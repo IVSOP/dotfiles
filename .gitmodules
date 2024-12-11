@@ -1,0 +1,3 @@
+[submodule "nvim/lua/plugins/mariana"]
+	path = nvim/lua/plugins/mariana
+	url = git@github.com:IVSOP/nvim-juliana-custom.git
