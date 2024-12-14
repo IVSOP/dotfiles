@@ -1,0 +1,47 @@
+[window]
+opacity = 0.75
+padding = { x = 4, y = 5 } # x = 3???
+
+[selection]
+# remove / ???
+semantic_escape_chars = ",│`|:\"' ()[]{}<>\t/"
+
+[cursor]
+style = { shape = "Beam", blinking = "Off" }
+thickness = 0.175
+
+[colors]
+selection = { text = "#282A2E", background = "#D8DEE9" }
+
+[colors.primary]
+foreground = "#D8DEE9"
+# in kitty, using 282A2E results in 222427
+# here, it results in 1E2022
+# so changed it to be the same since its what im used to
+background = "#2D3034"
+
+[colors.normal]
+red = "#CC0403"
+green = "#19CB00"
+blue = "#0D73CC"
+yellow = "#CECB00"
+cyan = "#0DCDCD"
+white = "#dddddd"
+magenta = "#CB1ED1"
+black = "#000000"
+
+[colors.bright]
+red = "#F2201F"
+green = "#FFFF00"
+blue = "#1A8FFF"
+yellow = "#FFFD00"
+cyan = "#14FFFF"
+white = "#FFFFFF"
+magenta = "#FD28FF"
+black = "#767676"
+
+[font]
+size = 11
+
+[env]
+WINIT_X11_SCALE_FACTOR = "1.0"
