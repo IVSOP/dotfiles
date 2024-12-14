@@ -1,0 +1,63 @@
+@theme "/home/ivsopi3/.config/rofi/current-theme/theme.rasi"
+window {
+	fullscreen: true;
+	padding:          4em;
+    children:         [ inputbar, listview];
+    spacing:          1em;
+}
+
+icon-ib {
+	expand: false;
+	vertical-align: 0.5;
+	horizontal-align: 0.5;
+	size: 1em;
+}
+inputbar {
+	//border-color: lightblue;
+	border: 3px;
+	border-radius: 0.4em;
+	spacing: 0.4em;
+	padding: 0.4em;
+	children: [ icon-ib, entry ];
+}
+entry {
+	placeholder: "Launch";
+	placeholder-color: grey;
+}
+
+listview {
+	flow: horizontal;
+	fixed-columns: true;
+	columns: 10;
+	lines: 5;
+	spacing: 1.0em;
+}
+
+element {
+	orientation: vertical;
+	padding: 0.1em;
+
+	//background-image: linear-gradient(white/5%, white/20%);
+	//border-color: lightblue /15%;
+	border: 2px;
+	border-radius: 0.4em;
+
+  children: [element-icon, element-text ];
+}
+element-icon {
+	size: calc(((100% - 10em) / 20 ));
+	horizontal-align: 0.5;
+	vertical-align: 0.5;
+}
+element-text {
+	horizontal-align: 0.5;
+	vertical-align: 0.5;
+  padding: 0.2em;
+}
+
+element selected {
+	//background-image: linear-gradient(white/25%, white/10%);
+	//border-color: lightblue;
+	border: 1px;
+	border-radius: 0.4em;
+}

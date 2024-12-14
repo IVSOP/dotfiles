@@ -1,0 +1,13 @@
+@theme "/home/ivsopi3/.config/rofi/current-theme/theme.rasi"
+window {
+	fullscreen: true;
+    border:           0;
+    padding:          5;
+}
+//window with all dmenu content
+mainbox {
+	margin: 30% 35% 30% 35%; //height, right, bottom, left 
+	border:  1;
+	border-radius: 0px;
+    padding: 0;
+}

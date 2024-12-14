@@ -1,0 +1,11 @@
+@theme "/home/ivsopi3/.config/rofi/current-theme/theme.rasi"
+window {
+    border:           1;
+    padding:          0;
+    width: 20%;
+    y-offset: -29;
+}
+mainbox {
+    border:  0;
+    padding: 0;
+}

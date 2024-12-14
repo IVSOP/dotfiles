@@ -1,0 +1,13 @@
+configuration {
+	show-icons:		false;
+	sidebar-mode: 	false;
+	font: "cantarell regular 12";
+}
+window {
+    border:           1;
+    padding:          0;
+}
+mainbox {
+    border:  0;
+    padding: 0;
+}
