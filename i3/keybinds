@@ -1,0 +1,168 @@
+# most of the things here are from the default config, except I chaged jkl; to hjkl because of vim, and made horizontal mode g instead of h
+
+floating_modifier $mod
+
+bindsym $mod+Return exec --no-startup-id i3-sensible-terminal
+# new terminal without focus
+# +Shift, alt or ctrl don't not work idk why
+#bindsym $mod+Ctrl+Return exec --no-focus i3-sensible-terminal
+
+bindsym $mod+Shift+q kill
+
+# audio
+# mouse commands only work with --whole-window for some reason
+bindsym XF86AudioRaiseVolume exec --no-startup-id $HOME/.config/i3/sound/sound.sh +5
+bindsym --whole-window button10 exec --no-startup-id $HOME/.config/i3/sound/sound.sh +5
+bindsym XF86AudioLowerVolume exec --no-startup-id $HOME/.config/i3/sound/sound.sh -5
+bindsym --whole-window button11 exec --no-startup-id $HOME/.config/i3/sound/sound.sh -5
+bindsym XF86AudioMute exec --no-startup-id $HOME/.config/i3/sound/toggle.sh
+################# this one has no script
+bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle; exec notify-send "i3 config XF86AudioMicMute pressed" "$(pactl get-source-mute @DEFAULT_SOURCE@)"
+
+# Crtl+Tab to change between run and drun modes (drun is standard, shows apps, run shows commands)
+bindsym $mod+d exec rofi -modi "run#drun" -show drun -display-drun "Launch" -theme $HOME/.config/rofi/current-theme/dmenu-theme.rasi -font "cantarell regular 15" -show-icons -i  &> /tmp/rofi.out
+
+# change focus
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+
+# alternatively, you can use the cursor keys:
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+# move focused window
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+
+# alternatively, you can use the cursor keys:
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+
+# split in horizontal orientation
+bindsym $mod+g split h
+
+# split in vertical orientation
+bindsym $mod+v split v
+
+# enter fullscreen mode for the focused container
+bindsym $mod+f fullscreen toggle
+
+# change container layout (stacked, tabbed, toggle split)
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+
+# toggle tiling / floating
+bindsym $mod+Shift+space floating toggle
+
+# change focus between tiling / floating windows
+bindsym $mod+space focus mode_toggle
+
+# focus the parent container
+bindsym $mod+a focus parent
+
+# focus the child container
+#bindsym $mod+v focus child
+
+# switch to workspace
+bindsym $mod+1 workspace $ws1
+bindsym $mod+2 workspace $ws2
+bindsym $mod+3 workspace $ws3
+bindsym $mod+4 workspace $ws4
+bindsym $mod+5 workspace $ws5
+bindsym $mod+6 workspace number $ws6
+bindsym $mod+7 workspace number $ws7
+bindsym $mod+8 workspace number $ws8
+bindsym $mod+9 workspace number $ws9
+bindsym $mod+0 workspace $ws10
+
+# move focused container to workspace
+bindsym $mod+Shift+1 move container to workspace $ws1
+bindsym $mod+Shift+2 move container to workspace $ws2
+bindsym $mod+Shift+3 move container to workspace $ws3
+bindsym $mod+Shift+4 move container to workspace $ws4
+bindsym $mod+Shift+5 move container to workspace $ws5
+bindsym $mod+Shift+6 move container to workspace number $ws6
+bindsym $mod+Shift+7 move container to workspace number $ws7
+bindsym $mod+Shift+8 move container to workspace number $ws8
+bindsym $mod+Shift+9 move container to workspace number $ws9
+bindsym $mod+Shift+0 move container to workspace $ws10
+
+# reload the configuration file
+bindsym $mod+Shift+c reload
+# restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
+bindsym $mod+Shift+r restart
+# exit i3 (logs you out of your X session)
+bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
+
+# brightness
+bindsym XF86MonBrightnessUp exec --no-startup-id $HOME/.config/i3/brightness/brightness.sh up
+bindsym XF86MonBrightnessDown exec --no-startup-id $HOME/.config/i3/brightness/brightness.sh down
+#####smaller increments
+bindsym Shift+XF86MonBrightnessUp exec --no-startup-id $HOME/.config/i3/brightness/brightness_small.sh up
+bindsym Shift+XF86MonBrightnessDown exec --no-startup-id $HOME/.config/i3/brightness/brightness_small.sh down
+#####reset to 50% (real 30%)
+bindsym Ctrl+XF86MonBrightnessUp exec --no-startup-id $HOME/.config/i3/brightness/reset.sh
+bindsym Ctrl+XF86MonBrightnessDown exec --no-startup-id $HOME/.config/i3/brightness/reset.sh
+
+# shortcuts
+bindsym $mod+Shift+F1 exec firefox-esr
+bindsym $mod+Shift+F2 exec code
+bindsym $mod+Shift+F3 exec xdg-open $HOME
+
+# controll 2 screens
+bindsym $mod+Shift+F10 exec --no-startup-id $HOME/.config/i3/Display/mirror.sh
+bindsym $mod+Shift+F11 exec --no-startup-id $HOME/.config/i3/Display/multi-screen.sh
+bindsym $mod+Shift+F12 exec --no-startup-id xrandr --output HDMI-1 --off --output eDP-1 --auto; exec --no-startup-id notify-send -u normal -t 1000 -h string:x-canonical-private-synchronous:display -i /usr/share/icons/HighContrast/32x32/devices/video-display.png "HMDI-1 off"
+
+# move workspaces between them
+bindsym $mod+Shift+p move workspace to output right
+bindsym $mod+Shift+o move workspace to ouptup eDP-1
+
+# mouse
+#bindsym button3 floating toggle
+#bindsym $mod+button3 floating toggle
+bindsym button9 move left
+bindsym button8 move right
+
+# Media player controls
+# changed play to act as play pause, pause key is different because reasons??
+bindsym XF86AudioPlay exec playerctl play-pause
+bindsym Pause exec playerctl pause
+bindsym XF86AudioNext exec playerctl next
+bindsym XF86AudioPrev exec playerctl previous
+
+# hide/unhide polybar modules
+bindsym $mod+Shift+f exec --no-startup-id $HOME/.config/polybar/module-toggler.sh
+
+# screenshot
+#%b%d_%H%M%S was the original
+bindsym $mod+Print exec --no-startup-id flameshot full -c -p $HOME/Pictures/Screenshots/$(date +%Y_%m_%d-%H%M%S).png
+bindsym --release Print exec --no-startup-id flameshot gui -c -p $HOME/Pictures/Screenshots/$(date +%Y_%m_%d-%H%M%S).png
+bindsym --release $mod+Shift+Print exec --no-startup-id import -quality 100 -screen $HOME/Pictures/Screenshots/$(date +%Y_%m_%d-%H%M%S).png; exec --no-startup-id notify-send -t 500 "Window Screenshit"
+
+# fan boost (lenovo y520)
+bindsym Ctrl+Shift+0 exec --no-startup-id ec4Linux change-state 2>&1 > /dev/null
+
+# show/hide border # I never used these and they conflicted with other keys
+#bindsym $mod+Shift+t border normal 2
+#bindsym $mod+Shift+h border pixel 2
+
+# themes menu
+bindsym $mod+Menu exec --no-startup-id $HOME/Desktop/Rofi-Themer/Scripts/menu.sh
+
+# cheats
+bindsym $mod+Shift+x exec --no-startup-id $HOME/.config/kitty/cheat_toggler.sh &> ~/idk.txt
+
+# self explanatory
+bindsym $mod+Tab workspace next
+bindsym $mod+Shift+Tab workspace prev
+

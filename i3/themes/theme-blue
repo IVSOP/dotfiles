@@ -1,0 +1,7 @@
+#                       border  backgr. text   indicator child_border
+client.focused          #2c4585 #302f2f98 #5785f8 #5785f8 #2c4585
+client.placeholder      #000000 #26262698 #5785f8 #5785f8 #0c0c0c
+client.focused_inactive #000000 #26262698 #5785f8 #5785f8 #0c0c0c
+
+#5785f8 light blue
+#2c4585 dark blue

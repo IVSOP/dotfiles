@@ -1,0 +1,7 @@
+client.focused          #bd00ff #302f2f98 #d600ff #d600ff #bd00ffbf
+client.placeholder      #000000 #26262698 #d600ff #d600ff #0c0c0c
+client.focused_inactive #000000 #26262698 #d600ff #d600ff #0c0c0c
+
+#d600ff light purple
+#bd00ff dark purple
+# change bd00ffa0 to bd00ff??? or use cf transparency?

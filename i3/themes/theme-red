@@ -1,0 +1,11 @@
+# colors
+#blue #1e6175
+#gray #262626
+#light red #e87272
+#dark red #521411
+#                       border  backgr. text   indicator child_border  
+#client.focused         #851f1b #521411 #fdf6e3 #e87272 #285577
+#client.placeholder     #000000 #0c0c0c #ffffff #000000 #0c0c0c
+client.focused          #851f1b #302f2f98 #ff7272 #e87272 #851f1b
+client.placeholder      #000000 #26262698 #ff7272 #e87272 #0c0c0c
+client.focused_inactive #000000 #26262698 #ff7272 #e87272 #0c0c0c

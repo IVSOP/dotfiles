@@ -1,0 +1,5 @@
+assign [class="^firefox$"] $ws2
+assign [class="^firefox-esr$"] $ws2
+
+assign [class="^discord$"] $ws1
+

@@ -1,0 +1,37 @@
+# Background, using nitrogen
+# head=-1 (in the script) makes it act as one screen
+# this script works at setting bg for both my screens
+exec_always --no-startup-id $HOME/.config/i3/Display/set-bg.sh
+
+# ithemer daemon for rofi themes
+#exec --no-startup-id $HOME/I-Themer/Scripts/start_daemon.sh
+exec --no-startup-id $HOME/Desktop/Rofi-Themer/Scripts/daemon.sh $HOME/Desktop/Rofi-Themer/data/
+
+# compton for vsync
+exec_always --no-startup-id $HOME/.config/compton/compton_launch.sh
+
+# dunst (notifications)
+# theme
+exec_always --no-startup-id $HOME/.config/dunst/get-theme.sh
+# dunst itself
+exec_always --no-startup-id $HOME/.config/dunst/launch.sh
+
+# Polybar (can be _always since launch.sh kills all bars)
+exec_always --no-startup-id $HOME/.config/polybar/launch.sh
+
+exec --no-startup-id nm-applet
+
+# screen before suspend. Use loginctl lock-session to lock your screen.
+# exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
+
+# for i3 theme
+exec_always --no-startup-id $HOME/.config/i3/i3theme.sh
+
+# for rofi theme
+exec_always --no-startup-id $HOME/.config/rofi/current-theme/get-theme.sh
+
+# for polybar theme
+exec_always --no-startup-id $HOME/.config/polybar/get-theme.sh
+
+# i3lock
+exec --no-startup-id xss-lock --transfer-sleep-lock -- $HOME/.config/i3/lock/lock_xss.sh
