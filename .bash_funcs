@@ -1,0 +1,80 @@
+#!/bin/bash
+
+#function setup_code () {
+#	cd $1
+#	code .
+#	# switch vscode to the left and resize it
+#	sleep 1
+#	i3-msg move left, resize grow width 15 px or 15 ppt
+#}
+
+#function setup_code () {
+#	cd $1
+#	# using i3-save-tree | grep "Visual Studio Code" also works but is less of a flex
+#	start_num_instances=$(i3-save-tree | sed '/^\s*\/\//d' | jq '.nodes[].name' | grep "Visual Studio Code" | wc -l)
+#	# very unfortunate but cant find a better way to wait for it to open
+#	code .
+#	sleep 0.1
+#	while [ $start_num_instances -eq $(i3-save-tree | sed '/^\s*\/\//d' | jq '.nodes[].name' | grep "Visual Studio Code" | wc -l) ]
+#	do
+#		sleep 0.1
+#	done
+#	
+#	# focus terminal
+#
+#	# resize terminal horizontally
+#	i3-msg move left, resize shrink width 15 px or 15 ppt
+#}
+
+function setup_code() {
+	# got lazy i know this is ugly
+	if [ "$#" -eq 0 ]
+	then
+	    BASEDIR=$(basename "`pwd`")
+	    KITTIES=0
+	    WORKDIR="."
+    	else
+		if [ "$#" -eq 1 ]
+		then
+			BASEDIR=$(basename "`pwd`")  
+			KITTIES=$1
+			WORKDIR="."
+		else
+			KITTIES=$1
+			BASEDIR=$(basename "$2")
+			WORKDIR=$2
+		fi
+	fi
+	
+	cd $WORKDIR
+
+	i3-msg split horizontal
+
+	code .
+	sleep 0.3
+
+	# WINDOWNAME=$(i3-save-tree | grep "$BASEDIR - Visual Studio Code")
+	while [ '0' -eq $(i3-save-tree | grep "$BASEDIR - Visual Studio Code" | wc -l) ]
+	do
+		sleep 0.3
+	done
+
+	# focus vscode
+	# i3-msg [title=\"$WINDOWNAME\"] focus
+	# could also get id using xwininfo
+	# grow vscode
+	# join these into one??????
+	i3-msg move left, resize grow width 0 px or 15 ppt
+	i3-msg focus prev # focus back to the terminal
+	
+	i3-msg split vertical
+	# spawn as many terminals as requested
+	for ((i = 0 ; i < KITTIES ; i++))
+	do
+		# what a mess. but it works
+		nohup kitty &> /dev/null & disown
+	done
+
+	clear
+}
+

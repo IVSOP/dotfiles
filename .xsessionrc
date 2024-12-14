@@ -1,0 +1,40 @@
+# keyboard layout
+
+#setxkbmap -layout us
+
+# screen
+#if [ "$(prime-select query)" = "nvidia" ]
+#then
+#    SCREEN1="HDMI-1-1"
+#    SCREEN2="eDP-1-1"
+#else
+#    SCREEN1="HDMI-1"
+#    SCREEN2="eDP-1"
+#fi
+
+#let AVAILABLE_SCREENS=$(xrandr | grep -wc "connected")
+#if [ $AVAILABLE_SCREENS -gt 1 ]
+#then
+#    xrandr --output $SCREEN1 --mode 2560x1440 --rate 60.00 --output $SCREEN2 --off
+#fi
+
+# mouse and touchpad settings
+xinput set-prop "SynPS/2 Synaptics TouchPad" "libinput Tapping Enabled" 1
+xinput set-prop "SynPS/2 Synaptics TouchPad" "libinput Natural Scrolling Enabled" 1
+xinput set-prop "SynPS/2 Synaptics TouchPad" "libinput Disable While Typing Enabled" 0
+xinput set-prop "SynPS/2 Synaptics TouchPad" "libinput Accel Profile Enabled"  0, 1
+xinput set-prop "SynPS/2 Synaptics TouchPad" "libinput Accel Speed"  0.1
+# # xinput set-prop pointer:"Lenovo Lenovo Y Gaming Precision Mouse" "libinput Accel Speed" 0.095
+# xinput set-prop pointer:"Lenovo Lenovo Y Gaming Precision Mouse" "libinput Accel Speed" 0.0475
+# 0.139706
+# xinput set-prop pointer:"Lenovo Lenovo Y Gaming Precision Mouse" "libinput Accel Profile Enabled"  0, 1
+# my mouse was being recognized as both keyboard and pointer and causing bugs, this disables it as a keyboard
+# xinput set-prop keyboard:"Lenovo Lenovo Y Gaming Precision Mouse" "Device Enabled" 0
+# xinput set-prop pointer:"Logitech USB Receiver" "libinput Accel Speed" 0.0475
+xinput set-prop pointer:"Logitech USB Receiver" "libinput Accel Speed" -0.35
+xinput set-prop pointer:"Logitech USB Receiver" "libinput Accel Profile Enabled" 0, 1
+xinput set-prop pointer:"Logitech PRO X Wireless" "libinput Accel Speed" -0.35
+xinput set-prop pointer:"Logitech PRO X Wireless" "libinput Accel Profile Enabled" 0, 1
+# this solves ibus problems on firefox
+export GTK_IM_MODULE=xim
+
