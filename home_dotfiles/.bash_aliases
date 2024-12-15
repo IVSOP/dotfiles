@@ -12,4 +12,5 @@ alias snano="sudo nano --rcfile /home/ivsopi3/.nanorc"
 alias sshkitty="kitty +kitten ssh"
 alias codekitty="setup_code"
 alias customfind="cat ~/customfindshort.sh"
+alias nv="nvim"
 
