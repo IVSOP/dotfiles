@@ -12,7 +12,11 @@
     lg3 = lg3-specific --all
     lg4 = log --graph --oneline --decorate --all
     grhh = reset --hard
+    ; ! is to treat as a regular shell command
     nuke = !git reset --hard && git clean -fdx
+    history = !git log --color=always --oneline | fzf --multi --ansi --preview 'git show --color=always {+1}'
+    rank = !git shortlog -n -s --no-merges | nl | grep --color -z -E 'Ivan Ribeiro|IVSOP'
+    review = !git diff --name-only | fzf -m --ansi --preview 'git diff --color=always -- {-1}'
 
     lg1-specific = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)'
     lg2-specific = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(auto)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)'
