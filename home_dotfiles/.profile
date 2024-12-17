@@ -26,5 +26,5 @@ if [ -d "$HOME/.local/bin" ] ; then
     PATH="$HOME/.local/bin:$PATH"
 fi
 
-export GTK_THEME=Adwaita-dark
+export GTK_THEME=Adwaita:dark
 . "$HOME/.cargo/env"
