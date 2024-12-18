@@ -38,3 +38,11 @@ xinput set-prop pointer:"Logitech PRO X Wireless" "libinput Accel Profile Enable
 # this solves ibus problems on firefox
 export GTK_IM_MODULE=xim
 
+# for polybar
+WIFI_IF=wlp15s0
+ETHERNET_IF=enp14s0
+#for i in /sys/class/thermal/thermal_zone*; do echo "$i: $(<$i/type)"; done
+export THERMAL_ZONE=0
+#for i in /sys/class/hwmon/hwmon*/temp*_input; do echo "$(<$(dirname $i)/name): $(cat ${i%_*}_label 2>/dev/null || echo $(basename ${i%_*})) $(readlink -f $i)"; done
+export CPU_TEMP=/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon4/temp1_input
+

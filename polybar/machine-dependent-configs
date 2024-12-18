@@ -1,0 +1,8 @@
+[interfaces]
+wifi = ${env:WIFI_IF}
+ehternet = ${env:ETHERNET_IF}
+
+[sensors]
+thermal_zone = ${env:THERMAL_ZONE}
+cpu_temp = ${env:CPU_TEMP}
+
