@@ -1,3 +1,5 @@
+-- https://github.com/hrsh7th/nvim-cmp/blob/main/doc/cmp.txt
+
 local cmp_kinds = {
   Text = '  ',
   Method = '  ',
@@ -32,10 +34,9 @@ local has_words_before = function()
     return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match('%s') == nil
 end
 
-
 return {
     "hrsh7th/nvim-cmp",
-    event = "InsertEnter",
+    -- event = "InsertEnter",
     dependencies = {
         "hrsh7th/cmp-buffer", -- buffer completion source for nvim-cmp
         "hrsh7th/cmp-path", -- path completion source for nvim-cmp
@@ -48,7 +49,8 @@ return {
 
         cmp.setup({
             completion = {
-                completeopt = "menu,menuone,preview,noselect"
+                completeopt = "menu,menuone,preview,noselect",
+                autocomplete = false -- only show the menu when I ask for it
             },
             snippet = {
                 expand = function(args)
@@ -58,10 +60,27 @@ return {
             mapping = {
                 ["<Down>"] = cmp.mapping.select_next_item(),
                 ["<Up>"] = cmp.mapping.select_prev_item(),
-                ['<C-Space>'] = cmp.mapping.confirm {
-                    behavior = cmp.ConfirmBehavior.Insert,
-                    select = true,
-                },
+                -- ['<C-Space>'] = function () -- trigger menu open and close
+                --     if cmp.visible() then -- close the menu if it is open
+                --         cmp.close()
+                --     else
+                --         if has_words_before() then -- only show if there are words before
+                --             -- repeated from what's below, only way for it to work for some reason
+                --             cmp.complete({
+                --                 config = {
+                --                     sources = {
+                --                         { name = "nvim_lsp" },
+                --                         -- { name = "luasnip" },
+                --                         { name = "buffer" },
+                --                         { name = "path" },
+                --                     }
+                --                 }
+                --             })
+                --         end
+                --     end
+                -- end,
+
+                -- if menu not shown and words before etc, then show it
                 ['<Tab>'] = function(fallback)
                     if not cmp.select_next_item() then
                         if vim.bo.buftype ~= 'prompt' and has_words_before() then
@@ -84,12 +103,11 @@ return {
                 -- ["<C-d>"] = cmp.mapping.scroll_docs(-4),
                 -- ["<C-f>"] = cmp.mapping.scroll_docs(4),
                 -- ["<C-Space>"] = cmp.mapping.complete(),
-                -- ["<C-e>"] = cmp.mapping.abort(), -- .close(),
+                ["<C-e>"] = cmp.mapping.close(), -- .close(),
                 -- ["<CR>"] = cmp.mapping.confirm({
                 --     behavior = cmp.ConfirmBehavior.Insert,
                 --     select = true,
                 -- }),
-                
             },
             sources = {
                 { name = "nvim_lsp" },
