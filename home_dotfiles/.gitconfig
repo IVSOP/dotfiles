@@ -2,7 +2,8 @@
 	name = Ivan Ribeiro
 	email = ivan.ribeiro09s@gmail.com
 [core]
-	editor = code --wait
+    editor = nvim
+    # editor = code --wait
 	pager = bat
 	#pager = less
 [alias]
