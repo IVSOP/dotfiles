@@ -3,7 +3,6 @@
 
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
-export EDITOR="nvim"
 
 export HISTSIZE=1000
 export HISTFILESIZE=2000
@@ -34,5 +33,5 @@ function statstring {
 
 PROMPT='%B%F{red}$(statstring)%f%F{green}%n@%m%f %F{blue}%~%f $%b '
 
-# source cargo/env???
+source $HOME/.cargo/env
 
