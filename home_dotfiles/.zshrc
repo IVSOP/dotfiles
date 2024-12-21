@@ -3,21 +3,25 @@
 
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
+export EDITOR="nvim"
 
 export HISTSIZE=1000
 export HISTFILESIZE=2000
 
+source $ZSH/oh-my-zsh.sh
+source $HOME/.bash_aliases
+source $HOME/.bash_funcs
+
 zstyle ':omz:update' mode disabled
 zstyle ':completion:' use-cache on
+zstyle ':completion:*' matcher-list '' # so that egg. D matches Downloads but not dotfiles
+# unsetopt nocaseglob
+# autoload -Uz compinit && compinit
 ENABLE_CORRECTION="false"
 
 # ZSH_THEME="robbyrussell"
 
 plugins=(z copypath colored-man-pages) # git
-
-source $ZSH/oh-my-zsh.sh
-source $HOME/.bash_aliases
-source $HOME/.bash_funcs
 
 export LANGUAGE=en_US.UTF-8
 export _JAVA_OPTIONS='-Dawt.useSystemAAFontSettings=on'
@@ -33,5 +37,5 @@ function statstring {
 
 PROMPT='%B%F{red}$(statstring)%f%F{green}%n@%m%f %F{blue}%~%f $%b '
 
-source $HOME/.cargo/env
+# source cargo/env???
 
