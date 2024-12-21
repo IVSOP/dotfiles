@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# I hate not having relative paths but whatever
+source $HOME/.config/polybar/env.sh
+
 date "+%H:%M:%S" | tee /tmp/polybar.log
 
 echo "Terminating already running bar instances" >> /tmp/polybar.log
