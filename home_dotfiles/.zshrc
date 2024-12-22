@@ -8,6 +8,7 @@ export EDITOR="nvim"
 export HISTSIZE=1000
 export HISTFILESIZE=2000
 
+plugins=(z copypath colored-man-pages) # git
 source $ZSH/oh-my-zsh.sh
 source $HOME/.bash_aliases
 source $HOME/.bash_funcs
@@ -20,8 +21,6 @@ zstyle ':completion:*' matcher-list '' # so that egg. D matches Downloads but no
 ENABLE_CORRECTION="false"
 
 # ZSH_THEME="robbyrussell"
-
-plugins=(z copypath colored-man-pages) # git
 
 export LANGUAGE=en_US.UTF-8
 export _JAVA_OPTIONS='-Dawt.useSystemAAFontSettings=on'
