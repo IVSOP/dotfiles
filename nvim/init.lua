@@ -13,6 +13,8 @@ o.relativenumber = true
 o.signcolumn = "yes" -- space created by gitsigns is always there
 o.termguicolors = true
 o.pumblend = 0 -- transparency of popup
+o.showmode = false -- disable --INSERT-- for example
+
 
 -- take warnins out of the left
 vim.diagnostic.config({

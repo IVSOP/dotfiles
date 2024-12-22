@@ -2,7 +2,7 @@
 -- | A | B | C                             X | Y | Z |
 -- +-------------------------------------------------+
 
--- TODO: reduce delay or switch out for another statusline
+-- TODO: use require('lualine').refresh() to manually refresh when chaning modes or something
 
 local diagnostics = {
     'diagnostics',
@@ -45,8 +45,6 @@ local custom_lspstatus = {
         end
 
         local buf_client_names = {}
-        local copilot_active = false
-
         -- add client
         for _, client in pairs(buf_clients) do
             if client.name ~= "null-ls" and client.name ~= "copilot" then
@@ -67,9 +65,11 @@ local custom_lspstatus = {
 
 local lspstatus = {
     function()
-        return require('lsp-progress').progress()
-    end
+        return
+            require('lsp-progress').progress()
+    end,
 
+    -- docs say this is needed but it works fine without it wtf
     -- -- listen lsp-progress event and refresh lualine
     -- vim.api.nvim_create_augroup("lualine_augroup", { clear = true })
     -- vim.api.nvim_create_autocmd("User", {
@@ -79,11 +79,16 @@ local lspstatus = {
     -- })
 }
 
+local branch = {
+    'branch',
+    icon = ''
+}
+
 return {
     'nvim-lualine/lualine.nvim',
     dependencies = {
         -- 'nvim-tree/nvim-web-devicons',
-        'linrongbin16/lsp-progress.nvim'
+        'linrongbin16/lsp-progress.nvim' -- configured in a different file
     },
     -- lazy = false,
     event = { "VimEnter" },
@@ -93,27 +98,28 @@ return {
             options = {
                 icons_enabled = true,
                 theme = 'auto',
-                component_separators = { left = '', right = ''},
-                section_separators = { left = '', right = ''},
+                -- theme = require('nvim-juliana').,
+                section_separators = '', -- these don't work wtf??? I just disabled them, only work when I leave normal mode
+                component_separators = '',
                 disabled_filetypes = {
                     statusline = {},
                     winbar = {},
                 },
                 ignore_focus = {},
-                always_divide_middle = true,
+                always_divide_middle = false,
                 always_show_tabline = true,
                 globalstatus = false,
                 refresh = {
-                    statusline = 100,
+                    statusline = 50,
                     tabline = 100,
                     winbar = 100,
                 }
             },
             sections = {
                 lualine_a = {'mode'},
-                lualine_b = {'branch', 'diff', diagnostics},
-                lualine_c = {},
-                lualine_x = {lspstatus},
+                lualine_b = {branch, 'diff'},
+                lualine_c = {diagnostics},
+                lualine_x = {lspstatus, function() return '|' end}, -- I hate this but I needed this separator, had to force it
                 lualine_y = {filename, fileformat},
                 lualine_z = {'location'}
             },

@@ -1,6 +1,9 @@
+live_config_reload = false
+
 [window]
 opacity = 0.75
-padding = { x = 4, y = 5 } # x = 3???
+# padding = { x = 4, y = 5 }
+dynamic_padding = true # I prefer the manual padding but this way nvim has no transparent border
 
 [selection]
 # remove / ???
