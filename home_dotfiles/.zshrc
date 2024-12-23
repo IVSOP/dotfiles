@@ -25,6 +25,7 @@ ENABLE_CORRECTION="false"
 export LANGUAGE=en_US.UTF-8
 export _JAVA_OPTIONS='-Dawt.useSystemAAFontSettings=on'
 export EDITOR=nvim
+export GTK_THEME=Adwaita:dark
 
 # print return code in red if it is an error code
 function statstring {
