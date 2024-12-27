@@ -1,3 +1,4 @@
+-- I know it is cursed but I was having issues with the separator of lualine so I added it here manually
 return {
     'linrongbin16/lsp-progress.nvim',
     config = function()
@@ -7,11 +8,11 @@ return {
             format = function(client_messages)
                 -- icon: nf-fa-gear \uf013
                 if #client_messages > 0 then
-                    return table.concat(client_messages, " ")
+                    return table.concat(client_messages, " ") .. ' |'
                 end
                 local clients = vim.lsp.get_clients() -- api.lsp_clients()
                 if #clients > 0 then
-                    return clients[1].name
+                    return clients[1].name .. ' |'
                 end
                 return ""
             end,

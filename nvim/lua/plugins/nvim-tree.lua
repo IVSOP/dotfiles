@@ -10,7 +10,15 @@ return {
             view = {
                 side = "right",
             },
-            vim.api.nvim_set_keymap("n", "<Leader>e", ":NvimTreeToggle<CR>", {noremap = true})
+            filters = {
+                dotfiles = true,
+            },
+            actions = {
+                open_file = {
+                    quit_on_open = true,  -- Close the tree when a file is opened
+                }
+            },
+            vim.api.nvim_set_keymap("n", "<Leader>t", ":NvimTreeToggle<CR>", {noremap = true})
         }
     end,
 }

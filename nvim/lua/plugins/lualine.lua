@@ -37,36 +37,9 @@ local filename = {
     }
 }
 
-local custom_lspstatus = {
-    function()
-        local buf_clients = vim.lsp.get_active_clients { bufnr = 0 }
-        if #buf_clients == 0 then
-            return "LSP Inactive"
-        end
-
-        local buf_client_names = {}
-        -- add client
-        for _, client in pairs(buf_clients) do
-            if client.name ~= "null-ls" and client.name ~= "copilot" then
-                if client.name == "GitHub Copilot" then
-                    copilot_active = true
-                else
-                    table.insert(buf_client_names, client.name)
-                end
-            end
-        end
-
-        local unique_client_names = table.concat(buf_client_names, ", ")
-        local language_servers = string.format("[%s]", unique_client_names)
-
-        return language_servers
-    end,
-}
-
 local lspstatus = {
     function()
-        return
-            require('lsp-progress').progress()
+        return require('lsp-progress').progress()
     end,
 
     -- docs say this is needed but it works fine without it wtf
@@ -119,7 +92,7 @@ return {
                 lualine_a = {'mode'},
                 lualine_b = {branch, 'diff'},
                 lualine_c = {diagnostics},
-                lualine_x = {lspstatus, function() return '|' end}, -- I hate this but I needed this separator, had to force it
+                lualine_x = {lspstatus}, -- ,function() return '|' end}, -- I hate this but I needed this separator, had to force it
                 lualine_y = {filename, fileformat},
                 lualine_z = {'location'}
             },

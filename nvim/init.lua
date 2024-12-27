@@ -1,3 +1,8 @@
+-- !!!!!!!!!! TEMPORARY WORKAROUND
+vim.hl = vim.highlight -- https://github.com/neovim/neovim/issues/31675
+
+
+
 require("config.lazy")
 
 --require('nvim-juliana').colors()
