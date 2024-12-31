@@ -15,8 +15,11 @@ return {
             },
             actions = {
                 open_file = {
-                    quit_on_open = true,  -- Close the tree when a file is opened
+                    quit_on_open = false,  -- Close the tree when a file is opened
                 }
+            },
+            renderer = {
+                highlight_opened_files = "name",
             },
             vim.api.nvim_set_keymap("n", "<Leader>t", ":NvimTreeToggle<CR>", {noremap = true})
         }
