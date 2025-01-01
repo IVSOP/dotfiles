@@ -27,7 +27,7 @@ pre_lock() {
     #scrot -q 10 - | composite -blend 15 png:$NOISE png:- png:- | convert png:- -scale 10% -scale 1000% png:$HOME/.config/i3/lock/screen.png
     # scrot is weird, using 90 works 100 times faster for the same filesize
     # this line basically takes screenshot, scales it way down (to blur) then blends with noise PNG. everything happens in pipes, only result is outputted
-    scrot -q 90 - | convert png:- -scale 10% png:- | composite -blend 15 png:$NOISE png:- png:- | convert png:- -scale 1000% png:$HOME/.config/i3/lock/screen.png
+    scrot -q 90 - | convert png:- -scale 10% png:- | composite -blend 15 png:$NOISE png:- png:- | convert png:- -scale 1000% png:/tmp/lock.png
 
     #mpc pause
     return
@@ -35,7 +35,7 @@ pre_lock() {
 
 # Run after the locker exits
 post_lock() {
-    rm $HOME/.config/i3/lock/screen.png
+    rm /tmp/screen.png
     return
 }
 
@@ -43,7 +43,7 @@ post_lock() {
 
 pre_lock
 
-i3lock_options="--image $HOME/.config/i3/lock/screen.png"
+i3lock_options="--image /tmp/lock.png"
 
 # We set a trap to kill the locker if we get killed, then start the locker and
 # wait for it to exit. The waiting is not that straightforward when the locker

@@ -9,6 +9,7 @@ return {
         require("nvim-tree").setup {
             view = {
                 side = "right",
+                -- centralize_selection = true,
             },
             filters = {
                 dotfiles = true,
@@ -21,6 +22,10 @@ return {
             renderer = {
                 highlight_opened_files = "name",
             },
+            update_focused_file = {
+                enable = true,
+            },
+
             vim.api.nvim_set_keymap("n", "<Leader>t", ":NvimTreeToggle<CR>", {noremap = true})
         }
     end,
