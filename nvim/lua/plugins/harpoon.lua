@@ -49,6 +49,11 @@ return {
         vim.keymap.set("n", "<leader>2", function() select(2) end)
         vim.keymap.set("n", "<leader>3", function() select(3) end)
         vim.keymap.set("n", "<leader>4", function() select(4) end)
+        vim.keymap.set("n", "<leader>5", function() select(5) end)
+        vim.keymap.set("n", "<leader>6", function() select(6) end)
+        vim.keymap.set("n", "<leader>7", function() select(7) end)
+        vim.keymap.set("n", "<leader>8", function() select(8) end)
+        vim.keymap.set("n", "<leader>9", function() select(9) end)
 
         -- Toggle previous & next buffers stored within Harpoon list
         vim.keymap.set("n", "<leader><Tab>", function() harpoon:list():next() end)

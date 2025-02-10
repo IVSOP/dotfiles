@@ -11,7 +11,7 @@ return {
         dependencies = { "williamboman/mason.nvim" },
         config = function()
             require("mason-lspconfig").setup({
-                ensure_installed = { "lua_ls", "pyright", "clangd", "rust_analyzer"},
+                ensure_installed = { "lua_ls", "pyright", "clangd", "rust_analyzer", "tinymist" },
             })
         end,
     },
