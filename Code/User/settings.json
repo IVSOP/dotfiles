@@ -3,22 +3,6 @@
     "open-php-html-js-in-browser.selectedBrowser": "Firefox",
     "editor.insertSpaces": false,
 	"editor.detectIndentation": false,
-	// mariana pro gray
-	"workbench.colorCustomizations": {
-		"[Mariana *]": {
-			"editorLineNumber.foreground": "#e87272", //"#999999"
-			"activityBar.background": "#262626",
-			"sideBar.background":"#262626",
-			"editor.background":"#262626",
-			"editorGroup.border":"#851f1b",
-			"editorGroupHeader.tabsBackground":"#262626"
-		}
-	},
-	"editor.tokenColorCustomizations": {
-		"[Mariana *]" : {
-			"variables": "#FFFFFF"
-		}
-	},
 	"gitlens.hovers.currentLine.over": "line",
 	"gitlens.currentLine.enabled": false,
 	"gitlens.codeLens.enabled": false,
@@ -30,7 +14,6 @@
 	"haskell.manageHLS": "GHCup",
 	"cmake.configureOnOpen": false,
 	"cmake.showOptionsMovedNotification": false,
-	"workbench.colorTheme": "Mariana Pro (Gray)",
 	"git.openRepositoryInParentFolders": "never",
 	"editor.largeFileOptimizations": false,
 	"editor.minimap.renderCharacters": false,
@@ -41,6 +24,11 @@
 	"json.schemas": [],
 	"telemetry.enableTelemetry": false,
 	"telemetry.enableCrashReporter": false,
-	"telemetry.telemetryLevel": "off"
+	"telemetry.telemetryLevel": "off",
+	"extensions.experimental.affinity": {
+		"asvetliakov.vscode-neovim": 1
+	},
+	"extensions.ignoreRecommendations": true,
+	"workbench.colorTheme": "Juliana"
 }
 // https://code.visualstudio.com/api/references/theme-color
