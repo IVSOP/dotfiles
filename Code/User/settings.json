@@ -1,7 +1,6 @@
 {
     "php.validate.executablePath": "",
     "open-php-html-js-in-browser.selectedBrowser": "Firefox",
-    "editor.insertSpaces": false,
 	"editor.detectIndentation": false,
 	"gitlens.hovers.currentLine.over": "line",
 	"gitlens.currentLine.enabled": false,
@@ -31,6 +30,7 @@
 	"extensions.ignoreRecommendations": true,
 	"workbench.colorTheme": "Juliana",
 	"editor.inlayHints.enabled": "off",
-	"editor.codeLens": false,
+	"editor.codeLens": false,"editor.tabSize": 4,
+    "editor.insertSpaces": true,
 }
 // https://code.visualstudio.com/api/references/theme-color
