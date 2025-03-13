@@ -29,6 +29,8 @@
 		"asvetliakov.vscode-neovim": 1
 	},
 	"extensions.ignoreRecommendations": true,
-	"workbench.colorTheme": "Juliana"
+	"workbench.colorTheme": "Juliana",
+	"editor.inlayHints.enabled": "off",
+	"editor.codeLens": false,
 }
 // https://code.visualstudio.com/api/references/theme-color
