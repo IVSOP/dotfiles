@@ -13,4 +13,5 @@ alias sshkitty="kitty +kitten ssh"
 alias codekitty="setup_code"
 alias customfind="cat ~/customfindshort.sh"
 alias nv="nvim"
+alias alc='alacritty --working-directory "$(pwd)" > /dev/null 2>&1 & disown'
 
