@@ -82,7 +82,7 @@ function setup_code() {
 function compress() {
     if [ "$#" -lt 2 ]
     then
-        echo "Not enough args"
+        echo "Not enough args: {OUTPUT} [FILENAMES]"
         return 1
     fi
     tar -cf - "${@:2}" | pv -s $(du -bc "${@:2}" | tail -n 1 | cut -f 1) | zstd -10 --long --threads=0 --stdout > $1
