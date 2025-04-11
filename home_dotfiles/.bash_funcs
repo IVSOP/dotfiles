@@ -83,6 +83,7 @@ function compress() {
     if [ "$#" -lt 2 ]
     then
         echo "Not enough args: {OUTPUT} [FILENAMES]"
+        echo "Command used is tar -cf - [FILENAMES] | pv -s \$(du -bc [FILENAMES] | tail -n 1 | cut -f 1) | zstd -10 --long --threads=0 --stdout > {OUTPUT}"
         return 1
     fi
     tar -cf - "${@:2}" | pv -s $(du -bc "${@:2}" | tail -n 1 | cut -f 1) | zstd -10 --long --threads=0 --stdout > $1
