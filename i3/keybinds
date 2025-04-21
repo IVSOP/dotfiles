@@ -114,10 +114,10 @@ bindsym Ctrl+XF86MonBrightnessUp exec --no-startup-id $HOME/.config/i3/brightnes
 bindsym Ctrl+XF86MonBrightnessDown exec --no-startup-id $HOME/.config/i3/brightness/reset.sh
 
 # shortcuts
-bindsym $mod+Shift+F1 exec firefox
-bindsym $mod+Shift+F2 exec discord
-bindsym $mod+Shift+F3 exec steam
-bindsym $mod+Shift+F4 exec nautilus
+bindsym $mod+Shift+F1 exec --no-startup-id firefox
+bindsym $mod+Shift+F2 exec --no-startup-id discord
+bindsym $mod+Shift+F3 exec --no-startup-id steam
+bindsym $mod+Shift+F4 exec --no-startup-id nautilus
 # bindsym $mod+Shift+F2 exec code
 # bindsym $mod+Shift+F3 exec xdg-open $HOME
 
