@@ -26,6 +26,7 @@
         "memory",
         "bluetooth",
         "custom/power",
+        "battery",
         "clock"
     ],
 
@@ -45,7 +46,7 @@
         // "format-alt": " {:%d/%m/%Y} |  {:%H:%M:%S}",
         // without this rise things would be off center vertically for some reason
         "format": "<span rise='1000'></span> {:%a, %b %d | <span color='#5785f8'>  %H:%M}</span>",
-        "format-alt": "<span rise='1000'></span> {:%d/%m/%Y | <span color='#5785f8'>  %H:%M:%S}</span>",
+        "format-alt": "<span rise='1000'></span> {:%d/%m/%Y | <span color='#5785f8'>  %H:%M:%S}</span>"
         // "tooltip-format": "<tt><small>{calendar}</small></tt>",
         // "calendar": {
         //     "mode"          : "year",
@@ -67,7 +68,7 @@
 
     "cpu": {
         // "min-length": 14,
-        "format": "<span rise='1000'></span> {usage:>2}% {icon0}{icon1}{icon2}{icon3}{icon4}{icon5}{icon6}{icon7}{icon8}{icon9}{icon10}{icon11}",
+        "format": "<span rise='1000'></span> {usage:>2}% {icon0}{icon1}{icon2}{icon3}{icon4}{icon5}{icon6}{icon7}",
         "format-icons": [
             "<span color='#5785f8'>_</span>",
             "<span color='#5785f8'>▁</span>",
@@ -76,8 +77,8 @@
             "<span color='#F0C674'>▄</span>",
             "<span color='#F0C674'>▅</span>",
             "<span color='#F0C674'>▆</span>",
-            "<span color='#ff5555'>▇</span>",
-            "<span color='#ff5555'>█</span>" 
+            "<span color='#ff6699'>▇</span>",
+            "<span color='#ff6699'>█</span>" 
         ],
         "interval": 1,
         "states": {
@@ -117,11 +118,25 @@
     },
 
     "battery": {
-        "format": "bat {capacity}%",
         "interval": 5,
+        // default, assumes you are plugged in. I swear this is not my fault, waybar is a mess
+        "format-full": "<span color='#5785f8' rise='1000'> </span> {capacity:2}%",
+        "format-near-full": "<span color='#5785f8' rise='1000'> </span> {capacity:2}%",
+        "format-half": "<span color='#5785f8' rise='1000'> </span> {capacity:2}%",
+        "format-low": "<span color='#5785f8' rise='1000'> </span> {capacity:2}%",
+        "format-empty": "<span color='#5785f8' rise='1000'> </span> {capacity:2}%",
+        // unplugged
+        "format-discharging-full": "<span color='#5785f8' rise='1000'></span> {capacity:2}%",
+        "format-discharging-near-full": "<span color='#5785f8' rise='1000'></span> {capacity:2}%",
+        "format-discharging-half": "<span color='#5785f8' rise='1000'></span> {capacity:2}%",
+        "format-discharging-low": "<span color='#F0C674'><span rise='1000'></span> {capacity:2}%</span>",
+        "format-discharging-empty": "<span color='#ff7a93'><span rise='1000'></span> {capacity:2}%</span>",
         "states": {
-            "warning": 20,
-            "critical": 10
+            "full": 100,
+            "near-full": 85,
+            "half": 60,
+            "low": 40,
+            "empty": 15
         },
         "tooltip": false
     },
@@ -179,7 +194,7 @@
 
     "temperature": {
         "format": "{icon} {temperatureC}°C",
-        "hwmon-path-abs": "/sys/devices/pci0000:00/0000:00:18.3/hwmon",
+        "hwmon-path-abs": "/sys/devices/platform/coretemp.0/hwmon",
         "input-filename": "temp1_input",
         "interval": 1,
         "format-icons": [

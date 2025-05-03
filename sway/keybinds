@@ -5,6 +5,14 @@ input "type:pointer" {
     pointer_accel -0.35
 }
 
+input "type:touchpad" {
+    tap enabled
+    natural_scroll enabled
+    dwt disabled
+    accel_profile "flat"
+    pointer_accel 0.1
+}
+
 floating_modifier $mod
 
 bindsym $mod+Return exec --no-startup-id i3-sensible-terminal
