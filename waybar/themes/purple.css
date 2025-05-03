@@ -1,0 +1,37 @@
+* {
+    border: 0;
+    border-radius: 0;
+    font-family: "Symbols Nerd Font", monospace;
+    font-size: 10.5pt;
+    margin: 0;
+    padding: 0;
+}
+
+window#waybar {
+    background: #1d2021;
+}
+
+tooltip {
+    background-color: #1d2021;
+}
+
+#workspaces button {
+    padding-left: 6pt;
+    padding-right: 6pt;
+    border-bottom: 3pt solid #4B0082;
+}
+
+#workspaces button.focused {
+    background: #34384e;
+    border-bottom: 3pt solid #d600ff;
+}
+
+#workspaces button.urgent {
+    background: #a54242;
+    border-bottom: 3pt solid #a54242;
+}
+
+#workspaces button:hover {
+    background: #34384e;
+    border-bottom: 3pt solid #d600ff;
+}

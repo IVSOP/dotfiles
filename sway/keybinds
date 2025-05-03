@@ -1,5 +1,10 @@
 # most of the things here are from the default config, except I chaged jkl; to hjkl because of vim, and made horizontal mode g instead of h
 
+input "type:pointer" {
+    accel_profile "flat"
+    pointer_accel -0.35
+}
+
 floating_modifier $mod
 
 bindsym $mod+Return exec --no-startup-id i3-sensible-terminal

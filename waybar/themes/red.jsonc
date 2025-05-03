@@ -1,0 +1,176 @@
+{
+    "layer": "top",
+    "position": "bottom",
+    "spacing": 20,
+    "height": 0,
+
+    "modules-left": [
+        "sway/workspaces",
+        "tray"
+    ],
+
+    "modules-center": [],
+
+    "modules-right": [
+        "network#wireless",
+        "network#wired",
+        "wireplumber",
+        "disk",
+        "temperature",
+        "cpu",
+        "memory",
+        "bluetooth",
+        "custom/power",
+        "clock"
+    ],
+
+    "sway/workspaces": {
+        "disable-scroll": true,
+        "all-outputs": true,
+        "tooltip": false
+    },
+
+    "tray": {
+        "spacing": 10,
+        "tooltip": false
+    },
+
+    "clock": {
+        "format": "<span rise='1000'></span> {:%a, %b %d | <span color='#e87272'>  %H:%M}</span>",
+        "format-alt": "<span rise='1000'></span> {:%d/%m/%Y | <span color='#e87272'>  %H:%M:%S}</span>",
+    },
+
+    "cpu": {
+        // "min-length": 14,
+        "format": "<span rise='1000'></span> {usage:>2}% {icon0}{icon1}{icon2}{icon3}{icon4}{icon5}{icon6}{icon7}{icon8}{icon9}{icon10}{icon11}",
+        "format-icons": [
+            "<span color='#55aa55'>_</span>",
+            "<span color='#55aa55'>▁</span>",
+            "<span color='#55aa55'>▂</span>",
+            "<span color='#55aa55'>▃</span>",
+            "<span color='#F0C674'>▄</span>",
+            "<span color='#F0C674'>▅</span>",
+            "<span color='#F0C674'>▆</span>",
+            "<span color='#e87272'>▇</span>",
+            "<span color='#e87272'>█</span>" 
+        ],
+        "interval": 1,
+        "states": {
+            "critical": 90
+        }
+    },
+
+    "memory": {
+        "interval": 2,
+        "format-0": " {used:0.2f} GiB/{percentage:2}% <span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span>",
+        "format-1": " {used:0.2f} GiB/{percentage:2}% <span color='#557755'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span>",
+        "format-2": " {used:0.2f} GiB/{percentage:2}% <span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span>",
+        "format-3": " {used:0.2f} GiB/{percentage:2}% <span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span>",
+        "format-4": " {used:0.2f} GiB/{percentage:2}% <span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#55aa55'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span>",
+        "format-5": " {used:0.2f} GiB/{percentage:2}% <span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#55aa55'>▐</span><span color='#55aa55'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span>",
+        "format-6": " {used:0.2f} GiB/{percentage:2}% <span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#55aa55'>▐</span><span color='#55aa55'>▐</span><span color='#55aa55'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span>",
+        "format-7": " {used:0.2f} GiB/{percentage:2}% <span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#55aa55'>▐</span><span color='#55aa55'>▐</span><span color='#55aa55'>▐</span><span color='#f5a70a'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span>",
+        "format-8": " {used:0.2f} GiB/{percentage:2}% <span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#55aa55'>▐</span><span color='#55aa55'>▐</span><span color='#55aa55'>▐</span><span color='#f5a70a'>▐</span><span color='#f5a70a'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span>",
+        "format-9": " {used:0.2f} GiB/{percentage:2}% <span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#55aa55'>▐</span><span color='#55aa55'>▐</span><span color='#55aa55'>▐</span><span color='#f5a70a'>▐</span><span color='#f5a70a'>▐</span><span color='#f5a70a'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span>",
+        "format-10": " {used:0.2f} GiB/{percentage:2}% <span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#55aa55'>▐</span><span color='#55aa55'>▐</span><span color='#55aa55'>▐</span><span color='#f5a70a'>▐</span><span color='#f5a70a'>▐</span><span color='#f5a70a'>▐</span><span color='#ff5555'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span>",
+        "format-11": " {used:0.2f} GiB/{percentage:2}% <span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#55aa55'>▐</span><span color='#55aa55'>▐</span><span color='#55aa55'>▐</span><span color='#f5a70a'>▐</span><span color='#f5a70a'>▐</span><span color='#f5a70a'>▐</span><span color='#ff5555'>▐</span><span color='#ff5555'>▐</span><span color='#444444'>▐</span>",
+        "format-12": " {used:0.2f} GiB/{percentage:2}% <span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#55aa55'>▐</span><span color='#55aa55'>▐</span><span color='#55aa55'>▐</span><span color='#f5a70a'>▐</span><span color='#f5a70a'>▐</span><span color='#f5a70a'>▐</span><span color='#ff5555'>▐</span><span color='#ff5555'>▐</span><span color='#ff5555'>▐</span>",
+        "states": {
+            "0": 0,
+            "1": 8,
+            "2": 16,
+            "3": 24,
+            "4": 32,
+            "5": 40,
+            "6": 48,
+            "7": 56,
+            "8": 64,
+            "9": 72,
+            "10": 80,
+            "11": 88
+        }
+    },
+
+    "battery": {
+        "format": "bat {capacity}%",
+        "interval": 5,
+        "states": {
+            "warning": 20,
+            "critical": 10
+        },
+        "tooltip": false
+    },
+
+    "network#wired": {
+        "interface": "enp*", // "enp14s0"
+        "format-ethernet": "<span color='#6afff3'> {bandwidthDownBytes:5}</span> <span color='#983bbf'> {bandwidthUpBytes:5}</span>",
+        "format-disconnected" : "<span color='#e87272'>󰈂</span>",
+        "interval": 1,
+        "tooltip": false
+    },
+
+    "network#wireless": {
+        "interface": "wlp*",
+        "format-wifi" : "{icon} {essid} <span color='#6afff3'></span> {bandwidthDownBytes:>} <span color='#983bbf'></span> {bandwidthUpBytes:>}",
+        "format-disconnected" : "<span color='#e87272'>󱛅</span>",
+        "interval": 1,
+        "tooltip": false,
+        "format-icons": [
+            "<span color='#55aa55'>󰤯</span>",
+            "<span color='#55aa55'>󰤟</span>",
+            "<span color='#55aa55'>󰤢</span>",
+            "<span color='#55aa55'>󰤥</span>",
+            "<span color='#55aa55'>󰤨</span>"
+        ]
+    },
+
+    "wireplumber": {
+        "format": " {volume:2}%",
+        "format-muted": "<span color='#707880'> {volume:2}%</span>",
+        "max-volume": 150,
+        "scroll-step": 5,
+        "tooltip": true,
+        "tooltip-format": "{node_name}",
+        "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+    },
+
+    "custom/power": {
+        "format": "",
+
+        "on-click": "rofi -show power-menu -modi power-menu:$HOME/.config/rofi/rofi-power-menu -width 20 -lines 6 -yoffset -29 -font \"JetBrains Mono NF 14\" -location 5 -theme $HOME/.config/rofi/current-theme/menu-theme.rasi"
+    },
+
+    "bluetooth": {
+        "format": "󰂲",
+        "format-connected": " {device_alias}",
+        "format-connected-battery": " {device_alias} {device_battery_percentage}%",
+        "tooltip-format": "{controller_alias}\t{controller_address}\n\n{num_connections} connected",
+        "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{num_connections} connected\n\n{device_enumerate}",
+        "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
+        "tooltip-format-enumerate-connected-battery": "{device_alias}\t{device_address}\t{device_battery_percentage}%"
+    },
+
+    "temperature": {
+        "format": "{icon} {temperatureC}°C",
+        "hwmon-path-abs": "/sys/devices/pci0000:00/0000:00:18.3/hwmon",
+        "input-filename": "temp1_input",
+        "interval": 1,
+        "format-icons": [
+            "<span color='#55aa55'></span>",
+            "<span color='#55aa55'></span>",
+            "<span color='#55aa55'></span>",
+            "<span color='#F0C674'></span>",
+            "<span color='#F0C674'></span>",
+            "<span color='#e87272'></span>"
+        ]
+    },
+
+    "disk": {
+        "interval": 6000,
+        // without this rise things would be off center vertically for some reason
+        "format": " {path}: {specific_free:0.5} GB <span rise='1000'>({percentage_used}%)</span>",
+        "path": "/",
+        "unit": "GB"
+    }
+}
+

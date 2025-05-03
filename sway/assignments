@@ -1,0 +1,8 @@
+# x11, have classes
+assign [class="^discord$"] $ws1
+assign [class="^steam$"] $ws5
+
+# wayland, no classes
+assign [app_id="^firefox$"] $ws2
+assign [app_id="^firefox-esr$"] $ws2
+
