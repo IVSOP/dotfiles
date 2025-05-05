@@ -68,7 +68,7 @@
 
     "cpu": {
         // "min-length": 14,
-        "format": "<span rise='1000'></span> {usage:>2}% {icon0}{icon1}{icon2}{icon3}{icon4}{icon5}{icon6}{icon7}",
+        "format": "<span rise='1000'></span> {usage:>2}% {icon0}{icon1}{icon2}{icon3}{icon4}{icon5}{icon6}{icon7}{icon8}{icon9}{icon10}{icon11}",
         "format-icons": [
             "<span color='#5785f8'>_</span>",
             "<span color='#5785f8'>▁</span>",
@@ -194,7 +194,7 @@
 
     "temperature": {
         "format": "{icon} {temperatureC}°C",
-        "hwmon-path-abs": "/sys/devices/platform/coretemp.0/hwmon",
+        "hwmon-path-abs": "/sys/devices/pci0000:00/0000:00:18.3/hwmon",
         "input-filename": "temp1_input",
         "interval": 1,
         "format-icons": [
@@ -203,7 +203,7 @@
             "<span color='#5785f8'></span>",
             "<span color='#F0C674'></span>",
             "<span color='#F0C674'></span>",
-            "<span color='#ff5555'></span>"
+            "<span color='#e87272'></span>"
         ]
     },
 

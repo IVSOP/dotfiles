@@ -28,5 +28,7 @@ SUSPEND_TIMEOUT_SECS=$(fend "20min to s" | cut -d' ' -f1)
 swayidle -w \
     timeout $LOCK_TIMEOUT_SECS "$HOME/.config/sway/lock/lock.sh" \
     timeout $SCREEN_OFF_TIMEOUT_SECS 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
-    timeout $SUSPEND_TIMEOUT_SECS 'systemctl suspend' before-sleep '$HOME/.config/sway/lock/lock.sh'
+    timeout $SUSPEND_TIMEOUT_SECS 'systemctl suspend' \
+    lock "$HOME/.config/sway/lock/lock.sh" \
+    before-sleep "$HOME/.config/sway/lock/lock.sh"
 
