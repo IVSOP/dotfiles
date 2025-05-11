@@ -32,5 +32,69 @@
 	"editor.inlayHints.enabled": "off",
 	"editor.codeLens": false,"editor.tabSize": 4,
     "editor.insertSpaces": true,
+    "todohighlight.keywords": [
+        {
+            "text": "TODO(string):",
+            "regex": {
+                "pattern": "(?<=^|\"|\\s)TODO(\\(\\w+\\))?:" // this allows for TODO: or TODO(Bob): etc.
+            },
+            "color": "black",
+            "backgroundColor": "#99c794"
+        },
+        {
+            "text": "WARN(string):",
+            "regex": {
+                "pattern": "(?<=^|\"|\\s)(WARN|HACK)(\\(\\w+\\))?:" // this allows for TODO: or TODO(Bob): etc.
+            },
+            "color": "black",
+            "backgroundColor": "#fac761"
+        },
+        {
+            "text": "FIXME(string):",
+            "regex": {
+                "pattern": "(?<=^|\"|\\s)(FIXME|FIX|BUG)(\\(\\w+\\))?:" // this allows for TODO: or TODO(Bob): etc.
+            },
+            "color": "black",
+            "backgroundColor": "#ec5f66"
+        },
+        {
+            "text": "NOTE(string):",
+            "regex": {
+                "pattern": "(?<=^|\"|\\s)(NOTE|INFO|TIP)(\\(\\w+\\))?:" // this allows for TODO: or TODO(Bob): etc.
+            },
+            "color": "black",
+            "backgroundColor": "#87c7c7"
+        },
+        {
+            "text": "PERF(string):",
+            "regex": {
+                "pattern": "(?<=^|\"|\\s)PERF(\\(\\w+\\))?:" // this allows for TODO: or TODO(Bob): etc.
+            },
+            "color": "black",
+            "backgroundColor": "white"
+        },
+    ],
+    "todohighlight.include": [
+        "**/*.js",
+        "**/*.jsx",
+        "**/*.ts",
+        "**/*.tsx",
+        "**/*.html",
+        "**/*.css",
+        "**/*.scss",
+        "**/*.php",
+        "**/*.rb",
+        "**/*.txt",
+        "**/*.mdown",
+        "**/*.md",
+        "**/*.lua",
+        "**/*.c",
+        "**/*.h",
+        "**/*.cpp",
+        "**/*.hpp",
+        "**/*.rs",
+        "**/*.hs",
+        "**/*.erl",
+        "**/*.java",
+    ],
 }
-// https://code.visualstudio.com/api/references/theme-color
