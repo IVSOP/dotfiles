@@ -39,7 +39,8 @@
                 "pattern": "(?<=^|\"|\\s)TODO(\\(\\w+\\))?:" // this allows for TODO: or TODO(Bob): etc.
             },
             "color": "black",
-            "backgroundColor": "#99c794"
+            "backgroundColor": "#99c794",
+            "fontWeight": "bold",
         },
         {
             "text": "WARN(string):",
@@ -47,7 +48,8 @@
                 "pattern": "(?<=^|\"|\\s)(WARN|HACK)(\\(\\w+\\))?:" // this allows for TODO: or TODO(Bob): etc.
             },
             "color": "black",
-            "backgroundColor": "#fac761"
+            "backgroundColor": "#fac761",
+            "fontWeight": "bold",
         },
         {
             "text": "FIXME(string):",
@@ -55,7 +57,8 @@
                 "pattern": "(?<=^|\"|\\s)(FIXME|FIX|BUG)(\\(\\w+\\))?:" // this allows for TODO: or TODO(Bob): etc.
             },
             "color": "black",
-            "backgroundColor": "#ec5f66"
+            "backgroundColor": "#ec5f66",
+            "fontWeight": "bold",
         },
         {
             "text": "NOTE(string):",
@@ -63,7 +66,8 @@
                 "pattern": "(?<=^|\"|\\s)(NOTE|INFO|TIP)(\\(\\w+\\))?:" // this allows for TODO: or TODO(Bob): etc.
             },
             "color": "black",
-            "backgroundColor": "#87c7c7"
+            "backgroundColor": "#87c7c7",
+            "fontWeight": "bold",
         },
         {
             "text": "PERF(string):",
@@ -71,7 +75,8 @@
                 "pattern": "(?<=^|\"|\\s)PERF(\\(\\w+\\))?:" // this allows for TODO: or TODO(Bob): etc.
             },
             "color": "black",
-            "backgroundColor": "white"
+            "backgroundColor": "white",
+            "fontWeight": "bold",
         },
     ],
     "todohighlight.include": [
@@ -96,5 +101,19 @@
         "**/*.hs",
         "**/*.erl",
         "**/*.java",
+    ],
+    "todohighlight.exclude": [
+        "**/node_modules/**",
+        "**/bower_components/**",
+        "**/dist/**",
+        "**/build/**",
+        "**/.vscode/**",
+        "**/.vscode-test/**",
+        "**/.github/**",
+        "**/_output/**",
+        "**/*.min.*",
+        "**/*.map",
+        "**/.next/**",
+        "**/target/**"
     ],
 }
