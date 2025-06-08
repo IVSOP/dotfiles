@@ -43,7 +43,7 @@
 
     "cpu": {
         // "min-length": 14,
-        "format": "<span rise='1000'></span> {usage:>2}% {icon0}{icon1}{icon2}{icon3}{icon4}{icon5}{icon6}{icon7}",
+        "format": "<span rise='1000'></span> {usage:>2}% {icon0}{icon1}{icon2}{icon3}{icon4}{icon5}{icon6}{icon7}{icon8}{icon9}{icon10}{icon11}",
         "format-icons": [
             "<span color='#55aa55'>_</span>",
             "<span color='#55aa55'>▁</span>",
@@ -118,7 +118,7 @@
 
     "network#wired": {
         "interface": "enp*", // "enp14s0"
-        "format-ethernet": "<span color='#6afff3'> {bandwidthDownBytes:5}</span> <span color='#983bbf'> {bandwidthUpBytes:5}</span>",
+        "format-ethernet": "<span color='#6afff3'></span> {bandwidthDownBytes:5} <span color='#983bbf'></span> {bandwidthUpBytes:5}",
         "format-disconnected" : "<span color='#e87272'>󰈂</span>",
         "interval": 1,
         "tooltip": false
@@ -167,7 +167,7 @@
 
     "temperature": {
         "format": "{icon} {temperatureC}°C",
-        "hwmon-path-abs": "/sys/devices/platform/coretemp.0/hwmon",
+        "hwmon-path-abs": "/sys/devices/pci0000:00/0000:00:18.3/hwmon",
         "input-filename": "temp1_input",
         "interval": 1,
         "format-icons": [

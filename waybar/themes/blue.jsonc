@@ -143,7 +143,7 @@
 
     "network#wired": {
         "interface": "enp*", // "enp14s0"
-        "format-ethernet": "<span color='#6afff3'> {bandwidthDownBytes:5}</span> <span color='#983bbf'> {bandwidthUpBytes:5}</span>",
+        "format-ethernet": "<span color='#6afff3'></span> {bandwidthDownBytes:5} <span color='#983bbf'></span> {bandwidthUpBytes:5}",
         "format-disconnected" : "<span color='#5785f8'>󰈂</span>",
         "interval": 1,
         "tooltip": false
