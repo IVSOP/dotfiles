@@ -39,7 +39,7 @@ PROMPT='%B%F{red}$(statstring)%f%F{green}%n@%m%f %F{blue}%~%f $%b '
 # ssh agent
 # could also use systemd, whatever
 if ! pgrep -u "$USER" ssh-agent > /dev/null; then
-    ssh-agent -t 1h > "$XDG_RUNTIME_DIR/ssh-agent.env"
+    ssh-agent -t 3h > "$XDG_RUNTIME_DIR/ssh-agent.env"
 fi
 if [ ! -f "$SSH_AUTH_SOCK" ]; then
     source "$XDG_RUNTIME_DIR/ssh-agent.env" >/dev/null
