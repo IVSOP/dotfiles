@@ -31,3 +31,6 @@ exec --no-startup-id xss-lock --transfer-sleep-lock -- $HOME/.config/i3/lock/loc
 # waybar
 exec_always --no-startup-id $HOME/.config/waybar/launch.sh
 
+# solaar
+exec --no-startup-id solaar --window hide
+

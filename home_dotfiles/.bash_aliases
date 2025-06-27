@@ -1,18 +1,36 @@
 #eval $(thefuck --alias)
-RED='\033[0;31m'
-NC='\033[0m' # No Color
-CYAN='\033[0;36m'
-alias files="sudo du -sh --si --time --threshold=-250M * | sort -h; echo -e \"${RED}Over 250M:${NC}\"; du -sh --si --time --threshold=250M * | sort -h; echo -e \"${CYAN}Total:${NC}\"; du -sh ."
-alias filesize="du -sh --si --time * | sort -rh"
 alias open="xdg-open . & disown"
 alias browser="w3m google.com"
-alias list="sudo ls -a1X --color=always"
-#alias nuke="sudo rm -Irv"
+# alias list="sudo ls -a1X --color=always"
+
+# editors
 alias snano="sudo nano --rcfile /home/ivsopi3/.nanorc"
-alias sshkitty="kitty +kitten ssh"
 alias codekitty="setup_code"
-alias customfind="cat ~/customfindshort.sh"
+alias ck="setup_code"
 alias nv="nvim"
-alias alc='alacritty --working-directory "$(pwd)" > /dev/null 2>&1 & disown'
 alias code='code --enable-features=UseOzonePlatform,WaylandWindowDecorations --ozone-platform-hint=auto'
+
+alias alc='alacritty --working-directory "$(pwd)" > /dev/null 2>&1 & disown'
+
+# dev
+alias npi="npm install"
+alias nr="npm run"
+alias nrb="npm run build"
+alias nrd="npm run dev"
+alias cr="cargo run"
+
+# files and file browsers
+alias files="nemo . &> /dev/null & disown"
+alias size="du -hcs"
+alias games="sudo mount UUID=560800025D1A30F9 /media/$LOGNAME/games"
+alias ugames="sudo umount /media/$LOGNAME/games"
+alias windows="sudo mount UUID=B272D69C72D6651F /media/$LOGNAME/windows"
+alias uwindows="sudo umount /media/$LOGNAME/windows"
+alias rs="rsync -ah --info=progress2" # --update
+
+# bluetooth
+alias blue="sudo systemctl start bluetooth.service && bluetoothctl"
+
+# screenshot copy
+alias sc="clipboard-png ~/Pictures/Screenshots/$(ls ~/Pictures/Screenshots | tail -n 1)"
 
