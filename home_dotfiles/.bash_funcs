@@ -53,13 +53,13 @@ function warp() {
     sudo systemctl $1 warp-svc.service
 }
 
-function clipboard-png() {
-    if [ "$#" -lt 1 ]
-    then
-        echo "Not enough args"
-        return 1
-    fi
+# screenshot copy
+function sc() {
+    wl-copy --type image/png < "$HOME/Pictures/Screenshots/$(ls ~/Pictures/Screenshots | tail -n 1)"
+}
 
-    wl-copy --type image/png < "$1"
+# screenshot delete
+function sd() {
+    rm "$HOME/Pictures/Screenshots/$(ls ~/Pictures/Screenshots | tail -n 1)"
 }
 

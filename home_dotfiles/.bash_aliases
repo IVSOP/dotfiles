@@ -31,6 +31,3 @@ alias rs="rsync -ah --info=progress2" # --update
 # bluetooth
 alias blue="sudo systemctl start bluetooth.service && bluetoothctl"
 
-# screenshot copy
-alias sc="clipboard-png ~/Pictures/Screenshots/$(ls ~/Pictures/Screenshots | tail -n 1)"
-
