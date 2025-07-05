@@ -18,6 +18,7 @@ alias npb="npm run build"
 alias npd="npm run dev"
 alias cr="cargo run"
 alias crr="cargo run release"
+alias yayf="yay -Slq | fzf --multi --preview 'yay -Sii {1}' --preview-window=down:75% | xargs -ro yay -S"
 
 # files and file browsers
 alias files="nemo . &> /dev/null & disown"
@@ -27,8 +28,9 @@ alias ugames="sudo umount /media/$LOGNAME/games"
 alias windows="sudo mount UUID=B272D69C72D6651F /media/$LOGNAME/windows"
 alias uwindows="sudo umount /media/$LOGNAME/windows"
 alias rs="rsync -ah --info=progress2" # --update
-alias ff="fzf"
-alias ls="eza"
+alias ff="fzf --preview 'bat --style=numbers --color=always {}'"
+alias ls="eza -lh --group-directories-first --icons=auto"
+alias lt="eza --tree --level=2 --long --icons --git"
 
 # bluetooth
 alias blue="sudo systemctl start bluetooth.service && bluetoothctl"

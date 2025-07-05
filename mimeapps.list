@@ -1,0 +1,5 @@
+[Added Associations]
+image/png=nemo-mpv-image.desktop;
+video/x-matroska=nemo-mpv-video.desktop;
+video/mp4=nemo-mpv-video.desktop;
+image/jpeg=nemo-mpv-image.desktop;

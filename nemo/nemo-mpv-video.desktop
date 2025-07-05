@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Type=Application
+NoDisplay=true
+Exec=mpv --hwdec=auto %f
+Name=mpv video
+Comment=Custom definition for mpv
+Icon=video-x-generic

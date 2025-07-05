@@ -1,0 +1,281 @@
+00:27:36.214: Platform: Wayland
+00:27:36.214: CPU Name: AMD Ryzen 5 7600X 6-Core Processor
+00:27:36.214: CPU Speed: 4332.399MHz
+00:27:36.214: Physical Cores: 6, Logical Cores: 12
+00:27:36.214: Physical Memory: 31183MB Total, 16136MB Free
+00:27:36.214: Kernel Version: Linux 6.15.3-arch1-1
+00:27:36.214: Distribution: "Arch Linux" Unknown
+00:27:36.214: Desktop Environment: sway (sway)
+00:27:36.214: Session Type: wayland
+00:27:36.215: Qt Version: 6.9.1 (runtime), 6.9.0 (compiled)
+00:27:36.215: Portable mode: false
+00:27:36.234: OBS 31.0.3 (linux)
+00:27:36.234: ---------------------------------
+00:27:36.235: ---------------------------------
+00:27:36.235: audio settings reset:
+00:27:36.235: 	samples per sec: 48000
+00:27:36.235: 	speakers:        2
+00:27:36.235: 	max buffering:   960 milliseconds
+00:27:36.235: 	buffering type:  dynamically increasing
+00:27:36.236: ---------------------------------
+00:27:36.236: Initializing OpenGL...
+00:27:36.236: Using EGL/Wayland
+00:27:36.262: Initialized EGL 1.5
+00:27:36.271: Loading up OpenGL on adapter AMD AMD Radeon RX 7800 XT (radeonsi, navi32, LLVM 20.1.6, DRM 3.63, 6.15.3-arch1-1)
+00:27:36.271: OpenGL loaded successfully, version 4.6 (Core Profile) Mesa 25.1.4-arch1.1, shading language 4.60
+00:27:36.295: ---------------------------------
+00:27:36.295: video settings reset:
+00:27:36.295: 	base resolution:   2560x1440
+00:27:36.295: 	output resolution: 2560x1440
+00:27:36.295: 	downscale filter:  Bicubic
+00:27:36.295: 	fps:               60/1
+00:27:36.295: 	format:            NV12
+00:27:36.295: 	YUV mode:          Rec. 709/Partial
+00:27:36.295: NV12 texture support enabled
+00:27:36.295: P010 texture support not available
+00:27:36.298: Audio monitoring device:
+00:27:36.298: 	name: Default
+00:27:36.298: 	id: default
+00:27:36.299: ---------------------------------
+00:27:36.310: No AJA devices found, skipping loading AJA UI plugin
+00:27:36.310: Failed to initialize module 'aja-output-ui.so'
+00:27:36.314: os_dlopen(/usr/lib/obs-plugins/aja.so->/usr/lib/obs-plugins/aja.so): /usr/lib/obs-plugins/aja.so: undefined symbol: _ZN18CNTV2DeviceScanner17GetDeviceInfoListEv
+00:27:36.314: 
+00:27:36.314: Module '/usr/lib/obs-plugins/aja.so' not loaded
+00:27:36.318: Failed to load 'en-US' text for module: 'decklink-captions.so'
+00:27:36.322: Failed to load 'en-US' text for module: 'decklink-output-ui.so'
+00:27:36.326: A DeckLink iterator could not be created.  The DeckLink drivers may not be installed
+00:27:36.326: Failed to initialize module 'decklink.so'
+00:27:36.332: droidcam-obs module loaded (arch)
+00:27:36.452: [pipewire] Available capture sources:
+00:27:36.452: [pipewire]     - Monitor source
+00:27:36.468: [linux-vkcapture] plugin loaded successfully (version 1.5.2)
+00:27:36.474: [obs-browser]: Version 2.25.0
+00:27:36.474: [obs-browser]: CEF Version 127.0.6533.120 (runtime), 127.0.0-6533-fix-stutter.3039+g9d68db8+chromium-127.0.6533.120 (compiled)
+00:27:36.506: VAAPI: API version 1.22
+00:27:36.506: FFmpeg VAAPI H264 encoding supported
+00:27:36.509: FFmpeg VAAPI AV1 encoding supported
+00:27:36.512: FFmpeg VAAPI HEVC encoding supported
+00:27:36.528: os_dlopen(libnvidia-encode.so.1->libnvidia-encode.so.1): libnvidia-encode.so.1: cannot open shared object file: No such file or directory
+00:27:36.528: 
+00:27:36.528: NVENC not supported
+00:27:36.528: Failed to initialize module 'obs-nvenc.so'
+00:27:36.577: [obs-websocket] [obs_module_load] you can haz websockets (Version: 5.5.6 | RPC Version: 1)
+00:27:36.577: [obs-websocket] [obs_module_load] Qt version (compile-time): 6.9.0 | Qt version (run-time): 6.9.1
+00:27:36.577: [obs-websocket] [obs_module_load] Linked ASIO Version: 103402
+00:27:36.577: DEPRECATION: obs_frontend_get_global_config is deprecated. Read from global or user configuration explicitly instead.
+00:27:36.580: [obs-websocket] [obs_module_load] Module loaded.
+00:27:36.601: [vlc-video]: VLC 3.0.21 Vetinari found, VLC video source enabled
+00:27:36.601: ---------------------------------
+00:27:36.601:   Loaded Modules:
+00:27:36.601:     vlc-video.so
+00:27:36.601:     text-freetype2.so
+00:27:36.601:     rtmp-services.so
+00:27:36.601:     obs-x264.so
+00:27:36.601:     obs-websocket.so
+00:27:36.601:     obs-webrtc.so
+00:27:36.601:     obs-vst.so
+00:27:36.601:     obs-transitions.so
+00:27:36.601:     obs-qsv11.so
+00:27:36.601:     obs-outputs.so
+00:27:36.601:     obs-libfdk.so
+00:27:36.601:     obs-filters.so
+00:27:36.601:     obs-ffmpeg.so
+00:27:36.601:     obs-browser.so
+00:27:36.601:     linux-vkcapture.so
+00:27:36.601:     linux-v4l2.so
+00:27:36.601:     linux-pulseaudio.so
+00:27:36.601:     linux-pipewire.so
+00:27:36.601:     linux-jack.so
+00:27:36.601:     linux-capture.so
+00:27:36.601:     linux-alsa.so
+00:27:36.601:     image-source.so
+00:27:36.601:     frontend-tools.so
+00:27:36.601:     droidcam-obs.so
+00:27:36.601:     decklink-output-ui.so
+00:27:36.601:     decklink-captions.so
+00:27:36.601: ---------------------------------
+00:27:36.601: ---------------------------------
+00:27:36.601: Available Encoders:
+00:27:36.601:   Video Encoders:
+00:27:36.601: 	- ffmpeg_svt_av1 (SVT-AV1)
+00:27:36.601: 	- ffmpeg_aom_av1 (AOM AV1)
+00:27:36.601: 	- ffmpeg_vaapi_tex (FFmpeg VAAPI H.264)
+00:27:36.601: 	- av1_ffmpeg_vaapi_tex (FFmpeg VAAPI AV1)
+00:27:36.601: 	- hevc_ffmpeg_vaapi_tex (FFmpeg VAAPI HEVC)
+00:27:36.601: 	- obs_x264 (x264)
+00:27:36.601:   Audio Encoders:
+00:27:36.602: 	- ffmpeg_aac (FFmpeg AAC)
+00:27:36.602: 	- ffmpeg_opus (FFmpeg Opus)
+00:27:36.602: 	- ffmpeg_pcm_s16le (FFmpeg PCM (16-bit))
+00:27:36.602: 	- ffmpeg_pcm_s24le (FFmpeg PCM (24-bit))
+00:27:36.602: 	- ffmpeg_pcm_f32le (FFmpeg PCM (32-bit float))
+00:27:36.602: 	- ffmpeg_alac (FFmpeg ALAC (24-bit))
+00:27:36.602: 	- ffmpeg_flac (FFmpeg FLAC (16-bit))
+00:27:36.602: 	- libfdk_aac (libfdk AAC)
+00:27:36.602: ==== Startup complete ===============================================
+00:27:36.642: All scene data cleared
+00:27:36.642: ------------------------------------------------
+00:27:36.645: pulse-input: Server name: 'PulseAudio (on PipeWire 1.4.5) 15.0.0'
+00:27:36.645: pulse-input: Audio format: s24le, 48000 Hz, 2 channels
+00:27:36.645: pulse-input: Sample format s24le not supported by OBS,using float32le instead for recording
+00:27:36.645: pulse-input: Started recording from 'alsa_output.usb-Razer_Razer_USB_Sound_Card_00000000-00.analog-stereo.monitor' (default)
+00:27:36.645: [Loaded global audio device]: 'Desktop Audio'
+00:27:36.645: pulse-input: Server name: 'PulseAudio (on PipeWire 1.4.5) 15.0.0'
+00:27:36.645: pulse-input: Audio format: s24le, 48000 Hz, 1 channels
+00:27:36.645: pulse-input: Sample format s24le not supported by OBS,using float32le instead for recording
+00:27:36.645: pulse-input: Started recording from 'alsa_input.usb-Razer_Inc._Razer_Seiren_V3_Mini-00.mono-fallback' (default)
+00:27:36.645: [Loaded global audio device]: 'Mic/Aux'
+00:27:36.645: [DroidCamOBS] Source: "droidcam" - 234
+00:27:36.645: [DroidCamOBS] trying 'adb'
+00:27:36.651: [DroidCamOBS] "adb version" exit value 2
+00:27:36.651: [DroidCamOBS] trying '/usr/local/bin/adb'
+00:27:36.651: [DroidCamOBS] trying '/usr/bin/adb'
+00:27:36.651: [DroidCamOBS] trying '/bin/adb'
+00:27:36.651: [DroidCamOBS] adb not found
+00:27:36.651: [DroidCamOBS] PATH=/home/ivsopi3/.local/bin:/home/ivsopi3/bin:/home/ivsopi3/.local/bin:/home/ivsopi3/bin:/home/ivsopi3/.cargo/bin:/sbin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/opt/rocm/bin
+00:27:36.651: [DroidCamOBS] activated=0, deactivateWNS=0, is_showing=0, enable_audio=0
+00:27:36.651: [DroidCamOBS] video_format=avc video_resolution=1920x1080
+00:27:36.651: [DroidCamOBS] video_thread start
+00:27:36.651: [DroidCamOBS] video_decode_thread start
+00:27:36.651: [DroidCamOBS] audio_thread start
+00:27:36.651: pulse-input: Server name: 'PulseAudio (on PipeWire 1.4.5) 15.0.0'
+00:27:36.651: pulse-input: Audio format: s24le, 48000 Hz, 2 channels
+00:27:36.651: pulse-input: Sample format s24le not supported by OBS,using float32le instead for recording
+00:27:36.652: pulse-input: Started recording from 'alsa_output.usb-Razer_Razer_USB_Sound_Card_00000000-00.analog-stereo.monitor' (default)
+00:27:36.652: pulse-input: Server name: 'PulseAudio (on PipeWire 1.4.5) 15.0.0'
+00:27:36.652: pulse-input: Audio format: s24le, 48000 Hz, 1 channels
+00:27:36.652: pulse-input: Sample format s24le not supported by OBS,using float32le instead for recording
+00:27:36.652: pulse-input: Started recording from 'alsa_input.usb-Razer_Inc._Razer_Seiren_V3_Mini-00.mono-fallback' (default)
+00:27:36.652: PipeWire initialized
+00:27:36.652: Source ID 'xcomposite_input' not found
+00:27:36.652: Failed to create source 'particlinator'!
+00:27:36.653: Switched to scene 'cam_scene'
+00:27:36.653: ------------------------------------------------
+00:27:36.653: Loaded scenes:
+00:27:36.653: - scene 'cam_scene':
+00:27:36.653:     - source: 'droidcam' (droidcam_obs)
+00:27:36.653: - scene 'recording':
+00:27:36.653:     - source: 'sound' (pulse_output_capture)
+00:27:36.653:     - source: 'mic' (pulse_input_capture)
+00:27:36.653:     - source: 'Screen Capture (PipeWire)' (pipewire-screen-capture-source)
+00:27:36.653:     - source: 'particlinator' (xcomposite_input)
+00:27:36.653: ------------------------------------------------
+00:27:36.673: [pipewire] Screencast session created
+00:27:36.708: [pipewire] Asking for monitor and window
+00:27:36.718: [pipewire] source selected, setting up screencast
+00:27:36.721: [pipewire] Server version: 1.4.5
+00:27:36.721: [pipewire] Library version: 1.4.5
+00:27:36.721: [pipewire] Header version: 1.4.2
+00:27:36.721: [pipewire] Created stream 0x555793448ea0
+00:27:36.721: [pipewire] Stream 0x555793448ea0 state: "connecting" (error: none)
+00:27:36.721: [pipewire] Playing stream 0x555793448ea0
+00:27:36.729: [pipewire] Stream 0x555793448ea0 state: "paused" (error: none)
+00:27:36.732: [pipewire] Negotiated format:
+00:27:36.732: [pipewire]     Format: 8 (Spa:Enum:VideoFormat:BGRx)
+00:27:36.732: [pipewire]     Modifier: 0x0
+00:27:36.732: [pipewire]     Size: 2560x1440
+00:27:36.732: [pipewire]     Framerate: 0/1
+00:27:36.732: [pipewire] Negotiated format:
+00:27:36.732: [pipewire]     Format: 8 (Spa:Enum:VideoFormat:BGRx)
+00:27:36.732: [pipewire]     Modifier: 0x20000002086bb04
+00:27:36.732: [pipewire]     Size: 2560x1440
+00:27:36.732: [pipewire]     Framerate: 0/1
+00:27:36.733: [pipewire] Stream 0x555793448ea0 state: "streaming" (error: none)
+00:27:37.216: adding 21 milliseconds of audio buffering, total audio buffering is now 21 milliseconds (source: Desktop Audio)
+00:27:37.216: 
+00:27:37.536: adding 64 milliseconds of audio buffering, total audio buffering is now 85 milliseconds (source: sound)
+00:27:37.536: 
+00:27:48.441: User switched to scene 'recording'
+00:27:49.612: User switched to scene 'cam_scene'
+00:27:50.964: ==== Shutting down ==================================================
+00:27:50.966: pulse-input: Stopped recording from 'alsa_output.usb-Razer_Razer_USB_Sound_Card_00000000-00.analog-stereo.monitor'
+00:27:50.966: pulse-input: Got 572 packets with 686400 frames
+00:27:50.966: pulse-input: Stopped recording from 'alsa_input.usb-Razer_Inc._Razer_Seiren_V3_Mini-00.mono-fallback'
+00:27:50.966: pulse-input: Got 569 packets with 682800 frames
+00:27:50.966: [DroidCamOBS] destroy: "droidcam"
+00:27:50.966: [DroidCamOBS] stopping
+00:27:50.967: [DroidCamOBS] video_decode_thread end
+00:27:50.973: [DroidCamOBS] video_thread end
+00:27:50.973: [DroidCamOBS] audio_thread end
+00:27:50.974: [DroidCamOBS] cleanup
+00:27:50.974: pulse-input: Stopped recording from 'alsa_output.usb-Razer_Razer_USB_Sound_Card_00000000-00.analog-stereo.monitor'
+00:27:50.974: pulse-input: Got 569 packets with 682800 frames
+00:27:50.974: pulse-input: Stopped recording from 'alsa_input.usb-Razer_Inc._Razer_Seiren_V3_Mini-00.mono-fallback'
+00:27:50.974: pulse-input: Got 564 packets with 676800 frames
+00:27:50.974: [pipewire] Stream 0x555793448ea0 state: "paused" (error: none)
+00:27:50.974: [pipewire] Stream 0x555793448ea0 state: "unconnected" (error: none)
+00:27:50.999: All scene data cleared
+00:27:50.999: ------------------------------------------------
+00:27:51.041: [obs-websocket] [obs_module_unload] Shutting down...
+00:27:51.041: Tried to call obs_frontend_remove_event_callback with no callbacks!
+00:27:51.041: [obs-websocket] [obs_module_unload] Finished shutting down.
+00:27:51.041: [linux-vkcapture] plugin unloaded
+00:27:51.045: [Scripting] Total detached callbacks: 0
+00:27:51.045: Freeing OBS context data
+00:27:51.057: == Profiler Results =============================
+00:27:51.057: run_program_init: 475.751 ms
+00:27:51.057:  ┣OBSApp::AppInit: 7.537 ms
+00:27:51.057:  ┃ ┗OBSApp::InitLocale: 0.49 ms
+00:27:51.057:  ┗OBSApp::OBSInit: 455.834 ms
+00:27:51.057:    ┣obs_startup: 1.325 ms
+00:27:51.057:    ┗OBSBasic::OBSInit: 435.286 ms
+00:27:51.057:      ┣OBSBasic::InitBasicConfig: 0.313 ms
+00:27:51.057:      ┣OBSBasic::ResetAudio: 0.134 ms
+00:27:51.057:      ┣OBSBasic::ResetVideo: 63.123 ms
+00:27:51.057:      ┃ ┗obs_init_graphics: 60.2 ms
+00:27:51.057:      ┃   ┗shader compilation: 23.432 ms
+00:27:51.057:      ┣OBSBasic::InitOBSCallbacks: 0.003 ms
+00:27:51.057:      ┣OBSBasic::InitHotkeys: 0.016 ms
+00:27:51.057:      ┣obs_load_all_modules2: 302.756 ms
+00:27:51.057:      ┃ ┣obs_init_module(aja-output-ui.so): 0.052 ms
+00:27:51.057:      ┃ ┣obs_init_module(decklink-captions.so): 0 ms
+00:27:51.057:      ┃ ┣obs_init_module(decklink-output-ui.so): 0 ms
+00:27:51.057:      ┃ ┣obs_init_module(decklink.so): 0.047 ms
+00:27:51.057:      ┃ ┣obs_init_module(droidcam-obs.so): 0.022 ms
+00:27:51.057:      ┃ ┣obs_init_module(frontend-tools.so): 40.674 ms
+00:27:51.057:      ┃ ┣obs_init_module(image-source.so): 0.008 ms
+00:27:51.057:      ┃ ┣obs_init_module(linux-alsa.so): 0.002 ms
+00:27:51.057:      ┃ ┣obs_init_module(linux-capture.so): 0 ms
+00:27:51.057:      ┃ ┣obs_init_module(linux-jack.so): 0.002 ms
+00:27:51.057:      ┃ ┣obs_init_module(linux-pipewire.so): 8.226 ms
+00:27:51.057:      ┃ ┣obs_init_module(linux-pulseaudio.so): 0.004 ms
+00:27:51.057:      ┃ ┣obs_init_module(linux-v4l2.so): 0.03 ms
+00:27:51.057:      ┃ ┣obs_init_module(linux-vkcapture.so): 0.072 ms
+00:27:51.057:      ┃ ┣obs_init_module(obs-browser.so): 0.028 ms
+00:27:51.057:      ┃ ┣obs_init_module(obs-ffmpeg.so): 9.737 ms
+00:27:51.057:      ┃ ┣obs_init_module(obs-filters.so): 0.016 ms
+00:27:51.057:      ┃ ┣obs_init_module(obs-libfdk.so): 0.001 ms
+00:27:51.057:      ┃ ┣obs_init_module(obs-nvenc.so): 0.049 ms
+00:27:51.057:      ┃ ┃ ┗nvenc_check: 0.042 ms
+00:27:51.057:      ┃ ┣obs_init_module(obs-outputs.so): 0.003 ms
+00:27:51.057:      ┃ ┣obs_init_module(obs-qsv11.so): 11.268 ms
+00:27:51.057:      ┃ ┣obs_init_module(obs-transitions.so): 0.008 ms
+00:27:51.057:      ┃ ┣obs_init_module(obs-vst.so): 0.001 ms
+00:27:51.057:      ┃ ┣obs_init_module(obs-webrtc.so): 0.002 ms
+00:27:51.057:      ┃ ┣obs_init_module(obs-websocket.so): 2.856 ms
+00:27:51.057:      ┃ ┣obs_init_module(obs-x264.so): 0.004 ms
+00:27:51.057:      ┃ ┣obs_init_module(rtmp-services.so): 0.449 ms
+00:27:51.057:      ┃ ┣obs_init_module(text-freetype2.so): 0.007 ms
+00:27:51.057:      ┃ ┗obs_init_module(vlc-video.so): 1.198 ms
+00:27:51.057:      ┣OBSBasic::InitService: 0.715 ms
+00:27:51.057:      ┣OBSBasic::ResetOutputs: 6.313 ms
+00:27:51.057:      ┣OBSBasic::CreateHotkeys: 0.071 ms
+00:27:51.057:      ┣OBSBasic::InitPrimitives: 0.068 ms
+00:27:51.057:      ┗OBSBasic::Load: 44.482 ms
+00:27:51.057: obs_hotkey_thread(25 ms): min=0 ms, median=0 ms, max=0.001 ms, 99th percentile=0 ms, 100% below 25 ms
+00:27:51.057: audio_thread(Audio): min=0.004 ms, median=0.021 ms, max=1.448 ms, 99th percentile=0.11 ms
+00:27:51.057: obs_graphics_thread(16.6667 ms): min=0.051 ms, median=0.102 ms, max=14.383 ms, 99th percentile=0.278 ms, 100% below 16.667 ms
+00:27:51.057:  ┣tick_sources: min=0 ms, median=0.002 ms, max=0.068 ms, 99th percentile=0.009 ms
+00:27:51.057:  ┣output_frame: min=0.03 ms, median=0.041 ms, max=1.889 ms, 99th percentile=0.168 ms
+00:27:51.057:  ┃ ┗gs_context(video->graphics): min=0.03 ms, median=0.041 ms, max=1.879 ms, 99th percentile=0.168 ms
+00:27:51.057:  ┃   ┣render_video: min=0.006 ms, median=0.007 ms, max=0.906 ms, 99th percentile=0.034 ms
+00:27:51.057:  ┃   ┃ ┗render_main_texture: min=0.005 ms, median=0.006 ms, max=0.904 ms, 99th percentile=0.029 ms
+00:27:51.057:  ┃   ┗gs_flush: min=0.001 ms, median=0.03 ms, max=0.23 ms, 99th percentile=0.05 ms
+00:27:51.057:  ┗render_displays: min=0.001 ms, median=0.052 ms, max=14.274 ms, 99th percentile=0.107 ms
+00:27:51.057: =================================================
+00:27:51.057: == Profiler Time Between Calls ==================
+00:27:51.057: obs_hotkey_thread(25 ms): min=25.004 ms, median=25.007 ms, max=26.17 ms, 99.8308% within ±2% of 25 ms (0% lower, 0.169205% higher)
+00:27:51.057: obs_graphics_thread(16.6667 ms): min=15.89 ms, median=16.667 ms, max=17.444 ms, 99.547% within ±2% of 16.667 ms (0.226501% lower, 0.226501% higher)
+00:27:51.057: =================================================
+00:27:51.058: Number of memory leaks: 0
