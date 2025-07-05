@@ -21,6 +21,6 @@ then
 	done
 fi
 
-waybar
+waybar 1>/tmp/waybar.log 2>/tmp/waybar_error.log
 
-echo "Bars launched" | tee -a /tmp/waybar.log
+echo "Bars launched"

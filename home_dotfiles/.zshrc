@@ -8,7 +8,7 @@ export EDITOR="nvim"
 export HISTSIZE=1000
 export HISTFILESIZE=2000
 
-plugins=(z copypath colored-man-pages) # git
+plugins=(z copypath colored-man-pages fzf-tab)
 source $ZSH/oh-my-zsh.sh
 source $HOME/.bash_aliases
 source $HOME/.bash_funcs
