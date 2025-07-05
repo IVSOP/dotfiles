@@ -1,0 +1,8 @@
+List of my cargo packages
+
+cargo-edit
+cargo-examples
+cargo-expand
+wasm-bindgen-cli
+wasm-pack
+wasm-server-runner
