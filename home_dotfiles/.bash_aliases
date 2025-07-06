@@ -21,7 +21,7 @@ alias crr="cargo run release"
 alias yayf="yay -Slq | fzf --multi --preview 'yay -Sii {1}' --preview-window=down:75% | xargs -ro yay -S"
 
 # files and file browsers
-alias files="nemo . &> /dev/null & disown"
+# alias files="nemo . &> /dev/null & disown" # function instead, so I can pass an arg to it
 alias size="du -hcs"
 alias games="sudo mount UUID=560800025D1A30F9 /media/$LOGNAME/games"
 alias ugames="sudo umount /media/$LOGNAME/games"

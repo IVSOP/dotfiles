@@ -55,11 +55,15 @@ function warp() {
 
 # screenshot copy
 function sc() {
-    wl-copy --type image/png < "$HOME/Pictures/Screenshots/$(ls ~/Pictures/Screenshots | tail -n 1)"
+    wl-copy --type image/png < "$HOME/Pictures/Screenshots/$(\ls ~/Pictures/Screenshots | tail -n 1)"
 }
 
 # screenshot delete
 function sd() {
-    rm "$HOME/Pictures/Screenshots/$(ls ~/Pictures/Screenshots | tail -n 1)"
+    rm "$HOME/Pictures/Screenshots/$(\ls ~/Pictures/Screenshots | tail -n 1)"
+}
+
+function files() {
+    nemo $1 &> /dev/null & disown
 }
 
