@@ -27,8 +27,7 @@
 	"extensions.experimental.affinity": {
 		"asvetliakov.vscode-neovim": 1
 	},
-	"extensions.ignoreRecommendations": true,
-	"workbench.colorTheme": "Juliana",
+    "extensions.ignoreRecommendations": true,
 	"editor.inlayHints.enabled": "off",
 	"editor.codeLens": false,"editor.tabSize": 4,
     "editor.insertSpaces": true,
@@ -123,4 +122,5 @@
     "hexeditor.columnWidth": 16,
     "hexeditor.showDecodedText": true,
     "hexeditor.inspectorType": "aside",
+    "workbench.colorTheme": "Iana",
 }
