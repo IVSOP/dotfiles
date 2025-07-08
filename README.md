@@ -17,7 +17,7 @@
 **Aliases and functions:** (these are all prefixed like `git [...]`)
 - `lg1`, `lg2`, ... `lg4` - formatted `git log`s
 - `grhh` - hard reset
-- `nuke` - harder reset, deletting any added files, as if you just cloned the repo
+- `nuke` - harder reset, deleting any added files, as if you just cloned the repo
 - `history` - show diffs in the different commits
 - `rank` - rank number of contributions
 - `review` - better git diff for current changes
@@ -66,6 +66,7 @@
 
 ## AUR
 - `yay` - AUR helper
+
 **Aliases and functions:**
 - `yayf` - fuzzy find packages
 
