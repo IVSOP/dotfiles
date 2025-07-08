@@ -72,8 +72,8 @@
 
 ## Keybinds and input
 - input (sensitivity, etc) and keybind configs are in `.config/sway/keybinds`
-- volume keys - call a script in `...`. You can also change volume through the bar or pavucontrol
-- brightness keys -  call a script in `...`
+- volume keys - call a script in `.config/i3/sound`. You can also change volume through the bar or pavucontrol
+- brightness keys - call scripts in `.config/i3/brightness/`
 - my Super key is Windows key
 - `Super + F1` - opens firefox in workspace 2
 - `Super + F2` - opens discord in workspace 1 (don't ask)
