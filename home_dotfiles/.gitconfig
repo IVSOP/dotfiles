@@ -7,7 +7,7 @@
 	pager = bat
 	#pager = less
 [alias]
-    lg = lg1
+    lg = lg4
     lg1 = lg1-specific --all
     lg2 = lg2-specific --all
     lg3 = lg3-specific --all
