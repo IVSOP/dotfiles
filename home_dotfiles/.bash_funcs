@@ -60,7 +60,16 @@ function sc() {
 
 # screenshot delete
 function sd() {
-    rm "$HOME/Pictures/Screenshots/$(\ls ~/Pictures/Screenshots | tail -n 1)"
+    IMAGE_PATH="$HOME/Pictures/Screenshots/$(\ls -t "$HOME/Pictures/Screenshots" | head -n 1)"
+
+    chafa $IMAGE_PATH # --size=x$(( $(tput lines) / 2 )) $IMAGE_PATH
+
+    if gum confirm "Remove $(basename "$IMAGE_PATH")?"
+    then
+        rm -v -- "$IMAGE_PATH"
+    else
+        echo "Not deleting"
+    fi
 }
 
 function files() {
