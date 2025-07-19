@@ -18,6 +18,11 @@ input "1133:50503:Logitech_USB_Receiver_Keyboard" {
     events disabled
 }
 
+input type:keyboard {
+    xkb_layout us
+    xkb_options compose:ralt
+}
+
 floating_modifier $mod
 
 bindsym $mod+Return exec --no-startup-id i3-sensible-terminal

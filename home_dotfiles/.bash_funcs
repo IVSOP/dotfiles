@@ -72,7 +72,21 @@ function sd() {
     fi
 }
 
+# open nemo
 function files() {
     nemo $1 &> /dev/null & disown
+}
+
+# get file from downloads
+function dl() {
+    local src
+    if [ $# -gt 0 ]; then
+        src=~/Downloads/"$1"
+    else
+        file=$(eza --sort oldest ~/Downloads | fzf --multi --ansi | tr -d "'")
+        [ -z "$file" ] && return 1
+        src=~/Downloads/"$file"
+    fi
+    mv "$src" .
 }
 
