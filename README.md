@@ -61,6 +61,13 @@
 - `bluetoothctl` - manage blueetooth in the terminal
 - `blueman` - GUI to manage blueetooth
 
+## Network
+- `nm-applet` - GUI applet in the bar's tray
+- `somo` - see used ports
+- `impala` - wifi TUI
+- `nmtui` - TUI network management
+- `nmcli` - for emergencies
+
 **Aliases and functions:**
 - `sc` - copy last screenshot (sometimes needed to paste into x11 apps, for wayland flameshot already copies them)
 - `sd` - delete last screenshot
