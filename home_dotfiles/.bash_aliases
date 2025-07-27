@@ -29,6 +29,14 @@ alias windows="sudo mount UUID=B272D69C72D6651F /media/$LOGNAME/windows"
 alias uwindows="sudo umount /media/$LOGNAME/windows"
 alias rs="rsync -ah --info=progress2" # --update
 alias ff="fzf --preview 'bat --style=numbers --color=always {}'"
+# fuzzy find with contents, not names, by using ripgrep
+# when you enter a file, it gets opened in vscode
+# previewed using bat
+alias frg="rg --column --line-number --no-heading --color=always --smart-case . | fzf --ansi \
+                --bind 'enter:become(code --goto {1}:{2})' \
+                --delimiter : \
+                --preview 'bat --style=full --color=always --highlight-line {2} {1}' \
+                --preview-window '~4,+{2}+4/3,<80(up)'"
 alias ls="eza -lh --group-directories-first --icons=auto"
 alias lt="eza --tree --level=2 --long --icons --git"
 

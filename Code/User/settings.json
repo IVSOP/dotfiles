@@ -103,6 +103,8 @@
         "**/*.erl",
         "**/*.java",
         "**/shaders/*",
+        "**/*.sh",
+        "**/*.typ"
     ],
     "todohighlight.exclude": [
         "**/node_modules/**",

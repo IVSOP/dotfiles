@@ -1,11 +1,12 @@
 # What do I use for...
 
-## File management:
+## File/disk management:
 - `nemo` - GUI file manager
 - `eza` - prettier `ls`
 - `rsync` - `cp` with progress and remote capabilities
 - `gdu` - see file sizes
 - `dl` - move a file from the downloads folder
+- `duf` - list filesystem occupied size
 
 **Aliases and functions:**
 - `ls` - mapped to `eza` automatically
