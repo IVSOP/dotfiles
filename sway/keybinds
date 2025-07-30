@@ -189,7 +189,6 @@ bindsym $mod+Menu exec --no-startup-id $HOME/Desktop/Rofi-Themer/Scripts/menu.sh
 # cheats
 bindsym $mod+Shift+x exec --no-startup-id $HOME/.config/kitty/cheat_toggler.sh &> ~/idk.txt
 
-# self explanatory
-bindsym $mod+Tab workspace next
-bindsym $mod+Shift+Tab workspace prev
-
+# mod tab goes to workspace I was previously at
+bindsym $mod+Tab workspace back_and_forth
+bindsym $mod+Shift+Tab move container to workspace back_and_forth
