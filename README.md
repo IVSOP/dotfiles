@@ -95,3 +95,8 @@ I use [Rofi-Themer](https://github.com/IVSOP/Rofi-Themer.git) to tell my program
 
 For example, polybar themes are in polybar/themes. The actual configuration file is just a symlink to one of the themed files.
 To setup these symlinks, I use polybar/get-theme.sh.
+
+## Screen management
+
+`wdisplays`
+

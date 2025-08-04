@@ -27,3 +27,5 @@ export QT_QPA_PLATFORM=wayland
 export XDG_CURRENT_DESKTOP=sway
 export XDG_SESSION_DESKTOP=sway
 
+export PATH="/home/ivsopi3/.local/share/solana/install/active_release/bin:$PATH"
+
