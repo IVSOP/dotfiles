@@ -31,7 +31,7 @@ function compress() {
         echo "Command used is tar -cf - [FILENAMES] | pv -s \$(du -bc [FILENAMES] | tail -n 1 | cut -f 1) | zstd -10 --long --threads=0 --stdout > {OUTPUT}"
         return 1
     fi
-    tar -cf - "${@:2}" | pv -s $(du -bc "${@:2}" | tail -n 1 | cut -f 1) | zstd -10 --long --threads=0 --stdout > $1
+    tar -cf - "${@:2}" | pv -s $(du -bc "${@:2}" | tail -n 1 | cut -f 1) | zstd -10 --long --threads=0 --stdout > "$1"
 }
 
 function decompress() {
@@ -40,7 +40,7 @@ function decompress() {
         echo "Not enough args"
         return 1
     fi
-    zstd --decompress --threads=0 $1 --stdout | pv -s $(du -bc $1 | tail -n 1 | cut -f 1) | tar -x -f -
+    zstd --decompress --threads=0 "$1" --stdout | pv -s $(du -bc $1 | tail -n 1 | cut -f 1) | tar -x -f -
 }
 
 function warp() {
@@ -60,13 +60,14 @@ function sc() {
 
 # screenshot delete
 function sd() {
-    IMAGE_PATH="$HOME/Pictures/Screenshots/$(\ls -t "$HOME/Pictures/Screenshots" | head -n 1)"
+    local image_path
+    image_path="$HOME/Pictures/Screenshots/$(\ls -t "$HOME/Pictures/Screenshots" | head -n 1)"
 
-    chafa $IMAGE_PATH # --size=x$(( $(tput lines) / 2 )) $IMAGE_PATH
+    chafa $image_path # --size=x$(( $(tput lines) / 2 )) $IMAGE_PATH
 
-    if gum confirm "Remove $(basename "$IMAGE_PATH")?"
+    if gum confirm "Remove $(basename "$image_path")?"
     then
-        rm -v -- "$IMAGE_PATH"
+        rm -v -- "$image_path"
     else
         echo "Not deleting"
     fi
@@ -88,5 +89,61 @@ function dl() {
         src=~/Downloads/"$file"
     fi
     mv "$src" .
+}
+
+# this assumes input is a single file, idc
+function encrypt() {
+    if [ "$#" -lt 1 ]
+    then
+        echo "Not enough args: {INPUT}. Output will be a .age"
+        return 1
+    fi
+
+    local filename="$1"
+    local output="${filename}.age"
+
+    age --passphrase --output $output $filename
+}
+
+function decrypt() {
+    if [ "$#" -lt 1 ]
+    then
+        echo "Not enough args: {INPUT}. Output is generated automatically"
+        return 1
+    fi
+
+    local filename="$1"
+    local result_filename
+
+    # if name ends in .age, remove the .age extension from the output
+    if [[ "$filename" =~ \.age$ ]]; then
+        result_filename="${filename%.age}"
+    else
+        result_filename="$filename"
+    fi
+
+    age --decrypt --output $result_filename "$1"
+}
+
+function compress-encrypt() {
+    if [ "$#" -lt 2 ]
+    then
+        echo "Not enough args: {OUTPUT (.tar.zst.age)} [FILENAMES]"
+        return 1
+    fi
+    tar -cf - "${@:2}" \
+        | zstd -10 --long --threads=0 --stdout \
+        | age --passphrase --output "$1"
+}
+
+function decompress-decrypt() {
+    if [ "$#" -lt 1 ]
+    then
+        echo "Not enough args"
+        return 1
+    fi
+    age --decrypt --output - "$1" \
+        | zstd --decompress --threads=0 - --stdout \
+        | tar -x -f -
 }
 
