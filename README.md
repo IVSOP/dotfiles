@@ -65,7 +65,7 @@
 ## Network
 - `nm-applet` - GUI applet in the bar's tray
 - `somo` - see used ports
-- `impala` - wifi TUI
+<!-- - `impala` - wifi TUI -->
 - `nmtui` - TUI network management
 - `nmcli` - for emergencies
 
