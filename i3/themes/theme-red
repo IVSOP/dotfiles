@@ -3,9 +3,22 @@
 #gray #262626
 #light red #e87272
 #dark red #521411
+#green #66CC66
+
 #                       border  backgr. text   indicator child_border  
 #client.focused         #851f1b #521411 #fdf6e3 #e87272 #285577
 #client.placeholder     #000000 #0c0c0c #ffffff #000000 #0c0c0c
-client.focused          #851f1b #302f2f98 #ff7272 #e87272 #851f1b
-client.placeholder      #000000 #26262698 #ff7272 #e87272 #0c0c0c
-client.focused_inactive #000000 #26262698 #ff7272 #e87272 #0c0c0c
+client.focused          #66CC66 #302f2f98 #e87272 #e87272 #66CC66
+client.placeholder      #000000 #26262698 #e87272 #e87272 #0c0c0c
+client.focused_inactive #000000 #26262698 #e87272 #e87272 #0c0c0c
+
+
+# red borders instead of green. I prefer the green since it contrasts more without being an eyesore
+# client.focused          #e87272 #302f2f98 #66CC66 #66CC66 #e87272
+# client.placeholder      #000000 #26262698 #66CC66 #66CC66 #0c0c0c
+# client.focused_inactive #000000 #26262698 #66CC66 #66CC66 #0c0c0c
+
+# old
+# client.focused          #851f1b #302f2f98 #ff7272 #e87272 #851f1b
+# client.placeholder      #000000 #26262698 #ff7272 #e87272 #0c0c0c
+# client.focused_inactive #000000 #26262698 #ff7272 #e87272 #0c0c0c

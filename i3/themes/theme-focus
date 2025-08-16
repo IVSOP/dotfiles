@@ -1,0 +1,4 @@
+#                       border      background    text   indicator child_border
+client.focused          #FFFFFF #302f2f98 #e87272 #e87272 #FFFFFF
+client.placeholder      #000000 #26262698 #e87272 #e87272 #0c0c0c
+client.focused_inactive #000000 #26262698 #e87272 #e87272 #0c0c0c

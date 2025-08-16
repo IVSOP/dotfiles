@@ -18,7 +18,7 @@ tooltip {
 #workspaces button {
     padding-left: 6pt;
     padding-right: 6pt;
-    border-bottom: 3pt solid #55aa55;
+    border-bottom: 3pt solid #66CC66;
 }
 
 #workspaces button.focused {

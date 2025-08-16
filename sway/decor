@@ -8,8 +8,8 @@ include $HOME/.config/i3/i3theme
 # disable outside of windows
 for_window [all] title_window_icon on
 
-default_border pixel 2
-
-default_floating_border pixel 2
+default_border pixel 3
+default_floating_border pixel 3
 
 for_window [all] title_format " <b>%title</b> | %class | %instance"
+

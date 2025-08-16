@@ -45,10 +45,10 @@
         // "min-length": 14,
         "format": "<span rise='1000'></span> {usage:>2}% {icon0}{icon1}{icon2}{icon3}{icon4}{icon5}{icon6}{icon7}{icon8}{icon9}{icon10}{icon11}",
         "format-icons": [
-            "<span color='#55aa55'>_</span>",
-            "<span color='#55aa55'>▁</span>",
-            "<span color='#55aa55'>▂</span>",
-            "<span color='#55aa55'>▃</span>",
+            "<span color='#66CC66'>_</span>",
+            "<span color='#66CC66'>▁</span>",
+            "<span color='#66CC66'>▂</span>",
+            "<span color='#66CC66'>▃</span>",
             "<span color='#F0C674'>▄</span>",
             "<span color='#F0C674'>▅</span>",
             "<span color='#F0C674'>▆</span>",
@@ -67,15 +67,15 @@
         "format-1": " {used:0.2f} GiB/{percentage:2}% <span color='#557755'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span>",
         "format-2": " {used:0.2f} GiB/{percentage:2}% <span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span>",
         "format-3": " {used:0.2f} GiB/{percentage:2}% <span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span>",
-        "format-4": " {used:0.2f} GiB/{percentage:2}% <span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#55aa55'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span>",
-        "format-5": " {used:0.2f} GiB/{percentage:2}% <span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#55aa55'>▐</span><span color='#55aa55'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span>",
-        "format-6": " {used:0.2f} GiB/{percentage:2}% <span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#55aa55'>▐</span><span color='#55aa55'>▐</span><span color='#55aa55'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span>",
-        "format-7": " {used:0.2f} GiB/{percentage:2}% <span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#55aa55'>▐</span><span color='#55aa55'>▐</span><span color='#55aa55'>▐</span><span color='#f5a70a'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span>",
-        "format-8": " {used:0.2f} GiB/{percentage:2}% <span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#55aa55'>▐</span><span color='#55aa55'>▐</span><span color='#55aa55'>▐</span><span color='#f5a70a'>▐</span><span color='#f5a70a'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span>",
-        "format-9": " {used:0.2f} GiB/{percentage:2}% <span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#55aa55'>▐</span><span color='#55aa55'>▐</span><span color='#55aa55'>▐</span><span color='#f5a70a'>▐</span><span color='#f5a70a'>▐</span><span color='#f5a70a'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span>",
-        "format-10": " {used:0.2f} GiB/{percentage:2}% <span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#55aa55'>▐</span><span color='#55aa55'>▐</span><span color='#55aa55'>▐</span><span color='#f5a70a'>▐</span><span color='#f5a70a'>▐</span><span color='#f5a70a'>▐</span><span color='#ff5555'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span>",
-        "format-11": " {used:0.2f} GiB/{percentage:2}% <span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#55aa55'>▐</span><span color='#55aa55'>▐</span><span color='#55aa55'>▐</span><span color='#f5a70a'>▐</span><span color='#f5a70a'>▐</span><span color='#f5a70a'>▐</span><span color='#ff5555'>▐</span><span color='#ff5555'>▐</span><span color='#444444'>▐</span>",
-        "format-12": " {used:0.2f} GiB/{percentage:2}% <span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#55aa55'>▐</span><span color='#55aa55'>▐</span><span color='#55aa55'>▐</span><span color='#f5a70a'>▐</span><span color='#f5a70a'>▐</span><span color='#f5a70a'>▐</span><span color='#ff5555'>▐</span><span color='#ff5555'>▐</span><span color='#ff5555'>▐</span>",
+        "format-4": " {used:0.2f} GiB/{percentage:2}% <span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#66CC66'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span>",
+        "format-5": " {used:0.2f} GiB/{percentage:2}% <span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#66CC66'>▐</span><span color='#66CC66'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span>",
+        "format-6": " {used:0.2f} GiB/{percentage:2}% <span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#66CC66'>▐</span><span color='#66CC66'>▐</span><span color='#66CC66'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span>",
+        "format-7": " {used:0.2f} GiB/{percentage:2}% <span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#66CC66'>▐</span><span color='#66CC66'>▐</span><span color='#66CC66'>▐</span><span color='#f5a70a'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span>",
+        "format-8": " {used:0.2f} GiB/{percentage:2}% <span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#66CC66'>▐</span><span color='#66CC66'>▐</span><span color='#66CC66'>▐</span><span color='#f5a70a'>▐</span><span color='#f5a70a'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span>",
+        "format-9": " {used:0.2f} GiB/{percentage:2}% <span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#66CC66'>▐</span><span color='#66CC66'>▐</span><span color='#66CC66'>▐</span><span color='#f5a70a'>▐</span><span color='#f5a70a'>▐</span><span color='#f5a70a'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span>",
+        "format-10": " {used:0.2f} GiB/{percentage:2}% <span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#66CC66'>▐</span><span color='#66CC66'>▐</span><span color='#66CC66'>▐</span><span color='#f5a70a'>▐</span><span color='#f5a70a'>▐</span><span color='#f5a70a'>▐</span><span color='#ff5555'>▐</span><span color='#444444'>▐</span><span color='#444444'>▐</span>",
+        "format-11": " {used:0.2f} GiB/{percentage:2}% <span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#66CC66'>▐</span><span color='#66CC66'>▐</span><span color='#66CC66'>▐</span><span color='#f5a70a'>▐</span><span color='#f5a70a'>▐</span><span color='#f5a70a'>▐</span><span color='#ff5555'>▐</span><span color='#ff5555'>▐</span><span color='#444444'>▐</span>",
+        "format-12": " {used:0.2f} GiB/{percentage:2}% <span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#557755'>▐</span><span color='#66CC66'>▐</span><span color='#66CC66'>▐</span><span color='#66CC66'>▐</span><span color='#f5a70a'>▐</span><span color='#f5a70a'>▐</span><span color='#f5a70a'>▐</span><span color='#ff5555'>▐</span><span color='#ff5555'>▐</span><span color='#ff5555'>▐</span>",
         "states": {
             "0": 0,
             "1": 8,
@@ -95,15 +95,15 @@
     "battery": {
         "interval": 5,
         // default, assumes you are plugged in. I swear this is not my fault, waybar is a mess
-        "format-full": "<span color='#55aa55' rise='1000'> </span> {capacity:2}%",
-        "format-near-full": "<span color='#55aa55' rise='1000'> </span> {capacity:2}%",
-        "format-half": "<span color='#55aa55' rise='1000'> </span> {capacity:2}%",
-        "format-low": "<span color='#55aa55' rise='1000'> </span> {capacity:2}%",
-        "format-empty": "<span color='#55aa55' rise='1000'> </span> {capacity:2}%",
+        "format-full": "<span color='#66CC66' rise='1000'> </span> {capacity:2}%",
+        "format-near-full": "<span color='#66CC66' rise='1000'> </span> {capacity:2}%",
+        "format-half": "<span color='#66CC66' rise='1000'> </span> {capacity:2}%",
+        "format-low": "<span color='#66CC66' rise='1000'> </span> {capacity:2}%",
+        "format-empty": "<span color='#66CC66' rise='1000'> </span> {capacity:2}%",
         // unplugged
-        "format-discharging-full": "<span color='#55aa55' rise='1000'></span> {capacity:2}%",
-        "format-discharging-near-full": "<span color='#55aa55' rise='1000'></span> {capacity:2}%",
-        "format-discharging-half": "<span color='#55aa55' rise='1000'></span> {capacity:2}%",
+        "format-discharging-full": "<span color='#66CC66' rise='1000'></span> {capacity:2}%",
+        "format-discharging-near-full": "<span color='#66CC66' rise='1000'></span> {capacity:2}%",
+        "format-discharging-half": "<span color='#66CC66' rise='1000'></span> {capacity:2}%",
         "format-discharging-low": "<span color='#F0C674'><span rise='1000'></span> {capacity:2}%</span>",
         "format-discharging-empty": "<span color='#ff7a93'><span rise='1000'></span> {capacity:2}%</span>",
         "states": {
@@ -131,11 +131,11 @@
         "interval": 1,
         "tooltip": false,
         "format-icons": [
-            "<span color='#55aa55'>󰤯</span>",
-            "<span color='#55aa55'>󰤟</span>",
-            "<span color='#55aa55'>󰤢</span>",
-            "<span color='#55aa55'>󰤥</span>",
-            "<span color='#55aa55'>󰤨</span>"
+            "<span color='#66CC66'>󰤯</span>",
+            "<span color='#66CC66'>󰤟</span>",
+            "<span color='#66CC66'>󰤢</span>",
+            "<span color='#66CC66'>󰤥</span>",
+            "<span color='#66CC66'>󰤨</span>"
         ]
     },
 
@@ -171,9 +171,9 @@
         "input-filename": "temp1_input",
         "interval": 1,
         "format-icons": [
-            "<span color='#55aa55'></span>",
-            "<span color='#55aa55'></span>",
-            "<span color='#55aa55'></span>",
+            "<span color='#66CC66'></span>",
+            "<span color='#66CC66'></span>",
+            "<span color='#66CC66'></span>",
             "<span color='#F0C674'></span>",
             "<span color='#F0C674'></span>",
             "<span color='#e87272'></span>"
