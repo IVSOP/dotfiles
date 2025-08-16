@@ -9,7 +9,7 @@ function setup_code() {
 	code .
 
     # wait for vscode to show up
-    while ! swaymsg -t get_workspaces | jq --argjson id "$WORKSPACE_ID" '.[] | select(.id == $id) | .representation' | grep code; do
+    while ! swaymsg -t get_workspaces | jq --argjson id "$WORKSPACE_ID" '.[] | select(.id == $id) | .representation' | grep -i code; do
         sleep 1
     done
 

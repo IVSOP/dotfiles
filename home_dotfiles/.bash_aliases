@@ -7,7 +7,6 @@ alias snano="sudo nano --rcfile /home/ivsopi3/.nanorc"
 alias codekitty="setup_code"
 alias ck="setup_code"
 alias nv="nvim"
-alias code='code --enable-features=UseOzonePlatform,WaylandWindowDecorations --ozone-platform-hint=auto'
 
 alias alc='alacritty --working-directory "$(pwd)" > /dev/null 2>&1 & disown'
 
