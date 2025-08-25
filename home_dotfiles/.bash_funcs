@@ -40,7 +40,8 @@ function decompress() {
         echo "Not enough args"
         return 1
     fi
-    zstd --decompress --threads=0 "$1" --stdout | pv -s $(du -bc $1 | tail -n 1 | cut -f 1) | tar -x -f -
+    local decompressed_size=$(zstd -l -v "$1" 2>/dev/null | grep Compressed | cut -d ' ' -f5 | cut -d \( -f2)
+    zstd --decompress --threads=0 "$1" --stdout | pv -s $decompressed_size | tar -x -f -
 }
 
 function warp() {
