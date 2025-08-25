@@ -40,5 +40,5 @@ alias ls="eza -lh --group-directories-first --icons=auto"
 alias lt="eza --tree --level=2 --long --icons --git"
 
 # bluetooth
-alias blue="sudo systemctl start bluetooth.service && bluetoothctl"
+alias blue="sudo systemctl start bluetooth.service && blueman-manager"
 
