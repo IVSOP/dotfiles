@@ -23,15 +23,22 @@ function setup_code() {
 	clear
 }
 
-# first arg name of output, other names are list of files to compress
 function compress() {
-    if [ "$#" -lt 2 ]
-    then
-        echo "Not enough args: {OUTPUT} [FILENAMES]"
+    if [ "$#" -lt 1 ]; then
+        echo "Not enough args: {OUTPUT} [FILENAMES] or {FILE}, there the output will be FILE.tar.zst"
         echo "Command used is tar -cf - [FILENAMES] | pv -s \$(du -bc [FILENAMES] | tail -n 1 | cut -f 1) | zstd -10 --long --threads=0 --stdout > {OUTPUT}"
         return 1
     fi
-    tar -cf - "${@:2}" | pv -s $(du -bc "${@:2}" | tail -n 1 | cut -f 1) | zstd -10 --long --threads=0 --stdout > "$1"
+
+    if [ "$#" -eq 1 ]; then
+        # Single file case: use input file as source and append .tar.zst for output
+        local input_file="$1"
+        local output_file="${input_file}.tar.zst"
+        tar -cf - "$input_file" | pv -s $(du -bc "$input_file" | tail -n 1 | cut -f 1) | zstd -10 --long --threads=0 --stdout > "$output_file"
+    else
+        # Multiple files case: first arg is output, rest are input files
+        tar -cf - "${@:2}" | pv -s $(du -bc "${@:2}" | tail -n 1 | cut -f 1) | zstd -10 --long --threads=0 --stdout > "$1"
+    fi
 }
 
 function decompress() {
