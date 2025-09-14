@@ -139,9 +139,28 @@ function compress-encrypt() {
         echo "Not enough args: {OUTPUT (.tar.zst.age)} [FILENAMES]"
         return 1
     fi
+
     tar -cf - "${@:2}" \
+        | pv -s $(du -bc "${@:2}" | tail -n 1 | cut -f 1) \
         | zstd -10 --long --threads=0 --stdout \
         | age --passphrase --output "$1"
+}
+
+function tar-encrypt() {
+    if [ "$#" -lt 1 ]
+    then
+        echo "Not enough args: FILENAME or OUTPUT(.tar.age) [FILENAMES]"
+        return 1
+    fi
+
+
+    if [ "$#" -eq 1 ]; then
+        local output="$1.tar.age"
+        tar -cf - $1 | pv -s $(du -bc "$1" | tail -n 1 | cut -f 1) | age --passphrase --output $output
+    else
+        local output="$1"
+        tar -cf - "${@:2}" | pv -s $(du -bc "${@:2}" | tail -n 1 | cut -f 1) | age --passphrase --output $output
+    fi
 }
 
 function decompress-decrypt() {
@@ -152,6 +171,17 @@ function decompress-decrypt() {
     fi
     age --decrypt --output - "$1" \
         | zstd --decompress --threads=0 - --stdout \
+        | tar -x -f -
+}
+
+function decompress-tar() {
+    if [ "$#" -lt 1 ]
+    then
+        echo "Not enough args"
+        return 1
+    fi
+    age --decrypt --output - "$1" \
+        | pv -s $(du -bc "$1" | tail -n 1 | cut -f 1) \
         | tar -x -f -
 }
 
