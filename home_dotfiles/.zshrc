@@ -8,6 +8,7 @@ export EDITOR="nvim"
 export HISTSIZE=1000
 export HISTFILESIZE=2000
 
+export DISABLE_AUTO_UPDATE=true
 plugins=(z copypath colored-man-pages fzf-tab)
 source $ZSH/oh-my-zsh.sh
 source $HOME/.bash_aliases
