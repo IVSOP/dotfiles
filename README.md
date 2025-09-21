@@ -68,6 +68,7 @@
 <!-- - `impala` - wifi TUI -->
 - `nmtui` - TUI network management
 - `nmcli` - for emergencies
+- `nethogs` - monitor activity
 
 **Aliases and functions:**
 - `sc` - copy last screenshot (sometimes needed to paste into x11 apps, for wayland flameshot already copies them)
@@ -98,5 +99,24 @@ To setup these symlinks, I use polybar/get-theme.sh.
 
 ## Screen management
 
-`wdisplays`
+- `wdisplays`
+
+## Monitoring
+
+- `htop`
+- `nethogs` and `somo`, mentioned above
+
+# Apps
+
+## Recording / virtual camera
+- obs
+
+## Editing images
+- pinta
+
+## Editing svg
+- inkscape / graphite
+
+## Editing videos
+- kdenlive
 
