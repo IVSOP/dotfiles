@@ -42,3 +42,7 @@ alias lt="eza --tree --level=2 --long --icons --git"
 # bluetooth
 alias blue="sudo systemctl start bluetooth.service && blueman-manager"
 
+# network
+alias tup="sudo systemctl start tailscaled"
+alias tdown="sudo systemctl stop tailscaled"
+
