@@ -184,10 +184,14 @@ bindsym XF86AudioPrev exec playerctl previous
 bindsym $mod+Shift+f exec --no-startup-id killall -SIGUSR1 waybar
 
 # screenshot
-#%b%d_%H%M%S was the original
-bindsym $mod+Print exec --no-startup-id flameshot full -c -p $HOME/Pictures/Screenshots/$(date +%Y_%m_%d-%H%M%S).png
-bindsym --release Print exec --no-startup-id flameshot gui -c -p $HOME/Pictures/Screenshots/$(date +%Y_%m_%d-%H%M%S).png
-bindsym --release $mod+Shift+Print exec --no-startup-id import -quality 100 -screen $HOME/Pictures/Screenshots/$(date +%Y_%m_%d-%H%M%S).png; exec --no-startup-id notify-send -t 500 "Window Screenshit"
+# TODO: -m output -m active does not work on sway. nees hyprctl
+# TODO: window screenshotting does not work on sway. needs hyprctl. I never used it anyway
+# screesnhot the screen
+bindsym $mod+Print exec --no-startup-id $HOME/.config/sway/scripts/screenshot-output.sh
+# screenshot a region
+bindsym --release Print exec --no-startup-id $HOME/.config/sway/scripts/screenshot.sh -m region
+# screenshot the screen, allowing drawing
+bindsym --release $mod+Shift+Print exec --no-startup-id $HOME/.config/sway/scripts/screenshot.sh -m output
 
 # fan boost (lenovo y520)
 bindsym Ctrl+Shift+0 exec --no-startup-id ec4Linux change-state 2>&1 > /dev/null

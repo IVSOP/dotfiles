@@ -1,5 +1,5 @@
 # Background
-exec_always --no-startup-id $HOME/.config/sway/display/set-bg.sh
+exec_always --no-startup-id $HOME/.config/sway/scripts/set-bg.sh
 
 # ithemer daemon for rofi themes
 #exec --no-startup-id $HOME/I-Themer/Scripts/start_daemon.sh
@@ -13,7 +13,7 @@ exec_always --no-startup-id $HOME/.config/dunst/launch.sh
 
 exec --no-startup-id nm-applet
 
-# for i3 theme
+# for i3 theme (used in sway for the theme, too)
 exec_always --no-startup-id $HOME/.config/i3/i3theme.sh
 
 # for rofi theme
