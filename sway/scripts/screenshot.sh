@@ -1,6 +1,6 @@
 #!/bin/sh
 
-pkill slurp || hyprshot $@ --raw |
+pkill slurp || hyprshot --freeze $@ --raw |
   satty --filename - \
     --early-exit \
     --actions-on-enter save-to-clipboard \
