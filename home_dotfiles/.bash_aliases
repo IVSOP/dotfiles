@@ -38,7 +38,12 @@ alias frg="rg --column --line-number --no-heading --color=always --smart-case . 
                 --preview-window '~4,+{2}+4/3,<80(up)'"
 alias ls="eza -lh --group-directories-first --icons=auto"
 alias lt="eza --tree --level=2 --long --icons --git"
-alias airdrop="sudo ufw disable && localsend; sudo ufw enable"
+alias airdrop="sudo ufw allow in 53317 && \
+    sudo ufw allow out to any && \
+    sudo ufw reload && localsend; \
+    sudo ufw delete allow 53317 && \
+    sudo ufw delete allow out to any && \
+    sudo ufw reload"
 
 # bluetooth
 alias blue="sudo systemctl start bluetooth.service && blueman-manager"
