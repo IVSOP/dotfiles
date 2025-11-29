@@ -38,6 +38,7 @@ alias frg="rg --column --line-number --no-heading --color=always --smart-case . 
                 --preview-window '~4,+{2}+4/3,<80(up)'"
 alias ls="eza -lh --group-directories-first --icons=auto"
 alias lt="eza --tree --level=2 --long --icons --git"
+alias airdrop="sudo ufw disable && localsend; sudo ufw enable"
 
 # bluetooth
 alias blue="sudo systemctl start bluetooth.service && blueman-manager"
