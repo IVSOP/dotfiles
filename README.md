@@ -120,3 +120,7 @@ To setup these symlinks, I use polybar/get-theme.sh.
 ## Editing videos
 - kdenlive
 
+# Editing pixel
+
+- libresprite
+
