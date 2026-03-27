@@ -13,6 +13,12 @@ input "type:touchpad" {
     pointer_accel 0.1
 }
 
+# 3-finger swipe right → previous workspace
+bindgesture swipe:3:right workspace prev
+
+# 3-finger swipe left → next workspace
+bindgesture swipe:3:left workspace next
+
 # why the fuck does my mouse have a keyboard? this was preventing me from suspending
 input "1133:50503:Logitech_USB_Receiver_Keyboard" {
     events disabled
