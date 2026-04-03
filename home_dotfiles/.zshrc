@@ -9,13 +9,14 @@ export HISTSIZE=1000
 export HISTFILESIZE=2000
 
 export DISABLE_AUTO_UPDATE=true
+export ZSH_DISABLE_COMPFIX=true
 plugins=(z copypath colored-man-pages fzf-tab)
 source $ZSH/oh-my-zsh.sh
 source $HOME/.bash_aliases
 source $HOME/.bash_funcs
 
 zstyle ':omz:update' mode disabled
-zstyle ':completion:' use-cache on
+zstyle ':completion:*' use-cache on
 zstyle ':completion:*' matcher-list '' # so that egg. D matches Downloads but not dotfiles
 # unsetopt nocaseglob
 # autoload -Uz compinit && compinit
@@ -50,3 +51,32 @@ export ANDROID_HOME=/opt/android-sdk
 export PATH=$PATH:$ANDROID_HOME/tools
 export PATH=$PATH:$ANDROID_HOME/platform-tools
 
+
+export NVM_DIR="$HOME/.nvm"
+
+# Lazy-load nvm only when it is first needed.
+_lazy_load_nvm() {
+    unset -f _lazy_load_nvm nvm node npm npx
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+}
+
+nvm() {
+    _lazy_load_nvm
+    nvm "$@"
+}
+
+node() {
+    _lazy_load_nvm
+    command node "$@"
+}
+
+npm() {
+    _lazy_load_nvm
+    command npm "$@"
+}
+
+npx() {
+    _lazy_load_nvm
+    command npx "$@"
+}
