@@ -257,3 +257,9 @@ from() {
   fi
 }
 
+cff() {
+  local file
+  file=$(fzf) || return
+  [ -n "$file" ] && code "$file"
+}
+
