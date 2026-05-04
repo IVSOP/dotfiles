@@ -263,3 +263,9 @@ cff() {
   [ -n "$file" ] && code "$file"
 }
 
+wallet() {
+  cd /tmp && \
+  decompress-decrypt $HOME/priv/wallet.tar.zst.age && \
+  cd wallet
+}
+
