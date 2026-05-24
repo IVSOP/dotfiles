@@ -263,6 +263,22 @@ cff() {
   [ -n "$file" ] && code "$file"
 }
 
+send_to_server() {
+  if [ "$#" -lt 1 ]; then
+    echo "Usage: send_to_server FILE [FILE...]"
+    return 1
+  fi
+  rsync -avP "$@" server:
+}
+
+send_to_server_compressed() {
+  if [ "$#" -lt 1 ]; then
+    echo "Usage: send_to_server_compressed FILE [FILE...]"
+    return 1
+  fi
+  rsync -avPz "$@" server:
+}
+
 wallet() {
   cd /tmp && \
   decompress-decrypt $HOME/priv/wallet.tar.zst.age && \
