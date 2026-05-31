@@ -1,0 +1,155 @@
+{
+    "php.validate.executablePath": "",
+    "open-php-html-js-in-browser.selectedBrowser": "Firefox",
+	"editor.detectIndentation": false,
+	"gitlens.hovers.currentLine.over": "line",
+	"gitlens.currentLine.enabled": false,
+	"gitlens.codeLens.enabled": false,
+	"vscode-live2d.English": true,
+	"gitlens.hovers.enabled": false,
+	"workbench.settings.useSplitJSON": true,
+	"glassit-linux.opacity": 91,
+	"java.configuration.runtimes": [],
+	"haskell.manageHLS": "GHCup",
+	"cmake.configureOnOpen": false,
+    "cmake.showOptionsMovedNotification": false,
+	"editor.largeFileOptimizations": false,
+	"editor.minimap.renderCharacters": false,
+	"cmake.pinnedCommands": [
+		"workbench.action.tasks.configureTaskRunner",
+		"workbench.action.tasks.runTask"
+	],
+	"json.schemas": [],
+	"telemetry.enableTelemetry": false,
+	"telemetry.enableCrashReporter": false,
+	"telemetry.telemetryLevel": "off",
+	"extensions.experimental.affinity": {
+		"asvetliakov.vscode-neovim": 1
+	},
+    "extensions.ignoreRecommendations": true,
+	"editor.inlayHints.enabled": "off",
+	"editor.codeLens": false,"editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "editor.wordWrap": "on",
+    "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\|;:'\",.<>/?_",
+    "todohighlight.keywords": [
+        {
+            "text": "TODO(string):",
+            "regex": {
+                "pattern": "(?<=^|\"|\\s)TODO(\\(\\w+\\))?:" // this allows for TODO: or TODO(Bob): etc.
+            },
+            "color": "black",
+            "backgroundColor": "#99c794",
+            "fontWeight": "bold",
+        },
+        {
+            "text": "WARN(string):",
+            "regex": {
+                "pattern": "(?<=^|\"|\\s)(WARN|HACK)(\\(\\w+\\))?:" // this allows for TODO: or TODO(Bob): etc.
+            },
+            "color": "black",
+            "backgroundColor": "#fac761",
+            "fontWeight": "bold",
+        },
+        {
+            "text": "FIXME(string):",
+            "regex": {
+                "pattern": "(?<=^|\"|\\s)(FIXME|FIX|BUG)(\\(\\w+\\))?:" // this allows for TODO: or TODO(Bob): etc.
+            },
+            "color": "black",
+            "backgroundColor": "#ec5f66",
+            "fontWeight": "bold",
+        },
+        {
+            "text": "NOTE(string):",
+            "regex": {
+                "pattern": "(?<=^|\"|\\s)(NOTE|INFO|TIP)(\\(\\w+\\))?:" // this allows for TODO: or TODO(Bob): etc.
+            },
+            "color": "black",
+            "backgroundColor": "#87c7c7",
+            "fontWeight": "bold",
+        },
+        {
+            "text": "PERF(string):",
+            "regex": {
+                "pattern": "(?<=^|\"|\\s)PERF(\\(\\w+\\))?:" // this allows for TODO: or TODO(Bob): etc.
+            },
+            "color": "black",
+            "backgroundColor": "white",
+            "fontWeight": "bold",
+        },
+    ],
+    "todohighlight.include": [
+        "**/*.js",
+        "**/*.jsx",
+        "**/*.ts",
+        "**/*.tsx",
+        "**/*.html",
+        "**/*.css",
+        "**/*.scss",
+        "**/*.php",
+        "**/*.rb",
+        "**/*.txt",
+        "**/*.mdown",
+        "**/*.md",
+        "**/*.lua",
+        "**/*.c",
+        "**/*.h",
+        "**/*.cpp",
+        "**/*.hpp",
+        "**/*.rs",
+        "**/*.hs",
+        "**/*.erl",
+        "**/*.java",
+        "**/shaders/*",
+        "**/*.sh",
+        "**/*.typ",
+        "**/*.cs"
+    ],
+    "todohighlight.exclude": [
+        "**/node_modules/**",
+        "**/bower_components/**",
+        "**/dist/**",
+        "**/build/**",
+        "**/.vscode/**",
+        "**/.vscode-test/**",
+        "**/.github/**",
+        "**/_output/**",
+        "**/*.min.*",
+        "**/*.map",
+        "**/.next/**",
+        "**/target/**"
+    ],
+    "hexeditor.defaultEndianness": "big",
+    "hexeditor.columnWidth": 16,
+    "hexeditor.showDecodedText": true,
+    "hexeditor.inspectorType": "aside",
+    "svelte.enable-ts-plugin": true,
+    "workbench.secondarySideBar.defaultVisibility": "hidden",
+    "workbench.startupEditor": "none",
+    "update.showReleaseNotes": false,
+    "github.copilot.enable": {
+        "*": false
+    },
+    "cSpell.language": "en",
+    "cSpell.enabledFileTypes": {
+        "*": false,
+        "typst": true,
+        "markdown": true
+    },
+    "git.blame.editorDecoration.enabled": false,
+    "github.copilot.nextEditSuggestions.enabled": true,
+    "claudeCode.preferredLocation": "panel",
+    "chat.tools.urls.autoApprove": {
+        "https://docs.rs": true
+    },
+    "chat.viewSessions.orientation": "stacked",
+    "wakatime.apiUrl": "https://wakapi.server.ivsop.dev/api",
+    "wakatime.apiKey": "c3135dfe-456d-4916-b8df-9c7fd6003ea1",
+    "[elixir]": {
+    "editor.bracketPairColorization.enabled": false
+    },
+    "workbench.colorTheme": "Iana",
+    "extensions.autoUpdate": false,
+    "extensions.autoCheckUpdates": false
+}
