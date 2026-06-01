@@ -279,7 +279,13 @@ send_to_server_compressed() {
   rsync -avPz "$@" server:
 }
 
-wallet() {
+hotwallet() {
+  cd /tmp && \
+  decompress-decrypt $HOME/priv/hot_wallet.tar.zst.age && \
+  cd wallet
+}
+
+coldwallet() {
   cd /tmp && \
   decompress-decrypt $HOME/priv/wallet.tar.zst.age && \
   cd wallet
