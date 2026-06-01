@@ -20,8 +20,6 @@
 		"workbench.action.tasks.runTask"
 	],
 	"json.schemas": [],
-	"telemetry.enableTelemetry": false,
-	"telemetry.enableCrashReporter": false,
 	"telemetry.telemetryLevel": "off",
 	"extensions.experimental.affinity": {
 		"asvetliakov.vscode-neovim": 1
@@ -151,5 +149,6 @@
     },
     "workbench.colorTheme": "Iana",
     "extensions.autoUpdate": false,
-    "extensions.autoCheckUpdates": false
+    "extensions.autoCheckUpdates": false,
+    "scm.defaultViewMode": "tree"
 }
