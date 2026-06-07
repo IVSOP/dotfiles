@@ -6,11 +6,12 @@ set $ws2 "2: "
 set $ws3 "3: "
 set $ws4 "4: "
 set $ws5 "5: "
-set $ws6 "6"
-set $ws7 "7"
-set $ws8 "8"
-set $ws9 "9"
-set $ws10 "10: 󰍺"
+set $ws6 "6: "
+set $ws7 "7  "
+set $ws8 "8: "
+set $ws9 "9: "
+set $ws10 "10: 󰝚"
+# set $ws10 "10: 󰍺"
 
 # env variable setup
 # exec systemctl --user import-environment WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESKTOP SWAYSOCK I3SOCK XCURSOR_SIZE XCURSOR_THEME
@@ -31,5 +32,5 @@ workspace_auto_back_and_forth yes
 # supposedly fixes flameshot in multi monitor
 for_window [app_id="flameshot"] border pixel 0, floating enable, fullscreen disable, move absolute position 0 0
 
-output * adaptive_sync on
+input "9094:17208:Raydium_Corporation_Raydium_Touch_System" map_to_output "eDP-1"
 
