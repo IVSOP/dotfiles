@@ -21,7 +21,8 @@ tooltip {
     border-bottom: 3pt solid #4B0082;
 }
 
-#workspaces button.focused {
+#workspaces button.focused,
+#workspaces button.active {
     background: #34384e;
     border-bottom: 3pt solid #d600ff;
 }

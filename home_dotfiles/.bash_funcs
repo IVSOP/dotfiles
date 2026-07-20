@@ -1,26 +1,60 @@
 #!/bin/bash
 
-function setup_code() {
-    # assume workspace is the focused workspace
+function setup_code_sway() {
+    local WORKSPACE_ID
     WORKSPACE_ID=$(swaymsg -t get_workspaces | jq '.[] | select(.focused == true) | .id')
 
-	swaymsg split horizontal
+    swaymsg split horizontal
+    code .
 
-	code .
-
-    # wait for vscode to show up
-    while ! swaymsg -t get_workspaces | jq --argjson id "$WORKSPACE_ID" '.[] | select(.id == $id) | .representation' | grep -i code; do
+    while ! swaymsg -t get_workspaces | jq --argjson id "$WORKSPACE_ID" '.[] | select(.id == $id) | .representation' | grep -qi code; do
         sleep 1
     done
 
-    # TODO: focus vscode instead???
-    # TODO: how to run these commands specifically on the current workspace, since I have its ID
+    swaymsg move left, resize grow width 0 px or 15 ppt
+    swaymsg focus prev
+    swaymsg split vertical
+    clear
+}
 
-	swaymsg move left, resize grow width 0 px or 15 ppt
-	swaymsg focus prev # focus back to the terminal
-	
-	swaymsg split vertical
-	clear
+function setup_code_hypr() {
+    local WORKSPACE_ID
+    WORKSPACE_ID=$(hyprctl activeworkspace -j | jq '.id')
+
+    # Window rule: force the next vscode window onto this workspace (no silent — let it take focus)
+    hyprctl eval "hl.window_rule({ name = 'setup_code_ws', match = { class = 'code' }, workspace = '$WORKSPACE_ID' })"
+
+    # Launch vscode
+    code . &
+
+    # Wait for the vscode window to appear
+    until hyprctl clients -j | jq -e '.[] | select(.class == "code")' > /dev/null 2>&1; do
+        sleep 0.3
+    done
+    sleep 0.5  # let it settle
+
+    # Remove the one-shot rule
+    hyprctl eval "hl.window_rule({ name = 'setup_code_ws', remove = true })" 2>/dev/null
+
+    # Vscode now has focus — move it left and grow to ~70%
+    hyprctl eval 'local hy3 = hl.plugin.hy3; hl.dispatch(hy3.move_window("l"))'
+    local mon_width
+    mon_width=$(hyprctl monitors -j | jq '.[] | select(.focused) | (.width / .scale | floor)')
+    local grow=$(( mon_width * 20 / 100 ))
+    hyprctl eval "hl.dispatch(hl.dsp.window.resize({ x = $grow, y = 0, relative = true }))"
+
+    # Focus back to terminal and make a vertical split
+    hyprctl eval 'local hy3 = hl.plugin.hy3; hl.dispatch(hy3.move_focus("r"))'
+    hyprctl eval 'local hy3 = hl.plugin.hy3; hl.dispatch(hy3.make_group("v"))'
+    clear
+}
+
+function setup_code() {
+    if [[ "$XDG_CURRENT_DESKTOP" == "Hyprland" ]]; then
+        setup_code_hypr
+    else
+        setup_code_sway
+    fi
 }
 
 function compress() {

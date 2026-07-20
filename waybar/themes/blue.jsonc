@@ -3,6 +3,7 @@
     "position": "bottom",
     "spacing": 20,
     "height": 0,
+    "output": "DP-3",
 
     // "margin-top": 8,
     // "margin-right": 8,
@@ -10,7 +11,7 @@
     // "margin-left": 8,
 
     "modules-left": [
-        "sway/workspaces",
+        "ext/workspaces",
         "tray"
     ],
 
@@ -30,10 +31,24 @@
         "clock"
     ],
 
-    "sway/workspaces": {
-        "disable-scroll": true,
-        "all-outputs": true,
-        "tooltip": false
+    "ext/workspaces": {
+        "format": "{name}: {icon}",
+        "on-click": "activate",
+        "format-icons": {
+            "1": "",
+            "2": "",
+            "3": "",
+            "4": "",
+            "5": "",
+            "6": "",
+            "7": "",
+            "8": "",
+            "9": "󰝚",
+            "10": "󰍺",
+            "default": ""
+        },
+        "sort-by-id": true,
+        "all-outputs": true
     },
 
     "tray": {
@@ -68,7 +83,7 @@
 
     "cpu": {
         // "min-length": 14,
-        "format": "<span rise='1000'></span> {usage:>2}% {icon0}{icon1}{icon2}{icon3}{icon4}{icon5}{icon6}{icon7}{icon8}{icon9}{icon10}{icon11}",
+        "format": "<span rise='1000'></span> {usage:>2}% {icon0}{icon1}{icon2}{icon3}{icon4}{icon5}{icon6}{icon7}{icon8}{icon9}{icon10}{icon11}{icon12}{icon13}{icon14}{icon15}{icon16}{icon17}{icon18}{icon19}{icon20}{icon21}{icon22}{icon23}",
         "format-icons": [
             "<span color='#5785f8'>_</span>",
             "<span color='#5785f8'>▁</span>",
@@ -143,7 +158,8 @@
 
     "network#wired": {
         "interface": "enp*", // "enp14s0"
-        "format-ethernet": "<span color='#6afff3'></span> {bandwidthDownBytes:5} <span color='#983bbf'></span> {bandwidthUpBytes:5}",
+        // format-ethernet is broken wtf, both eth and wifi format show nothing
+        "format": "<span color='#6afff3'></span> {bandwidthDownBytes:5} <span color='#983bbf'></span> {bandwidthUpBytes:5}",
         "format-disconnected" : "<span color='#5785f8'>󰈂</span>",
         "interval": 1,
         "tooltip": false
