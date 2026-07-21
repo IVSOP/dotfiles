@@ -254,7 +254,7 @@ hl.device({
 })
 
 hl.device({
-    name          = "REPLACE-ME-touchpad-name",
+    name          = "etps/2-elantech-touchpad",
     sensitivity   = 0.1,    -- Sway `pointer_accel 0.1`
     accel_profile = "flat", -- Sway `accel_profile "flat"`
 })
