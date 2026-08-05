@@ -292,6 +292,9 @@ hl.bind(mainMod .. " + SHIFT + F3", hl.dsp.exec_cmd("steam"))
 -- Toggle fullscreen
 hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" }))
 
+-- Toggle floating ("windowed") / tiled
+hl.bind(mainMod .. " + SHIFT + space", hl.dsp.window.float({ action = "toggle" }))
+
 -- Screenshots
 hl.bind(mainMod .. " + Print", hl.dsp.exec_cmd("$HOME/.config/sway/scripts/screenshot-output.sh"))
 hl.bind("Print", hl.dsp.exec_cmd("$HOME/.config/sway/scripts/screenshot.sh -m region"), { release = true })
