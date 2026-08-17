@@ -16,6 +16,7 @@
 
   # ── Networking ────────────────────────────────────────────────────────
   networking.networkmanager.enable = true;
+  networking.nftables.enable = true;
 
   # ── Time / Locale ────────────────────────────────────────────────────
   time.timeZone = "Europe/Lisbon";
@@ -62,6 +63,10 @@
 
   # ── Docker ───────────────────────────────────────────────────────────
   virtualisation.docker.enable = true;
+
+  # ── Firewall ─────────────────────────────────────────────────────────
+  networking.firewall.checkReversePath = "loose";
+  networking.firewall.trustedInterfaces = [ "tailscale0" ];
 
   # ── Tailscale ────────────────────────────────────────────────────────
   services.tailscale.enable = true;
