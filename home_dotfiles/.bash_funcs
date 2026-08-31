@@ -97,7 +97,9 @@ function warp() {
 
 # screenshot copy
 function sc() {
-    wl-copy --type image/png < "$HOME/Pictures/Screenshots/$(\ls ~/Pictures/Screenshots | tail -n 1)"
+    # Screenshots are saved as AVIF, which nothing pastes yet, so decode to PNG.
+    ffmpeg -v error -i "$HOME/Pictures/Screenshots/$(\ls ~/Pictures/Screenshots | tail -n 1)" \
+        -f image2pipe -vcodec png - | wl-copy --type image/png
 }
 
 # screenshot delete
