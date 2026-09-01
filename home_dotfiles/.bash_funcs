@@ -105,9 +105,11 @@ function sc() {
 # screenshot delete
 function sd() {
     local image_path
-    image_path="$HOME/Pictures/Screenshots/$(\ls -t "$HOME/Pictures/Screenshots" | head -n 1)"
+    # Sort by name, not mtime: names are YYYY_MM_DD-HHMMSS and mtimes were all
+    # flattened by the bulk AVIF conversion.
+    image_path="$HOME/Pictures/Screenshots/$(\ls "$HOME/Pictures/Screenshots" | tail -n 1)"
 
-    chafa $image_path # --size=x$(( $(tput lines) / 2 )) $IMAGE_PATH
+    chafa "$image_path" # --size=x$(( $(tput lines) / 2 )) $IMAGE_PATH
 
     if gum confirm "Remove $(basename "$image_path")?"
     then
