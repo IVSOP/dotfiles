@@ -1,0 +1,6 @@
+# ignore everything except User/settings.json
+/*
+!/.gitignore
+!/User/
+/User/*
+!/User/settings.json

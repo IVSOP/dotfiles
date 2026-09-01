@@ -1,4 +1,201 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, nixpkgs-anchor, ... }:
+
+let
+  # Cross-compilation targets, installed for both toolchains.
+  rustTargets = [
+    "wasm32-unknown-unknown"   # wasm-bindgen / wasm-pack / wasm-server-runner
+    "aarch64-linux-android"    # real ARM devices
+    "x86_64-linux-android"     # emulator
+    "x86_64-pc-windows-gnu"    # cross-linked via mingw-w64
+  ];
+
+  # Stable toolchain, minus rustfmt (nightly supplies that below).
+  rustStable = pkgs.rust-bin.stable.latest.minimal.override {
+    extensions = [ "rust-src" "rust-analyzer" "clippy" ];
+    targets = rustTargets;
+  };
+
+  # Latest nightly that actually has all these components built.
+  rustNightly = pkgs.rust-bin.selectLatestNightlyWith (toolchain:
+    toolchain.default.override {
+      extensions = [ "rust-src" "rustfmt" "clippy" ];
+      targets = rustTargets;
+    });
+
+  # Native libraries C-sys crates need. Bevy (alsa/udev at build time, plus
+  # vulkan/wayland/xkbcommon/X11 dlopened at runtime) is the driving case.
+  rustNativeDeps = with pkgs; [
+    alsa-lib
+    systemdLibs      # libudev
+    openssl
+    libxkbcommon
+    wayland
+    vulkan-loader
+    libGL            # libglvnd: gl.pc/egl.pc/glesv2.pc + libGL.so.1, libEGL.so.1
+    libGLU
+    libx11
+    libxcursor
+    libxi
+    libxrandr
+  ];
+
+  # What lands on PATH by default: stable, with nightly rustfmt/cargo-fmt
+  # so `cargo fmt` accepts nightly-only rustfmt.toml options.
+  rustDefault = pkgs.runCommand "rust-default" { } ''
+    mkdir -p $out/bin
+    ln -s ${rustStable}/bin/* $out/bin/
+    ln -sf ${rustNightly}/bin/rustfmt   $out/bin/rustfmt
+    ln -sf ${rustNightly}/bin/cargo-fmt $out/bin/cargo-fmt
+  '';
+
+  # Full nightly toolchain as cargo-nightly, rustc-nightly, ...
+  # PATH is prefixed so nightly cargo finds nightly rustc/rustfmt, not stable.
+  rustNightlySuffixed = pkgs.runCommand "rust-nightly-suffixed"
+    { nativeBuildInputs = [ pkgs.makeWrapper ]; } ''
+    mkdir -p $out/bin
+    for bin in ${rustNightly}/bin/*; do
+      name=$(basename "$bin")
+      makeWrapper "$bin" "$out/bin/$name-nightly" \
+        --prefix PATH : ${rustNightly}/bin
+    done
+  '';
+
+  # ── Solana toolchain, version-pinned ─────────────────────────────────
+  # The projects under ~/Desktop/solana pin exact toolchain versions in
+  # their Anchor.toml, and the CLI aborts on a mismatch instead of just
+  # warning, so the versions here are held still deliberately.
+
+  # anchor 1.0.2, matching `anchor_version` in DeFORM's Anchor.toml.
+  # The nixpkgs this system tracks ships 1.1.2, so rather than rebuild the
+  # 1.0.2 source here, take it from the last nixpkgs revision that packaged
+  # it (see the nixpkgs-anchor input in flake.nix). That revision's binary
+  # is on cache.nixos.org, so this costs a 60 MB download and no compile.
+  # Imported bare, without this system's overlays — it only needs to yield
+  # one binary, not match the rest of the system.
+  anchorPinned = pkgs.symlinkJoin {
+    name = "anchor-1.0.2";
+    paths = [ (import nixpkgs-anchor { inherit (pkgs.stdenv.hostPlatform) system; }).anchor ];
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      wrapProgram $out/bin/anchor --prefix PATH : ${rustupShim}/bin
+    '';
+  };
+
+  # agave/solana CLI. flake.lock is what actually holds this at 4.0.3;
+  # the assert makes a `nix flake update` that moves it fail loudly here
+  # rather than quietly swapping the CLI under the projects. Rebuilding
+  # agave from source to force an old version would cost a ~30 min build
+  # and lose the binary cache, so it isn't worth it.
+  solanaPinned =
+    assert lib.assertMsg (pkgs.solana-cli.version == "4.0.3")
+      "solana-cli moved to ${pkgs.solana-cli.version}; re-pin or update this assert";
+    pkgs.solana-cli;
+
+  # Both anchor and cargo-build-sbf assume a rustup-managed world:
+  #
+  #   cargo-build-sbf  runs `rustup toolchain link solana-<ver> ...` and
+  #                    then builds with `cargo +solana-<ver>`.
+  #   anchor           probes `cargo +stable` before generating the IDL,
+  #                    and if that fails shells out to `rustup toolchain
+  #                    install stable` — which would download a fourth
+  #                    complete Rust despite stable already being here.
+  #
+  # rustup can't go in systemPackages: its bin/cargo and bin/rustc would
+  # collide with rustDefault. Putting all of rustup/bin on PATH doesn't
+  # work either — cargo-build-sbf also runs a plain `cargo metadata` first,
+  # and routing that through rustup demands a default toolchain this system
+  # deliberately doesn't have ("rustup could not choose a version of rustc
+  # to run"). So this shim goes on PATH for those two programs only, and
+  # dispatches per call:
+  #
+  #   cargo +stable / +nightly  the toolchains already in this config, with
+  #                             the flag stripped — nothing to install
+  #   cargo +anything-else      rustup's proxy (i.e. the linked solana one)
+  #   cargo <no +toolchain>     the normal toolchain
+  #
+  # rustc needs the same treatment: rustup's cargo proxy exports
+  # RUSTUP_TOOLCHAIN before exec'ing the toolchain's cargo, which then
+  # looks up `rustc` on PATH expecting another rustup proxy. Without it,
+  # cargo finds the stable rustc and the SBF build dies on platform-tools'
+  # `-Zremap-cwd-prefix` ("the option `Z` is only accepted on the nightly
+  # compiler").
+  rustupShim = pkgs.runCommand "solana-rustup-shim" { } ''
+    mkdir -p $out/bin
+    ln -s ${pkgs.rustup}/bin/rustup $out/bin/rustup
+
+    cat > $out/bin/cargo <<SHIM
+    #!${pkgs.runtimeShell}
+    case "\$1" in
+      +stable)  shift; exec ${rustDefault}/bin/cargo "\$@" ;;
+      +nightly) shift; exec ${rustNightly}/bin/cargo "\$@" ;;
+      +*)              exec ${pkgs.rustup}/bin/cargo "\$@" ;;
+      *)               exec ${rustDefault}/bin/cargo "\$@" ;;
+    esac
+    SHIM
+
+    cat > $out/bin/rustc <<SHIM
+    #!${pkgs.runtimeShell}
+    if [ -n "\''${RUSTUP_TOOLCHAIN:-}" ]; then
+      exec ${pkgs.rustup}/bin/rustc "\$@"
+    else
+      exec ${rustDefault}/bin/rustc "\$@"
+    fi
+    SHIM
+
+    chmod +x $out/bin/cargo $out/bin/rustc
+  '';
+
+  # cargo-build-sbf / cargo-test-sbf, which `anchor build` shells out to.
+  # nixpkgs' solana-cli doesn't ship them: they live in the agave repo's
+  # platform-tools-sdk/, which the root Cargo.toml *excludes* from the
+  # workspace, so they need their own buildRustPackage against the same
+  # source rather than an extra entry in solanaPkgs.
+  #
+  # At runtime cargo-build-sbf downloads the platform-tools LLVM/rust
+  # toolchain into ~/.cache/solana. It reads ID=nixos from /etc/os-release
+  # and patchelfs those binaries itself, via `nix-build -E` against
+  # <nixpkgs> — which resolves here through NIX_PATH. nix-ld is the
+  # backstop if that ever fails.
+  cargoBuildSbf = pkgs.rustPlatform.buildRustPackage rec {
+    pname = "solana-cargo-build-sbf";
+    inherit (solanaPinned) version src;
+
+    sourceRoot = "${src.name}/platform-tools-sdk";
+    cargoHash = "sha256-VYNVdO2nMcLvE6AWd1IJpixnZaIQHfKY79+gzekxiK8=";
+
+    buildInputs = [ pkgs.openssl pkgs.bzip2 ];
+
+    # The platform-tools toolchain is a 1.6 GB download into ~/.cache/solana
+    # and cargo-build-sbf keeps one directory per version. anchor 1.0.2
+    # hardcodes `--tools-version v1.52` (cli/src/lib.rs), while upstream
+    # cargo-build-sbf 4.0.3 defaults to v1.54 — so calling it by hand would
+    # silently fetch a second copy. Retarget the default to agree with
+    # anchor. DEFAULT_RUST_VERSION next to it is already 1.89.0, which is
+    # what v1.52 ships, so the toolchain name is unaffected.
+    postPatch = ''
+      substituteInPlace cargo-build-sbf/src/toolchain.rs \
+        --replace-fail 'DEFAULT_PLATFORM_TOOLS_VERSION: &str = "v1.54"' \
+                       'DEFAULT_PLATFORM_TOOLS_VERSION: &str = "v1.52"'
+    '';
+
+    cargoBuildFlags = [
+      "-p" "solana-cargo-build-sbf"
+      "-p" "solana-cargo-test-sbf"
+    ];
+
+    # The suite wants a downloaded toolchain and a network, neither of
+    # which exists in the sandbox.
+    doCheck = false;
+
+    # See rustupShim above for why PATH is doctored rather than adding
+    # rustup to systemPackages.
+    nativeBuildInputs = [ pkgs.pkg-config pkgs.makeWrapper ];
+    postInstall = ''
+      wrapProgram $out/bin/cargo-build-sbf --prefix PATH : ${rustupShim}/bin
+      wrapProgram $out/bin/cargo-test-sbf  --prefix PATH : ${rustupShim}/bin
+    '';
+  };
+in
 
 {
   # ── Boot (lanzaboote / secure boot) ───────────────────────────────────
@@ -18,6 +215,10 @@
   networking.networkmanager.enable = true;
   networking.nftables.enable = true;
 
+  # ── Power button ─────────────────────────────────────────────────────
+  # systemd's HandlePowerKey default is "poweroff"; suspend instead.
+  services.logind.settings.Login.HandlePowerKey = "suspend";
+
   # ── Time / Locale ────────────────────────────────────────────────────
   time.timeZone = "Europe/Lisbon";
   i18n.defaultLocale = "en_US.UTF-8";
@@ -31,6 +232,8 @@
 
   # ── Hyprland ──────────────────────────────────────────────────────────
   programs.hyprland.enable = true;
+
+  environment.etc."hypr/libhy3.so".source = "${pkgs.hy3}/lib/libhy3.so";
 
   # ly display manager
   services.displayManager.ly.enable = true;
@@ -50,30 +253,102 @@
     wireplumber.enable = true;
   };
 
+  # ── udev rules from packages ─────────────────────────────────────────
+  # systemPackages only puts binaries on PATH; a package's udev rules are
+  # ignored unless listed here. brightnessctl ships 90-brightnessctl.rules,
+  # which chgrps /sys/class/backlight/*/brightness to the video group and
+  # adds group-write — without it the XF86MonBrightness binds can't write
+  # to the backlight (file stays root:root 644).
+  services.udev.packages = [ pkgs.brightnessctl ];
+
+  # ── Removable media ──────────────────────────────────────────────────
+  # Nemo's drive sidebar is gvfs talking to udisks2 over D-Bus. gvfs in
+  # systemPackages only installs binaries; the daemon needs the module,
+  # and without udisks2 the volume monitor has nothing to enumerate.
+  services.udisks2.enable = true;
+  services.gvfs.enable = true;
+
   # ── Bluetooth ────────────────────────────────────────────────────────
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;
 
   # ── SSH ───────────────────────────────────────────────────────────────
   services.openssh.enable = true;
+  # Defaults to true, which would open 22 on every interface. The firewall
+  # section below opens it on tailscale0 only.
+  services.openssh.openFirewall = false;
+  # Fully manual: `systemctl start sshd`. Not socket-activated — that would
+  # still leave systemd listening on 22 from boot.
+  systemd.services.sshd.wantedBy = lib.mkForce [ ];
   services.openssh.settings = {
     PasswordAuthentication = false;
     KbdInteractiveAuthentication = false;
   };
+  # Drop %h/.ssh/authorized_keys from AuthorizedKeysFile, leaving only
+  # /etc/ssh/authorized_keys.d/%u, which nix generates read-only. Keys are
+  # then declared per host (laptop.nix / desktop.nix) and nowhere else — a
+  # key dropped into a home dir by hand no longer grants access.
+  services.openssh.authorizedKeysInHomedir = false;
+
+  # ssh-agent as a systemd user service, socket at $XDG_RUNTIME_DIR/ssh-agent.
+  # Replaces the hand-rolled ssh-agent block that used to live in .zshrc:
+  # this starts before the session, so graphical launches (hyprland keybinds,
+  # .desktop entries) get SSH_AUTH_SOCK too, not just interactive shells.
+  programs.ssh.startAgent = true;
+  programs.ssh.agentTimeout = "3h";
 
   # ── Docker ───────────────────────────────────────────────────────────
   virtualisation.docker.enable = true;
+  # Fully manual: `systemctl start docker`. enableOnBoot drops dockerd from
+  # multi-user.target; the socket has to be pulled out of sockets.target too,
+  # or the first `docker` command would activate the daemon on demand.
+  # docker.service Requires=docker.socket, so starting the service still
+  # brings the socket up. `--restart=always` containers only return on start.
+  virtualisation.docker.enableOnBoot = false;
+  systemd.sockets.docker.wantedBy = lib.mkForce [ ];
 
   # ── Firewall ─────────────────────────────────────────────────────────
-  networking.firewall.checkReversePath = "loose";
-  networking.firewall.trustedInterfaces = [ "tailscale0" ];
+  # NixOS' own firewall (nftables backend), not ufw. Input policy is drop and
+  # nothing is opened globally; SSH is reachable over tailscale0 only.
+  # Outbound traffic is never filtered, so there is no "allow out" to write.
+  # Temporary holes: `sudo nixos-firewall-tool open tcp 8888` / `... reset`.
+  networking.firewall = {
+    enable = true;
+    checkReversePath = "loose";        # required by tailscale
+    allowedTCPPorts = [ ];
+    allowedUDPPorts = [ ];
+    interfaces."tailscale0".allowedTCPPorts = [ 22 ];
+  };
 
   # ── Tailscale ────────────────────────────────────────────────────────
   services.tailscale.enable = true;
+  # tailscaled ships no socket unit, so this one is genuinely manual:
+  # `tup` / `tdown` (systemctl start/stop tailscaled). State is preserved,
+  # so it reconnects on start without re-running `tailscale up`.
+  systemd.services.tailscaled.wantedBy = lib.mkForce [ ];
+  # Opens UDP 41641 so peers can connect directly; without it tailscale still
+  # works but every connection is bounced through a DERP relay.
+  services.tailscale.openFirewall = true;
 
   # ── Libvirt / QEMU ──────────────────────────────────────────────────
   virtualisation.libvirtd.enable = true;
   programs.virt-manager.enable = true;
+  # Fully manual: `systemctl start libvirtd`. Socket out of sockets.target as
+  # well, otherwise virsh/virt-manager would activate the daemon on demand.
+  # libvirtd.service Wants its sockets, so starting it brings them up.
+  # libvirt-guests (VM autostart/suspend at boot and shutdown) is pointless
+  # with no daemon at boot, so it goes too.
+  systemd.services.libvirtd.wantedBy = lib.mkForce [ ];
+  systemd.services.libvirt-guests.wantedBy = lib.mkForce [ ];
+  systemd.sockets.libvirtd.wantedBy = lib.mkForce [ ];
+  # virtlogd/virtlockd are the helper daemons' sockets, and unlike the three
+  # libvirtd ones they sit in sockets.target, so they were still being opened
+  # at boot ("Listening on Virtual machine log/lock manager socket"). They cost
+  # nothing and start no daemon, but they are the only libvirt noise left in a
+  # boot log. libvirtd.service Requires=virtlogd.socket and Wants=virtlockd.socket,
+  # so `systemctl start libvirtd` still pulls both up.
+  systemd.sockets.virtlogd.wantedBy = lib.mkForce [ ];
+  systemd.sockets.virtlockd.wantedBy = lib.mkForce [ ];
 
   # ── User ──────────────────────────────────────────────────────────────
   users.users.ivsopi3 = {
@@ -84,6 +359,11 @@
 
   # ── Shell ─────────────────────────────────────────────────────────────
   programs.zsh.enable = true;
+
+  # ── Foreign binaries (nix-ld) ─────────────────────────────────────────
+  # Lets prebuilt, non-Nix binaries run: the Android NDK toolchain that
+  # Android Studio's SDK Manager downloads into ~/Android/Sdk, pip wheels, etc.
+  programs.nix-ld.enable = true;
 
   # ── GTK / Theming ────────────────────────────────────────────────────
   environment.variables = {
@@ -99,6 +379,40 @@
 
   # ── Cursor ────────────────────────────────────────────────────────────
   environment.sessionVariables.XCURSOR_THEME = "Adwaita";
+
+  # ── Rust ──────────────────────────────────────────────────────────────
+  # Linker + libpthread search path for the x86_64-pc-windows-gnu target.
+  environment.variables.CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER =
+    "${pkgs.pkgsCross.mingwW64.stdenv.cc}/bin/x86_64-w64-mingw32-gcc";
+  environment.variables.CARGO_TARGET_X86_64_PC_WINDOWS_GNU_RUSTFLAGS =
+    "-L ${pkgs.pkgsCross.mingwW64.windows.pthreads}/lib";
+  # cargo-examples / wasm-server-runner are not in nixpkgs; `cargo install` them.
+  environment.sessionVariables.PATH = [ "$HOME/.cargo/bin" ];
+
+  # pkg-config does not search /run/current-system/sw by default, so point it
+  # straight at the dev outputs. Build-time only, so this is safe globally.
+  environment.variables.PKG_CONFIG_PATH =
+    lib.makeSearchPathOutput "dev" "lib/pkgconfig" rustNativeDeps;
+
+  # Libraries that get dlopened at runtime (vulkan, wayland, xkbcommon, X11)
+  # carry no RPATH, so they need a search path. Scoped to interactive shells
+  # rather than set session-wide: a global LD_LIBRARY_PATH can break unrelated
+  # Nix-built apps through library version skew.
+  programs.zsh.interactiveShellInit = ''
+    export LD_LIBRARY_PATH="${lib.makeLibraryPath rustNativeDeps}''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+  '';
+
+  # ── Android ───────────────────────────────────────────────────────────
+  # SDK and NDK are managed by Android Studio's SDK Manager, not by Nix,
+  # so they live in a writable dir Studio can update. nix-ld (above) is what
+  # makes the NDK's prebuilt clang runnable outside Studio's FHS sandbox.
+  environment.sessionVariables.ANDROID_HOME = "$HOME/Android/Sdk";
+
+  # Blank Swing windows under Hyprland. This is all android-studio's
+  # `tiling_wm = true` override did, minus the rebuild.
+  environment.sessionVariables._JAVA_AWT_WM_NONREPARENTING = "1";
+  # cargo-ndk needs a concrete version dir; set once the NDK is installed:
+  # environment.sessionVariables.ANDROID_NDK_HOME = "$HOME/Android/Sdk/ndk/<version>";
 
   # ── Fonts ─────────────────────────────────────────────────────────────
   fonts = {
@@ -118,7 +432,7 @@
     fontconfig = {
       antialias = true;
       defaultFonts = {
-        monospace = [ "JetBrainsMono Nerd Font" "DejaVu Sans Mono" ];
+        monospace = [ "Noto Sans Mono" "JetBrainsMono Nerd Font" "DejaVu Sans Mono" ];
         sansSerif = [ "Cantarell" "DejaVu Sans" ];
         serif = [ "DejaVu Serif" ];
       };
@@ -141,7 +455,7 @@
     nemo-with-extensions
     pavucontrol
     desktop-file-utils
-    gvfs
+    waybar
 
     # ─ Terminals ─
     alacritty
@@ -158,6 +472,8 @@
     file
     tree
     man-pages
+    usbutils         # lsusb
+    pciutils         # lspci
 
     # ─ CLI tools ─
     eza
@@ -196,6 +512,7 @@
     grim
     hyprshot
     satty
+    swaybg                         # sway/scripts/set-bg.sh
     wayland-utils
     wlprop
     libsForQt5.qtwayland
@@ -209,14 +526,26 @@
     ninja
     pkg-config
     cpio
-    rustup
+    rustDefault
+    rustNightlySuffixed
+    cargo-edit
+    cargo-expand
+    wasm-bindgen-cli
+    wasm-pack
+    cargo-ndk                      # wires the NDK linker for android targets
+    pkgsCross.mingwW64.stdenv.cc   # x86_64-w64-mingw32-gcc, linker for windows-gnu
     nodejs
-    elixir
+    yarn                           # anchor test runner shells out to yarn
     python3
     typst
     gdb
     valgrind
     glew
+
+    # ─ Solana ─
+    solanaPinned                   # agave 4.0.3: solana, solana-keygen, test-validator
+    anchorPinned                   # anchor CLI 1.0.2
+    cargoBuildSbf                  # cargo-build-sbf / cargo-test-sbf for `anchor build`
     (vscode-with-extensions.override {
       vscodeExtensions = pkgs.nix4vscode.forVscode [
         "anthropic.claude-code"
@@ -297,6 +626,7 @@
 
     # ─ Media ─
     ffmpeg-full
+    libavif                        # avifenc, the encoder sway/scripts/screenshot*.sh pipe into
     mpv
     ffmpegthumbnailer
     mediainfo
@@ -314,6 +644,7 @@
     blender
     qbittorrent
     pandoc
+    localsend
 
     # ─ Gaming ─
     lutris
@@ -345,6 +676,15 @@
     # ─ Encryption / Security ─
     veracrypt
 
+    # ─ Game / mobile dev ─
+    unityhub
+    # NB: no .override here. android-studio isn't on cache.nixos.org (unfree),
+    # so any override forks the derivation into a 4 GB local rebuild fed by a
+    # 1.3 GB source fetch. tiling_wm only sets _JAVA_AWT_WM_NONREPARENTING,
+    # which sessionVariables does for free — see below.
+    android-studio
+    android-tools # adb/fastboot; programs.adb was removed (systemd 258 uaccess)
+
     # ─ Misc ─
     adwaita-icon-theme
     solaar
@@ -362,8 +702,8 @@
         email = "ivan.ribeiro09s@gmail.com";
       };
       core = {
-        editor = "nvim";
-        pager = "delta";
+        editor = "code --wait";
+        pager = "bat";
       };
       interactive.diffFilter = "delta --color-only";
       delta = {
@@ -425,4 +765,13 @@
 
   # ── stateVersion ─────────────────────────────────────────────────────
   system.stateVersion = "26.05";
+
+  # FHS shebang paths. NixOS ships only /bin/sh and /usr/bin/env, so scripts
+  # written on Arch (where /bin is a symlink to /usr/bin) need the path they
+  # actually name. Prefer `#!/usr/bin/env bash` in new scripts over growing
+  # this list.
+  systemd.tmpfiles.rules = [
+    "L+ /bin/bash - - - - ${pkgs.bashInteractive}/bin/bash"
+    "L+ /usr/bin/bash - - - - ${pkgs.bashInteractive}/bin/bash"
+  ];
 }

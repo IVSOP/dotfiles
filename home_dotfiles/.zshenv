@@ -1,5 +1,3 @@
-. "$HOME/.cargo/env"
-
 # if running bash
 if [ -n "$BASH_VERSION" ]; then
     # include .bashrc if it exists
@@ -19,7 +17,7 @@ if [ -d "$HOME/.local/bin" ] ; then
 fi
 
 export GTK_THEME=Adwaita:dark
-. "$HOME/.cargo/env"
+# . "$HOME/.cargo/env"
 unset DEBUGINFOD_URLS
 
 export _JAVA_AWT_WM_NONREPARENTING=1

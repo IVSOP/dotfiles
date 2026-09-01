@@ -3,7 +3,7 @@
     "position": "bottom",
     "spacing": 20,
     "height": 0,
-    "output": "DP-3",
+    "output": "eDP-1",
 
     // "margin-top": 8,
     // "margin-right": 8,
@@ -82,7 +82,7 @@
 
     "cpu": {
         // "min-length": 14,
-        "format": "<span rise='1000'></span> {usage:>2}% {icon0}{icon1}{icon2}{icon3}{icon4}{icon5}{icon6}{icon7}{icon8}{icon9}{icon10}{icon11}{icon12}{icon13}{icon14}{icon15}{icon16}{icon17}{icon18}{icon19}{icon20}{icon21}{icon22}{icon23}",
+        "format": "<span rise='1000'></span> {usage:>2}% {icons}",
         "format-icons": [
             "<span color='#5785f8'>_</span>",
             "<span color='#5785f8'>▁</span>",

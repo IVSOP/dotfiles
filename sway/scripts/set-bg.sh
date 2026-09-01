@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 
 
 BG_PATH=$($HOME/Desktop/Rofi-Themer/Scripts/read.sh "background")

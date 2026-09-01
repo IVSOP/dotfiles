@@ -1,19 +1,24 @@
 ------------------
+---- PLUGINS -----
+
+-- on arch I use hyprpm but on nix I need this since I install hy3 through the system
+local hy3_so = "/etc/hypr/libhy3.so"
+local hy3_f = io.open(hy3_so, "r")
+if hy3_f then
+    hy3_f:close()
+    hl.plugin.load(hy3_so)
+end
+
+-----------------
 ---- MONITORS ----
 ------------------
 
 hl.monitor({
-    output    = "DP-1",
+    output    = "eDP-1",
     mode      = "preferred",
     position  = "0x0",
     scale     = 1,
-    transform = 1
-})
-hl.monitor({
-    output    = "DP-3",
-    mode      = "3840x2160@165",
-    position  = "1440x506",
-    scale     = 1.5,
+    transform = 0
 })
 
 ---------------------
@@ -31,7 +36,7 @@ local mainMod     = "SUPER"
 -------------------
 
 hl.on("hyprland.start", function()
-    hl.exec_cmd("hyprpm reload -n")
+    -- hl.exec_cmd("hyprpm reload -n")
     hl.exec_cmd("~/.config/waybar/launch.sh")
     hl.exec_cmd("nm-applet")
     hl.exec_cmd("~/.config/dunst/get-theme.sh")

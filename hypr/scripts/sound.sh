@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 
 # Usage: sound.sh +5 | -5 | toggle-mute
 
