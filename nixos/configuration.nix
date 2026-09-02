@@ -60,144 +60,14 @@ let
     done
   '';
 
-  # ── Solana toolchain, version-pinned ─────────────────────────────────
-  # The projects under ~/Desktop/solana pin exact toolchain versions in
-  # their Anchor.toml, and the CLI aborts on a mismatch instead of just
-  # warning, so the versions here are held still deliberately.
-
-  # anchor 1.0.2, matching `anchor_version` in DeFORM's Anchor.toml.
-  # The nixpkgs this system tracks ships 1.1.2, so rather than rebuild the
-  # 1.0.2 source here, take it from the last nixpkgs revision that packaged
-  # it (see the nixpkgs-anchor input in flake.nix). That revision's binary
-  # is on cache.nixos.org, so this costs a 60 MB download and no compile.
-  # Imported bare, without this system's overlays — it only needs to yield
-  # one binary, not match the rest of the system.
-  anchorPinned = pkgs.symlinkJoin {
-    name = "anchor-1.0.2";
-    paths = [ (import nixpkgs-anchor { inherit (pkgs.stdenv.hostPlatform) system; }).anchor ];
-    nativeBuildInputs = [ pkgs.makeWrapper ];
-    postBuild = ''
-      wrapProgram $out/bin/anchor --prefix PATH : ${rustupShim}/bin
-    '';
-  };
-
-  # agave/solana CLI. flake.lock is what actually holds this at 4.0.3;
-  # the assert makes a `nix flake update` that moves it fail loudly here
-  # rather than quietly swapping the CLI under the projects. Rebuilding
-  # agave from source to force an old version would cost a ~30 min build
-  # and lose the binary cache, so it isn't worth it.
-  solanaPinned =
-    assert lib.assertMsg (pkgs.solana-cli.version == "4.0.3")
-      "solana-cli moved to ${pkgs.solana-cli.version}; re-pin or update this assert";
-    pkgs.solana-cli;
-
-  # Both anchor and cargo-build-sbf assume a rustup-managed world:
-  #
-  #   cargo-build-sbf  runs `rustup toolchain link solana-<ver> ...` and
-  #                    then builds with `cargo +solana-<ver>`.
-  #   anchor           probes `cargo +stable` before generating the IDL,
-  #                    and if that fails shells out to `rustup toolchain
-  #                    install stable` — which would download a fourth
-  #                    complete Rust despite stable already being here.
-  #
-  # rustup can't go in systemPackages: its bin/cargo and bin/rustc would
-  # collide with rustDefault. Putting all of rustup/bin on PATH doesn't
-  # work either — cargo-build-sbf also runs a plain `cargo metadata` first,
-  # and routing that through rustup demands a default toolchain this system
-  # deliberately doesn't have ("rustup could not choose a version of rustc
-  # to run"). So this shim goes on PATH for those two programs only, and
-  # dispatches per call:
-  #
-  #   cargo +stable / +nightly  the toolchains already in this config, with
-  #                             the flag stripped — nothing to install
-  #   cargo +anything-else      rustup's proxy (i.e. the linked solana one)
-  #   cargo <no +toolchain>     the normal toolchain
-  #
-  # rustc needs the same treatment: rustup's cargo proxy exports
-  # RUSTUP_TOOLCHAIN before exec'ing the toolchain's cargo, which then
-  # looks up `rustc` on PATH expecting another rustup proxy. Without it,
-  # cargo finds the stable rustc and the SBF build dies on platform-tools'
-  # `-Zremap-cwd-prefix` ("the option `Z` is only accepted on the nightly
-  # compiler").
-  rustupShim = pkgs.runCommand "solana-rustup-shim" { } ''
-    mkdir -p $out/bin
-    ln -s ${pkgs.rustup}/bin/rustup $out/bin/rustup
-
-    cat > $out/bin/cargo <<SHIM
-    #!${pkgs.runtimeShell}
-    case "\$1" in
-      +stable)  shift; exec ${rustDefault}/bin/cargo "\$@" ;;
-      +nightly) shift; exec ${rustNightly}/bin/cargo "\$@" ;;
-      +*)              exec ${pkgs.rustup}/bin/cargo "\$@" ;;
-      *)               exec ${rustDefault}/bin/cargo "\$@" ;;
-    esac
-    SHIM
-
-    cat > $out/bin/rustc <<SHIM
-    #!${pkgs.runtimeShell}
-    if [ -n "\''${RUSTUP_TOOLCHAIN:-}" ]; then
-      exec ${pkgs.rustup}/bin/rustc "\$@"
-    else
-      exec ${rustDefault}/bin/rustc "\$@"
-    fi
-    SHIM
-
-    chmod +x $out/bin/cargo $out/bin/rustc
-  '';
-
-  # cargo-build-sbf / cargo-test-sbf, which `anchor build` shells out to.
-  # nixpkgs' solana-cli doesn't ship them: they live in the agave repo's
-  # platform-tools-sdk/, which the root Cargo.toml *excludes* from the
-  # workspace, so they need their own buildRustPackage against the same
-  # source rather than an extra entry in solanaPkgs.
-  #
-  # At runtime cargo-build-sbf downloads the platform-tools LLVM/rust
-  # toolchain into ~/.cache/solana. It reads ID=nixos from /etc/os-release
-  # and patchelfs those binaries itself, via `nix-build -E` against
-  # <nixpkgs> — which resolves here through NIX_PATH. nix-ld is the
-  # backstop if that ever fails.
-  cargoBuildSbf = pkgs.rustPlatform.buildRustPackage rec {
-    pname = "solana-cargo-build-sbf";
-    inherit (solanaPinned) version src;
-
-    sourceRoot = "${src.name}/platform-tools-sdk";
-    cargoHash = "sha256-VYNVdO2nMcLvE6AWd1IJpixnZaIQHfKY79+gzekxiK8=";
-
-    buildInputs = [ pkgs.openssl pkgs.bzip2 ];
-
-    # The platform-tools toolchain is a 1.6 GB download into ~/.cache/solana
-    # and cargo-build-sbf keeps one directory per version. anchor 1.0.2
-    # hardcodes `--tools-version v1.52` (cli/src/lib.rs), while upstream
-    # cargo-build-sbf 4.0.3 defaults to v1.54 — so calling it by hand would
-    # silently fetch a second copy. Retarget the default to agree with
-    # anchor. DEFAULT_RUST_VERSION next to it is already 1.89.0, which is
-    # what v1.52 ships, so the toolchain name is unaffected.
-    postPatch = ''
-      substituteInPlace cargo-build-sbf/src/toolchain.rs \
-        --replace-fail 'DEFAULT_PLATFORM_TOOLS_VERSION: &str = "v1.54"' \
-                       'DEFAULT_PLATFORM_TOOLS_VERSION: &str = "v1.52"'
-    '';
-
-    cargoBuildFlags = [
-      "-p" "solana-cargo-build-sbf"
-      "-p" "solana-cargo-test-sbf"
-    ];
-
-    # The suite wants a downloaded toolchain and a network, neither of
-    # which exists in the sandbox.
-    doCheck = false;
-
-    # See rustupShim above for why PATH is doctored rather than adding
-    # rustup to systemPackages.
-    nativeBuildInputs = [ pkgs.pkg-config pkgs.makeWrapper ];
-    postInstall = ''
-      wrapProgram $out/bin/cargo-build-sbf --prefix PATH : ${rustupShim}/bin
-      wrapProgram $out/bin/cargo-test-sbf  --prefix PATH : ${rustupShim}/bin
-    '';
-  };
 in
 
 {
+  imports = [ ./solana.nix ];
+
+  # Consumed by solana.nix's rustup shim.
+  _module.args = { inherit rustDefault rustNightly; };
+
   # ── Boot (lanzaboote / secure boot) ───────────────────────────────────
   boot.loader.systemd-boot.enable = lib.mkForce false;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -538,14 +408,11 @@ in
     yarn                           # anchor test runner shells out to yarn
     python3
     typst
+    fastfetch
     gdb
     valgrind
     glew
 
-    # ─ Solana ─
-    solanaPinned                   # agave 4.0.3: solana, solana-keygen, test-validator
-    anchorPinned                   # anchor CLI 1.0.2
-    cargoBuildSbf                  # cargo-build-sbf / cargo-test-sbf for `anchor build`
     (vscode-with-extensions.override {
       vscodeExtensions = pkgs.nix4vscode.forVscode [
         "anthropic.claude-code"
