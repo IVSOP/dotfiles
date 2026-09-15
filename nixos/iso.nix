@@ -5,6 +5,8 @@
     <nixpkgs/nixos/modules/installer/cd-dvd/installation-cd-minimal.nix>
   ];
 
+  nixpkgs.config.allowUnfree = true;  # claude-code
+
   environment.systemPackages = with pkgs; [
     # ─ Editor / shell ─
     neovim
@@ -21,6 +23,10 @@
 
     # ─ Git ─
     git
+
+    # ─ AI CLIs ─
+    claude-code
+    codex
 
     # ─ Network ─
     curl
