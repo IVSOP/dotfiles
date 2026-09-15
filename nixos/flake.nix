@@ -33,6 +33,16 @@
   outputs = { nixpkgs, nixpkgs-anchor, lanzaboote, nix4vscode, hy3, waybar, rust-overlay, ... }: let
     system = "x86_64-linux";
 
+    # This registry pin is on by default, but without the narHash, so nix reads
+    # it as unlocked and skips the eval cache: every `nix search` costs ~75s.
+    pinRegistry = {
+      nix.registry.nixpkgs.to = {
+        type = "path";
+        path = nixpkgs.outPath;
+        narHash = nixpkgs.narHash;
+      };
+    };
+
     hy3Overlay = final: prev: {
       hy3 = final.callPackage "${hy3}/default.nix" {
         inherit (final) hyprland;
@@ -47,6 +57,7 @@
       modules = [
         lanzaboote.nixosModules.lanzaboote
         { nixpkgs.overlays = [ nix4vscode.overlays.default hy3Overlay waybar.overlays.default rust-overlay.overlays.default ]; }
+        pinRegistry
         ./configuration.nix
         ./laptop.nix
       ];
@@ -58,6 +69,7 @@
       modules = [
         lanzaboote.nixosModules.lanzaboote
         { nixpkgs.overlays = [ nix4vscode.overlays.default hy3Overlay waybar.overlays.default rust-overlay.overlays.default ]; }
+        pinRegistry
         ./configuration.nix
         ./desktop.nix
       ];
