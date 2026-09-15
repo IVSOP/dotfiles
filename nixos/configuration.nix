@@ -616,7 +616,15 @@ in
         "uBlock0@raymondhill.net" = ext "ublock-origin";
       };
       Preferences = {
+        # Restore the previous session on startup.
         "browser.startup.page" = { Value = 3; Status = "locked"; };
+        # Open new tabs immediately to the right of the current one.
+        "browser.tabs.insertAfterCurrent" = { Value = true; Status = "locked"; };
+        # Dark UI + dark web content. Works because the theme is left on
+        # "Automatic", which follows this pref rather than the real system
+        # setting; the content-override makes prefers-color-scheme dark too.
+        "ui.systemUsesDarkTheme" = { Value = 1; Status = "locked"; };
+        "layout.css.prefers-color-scheme.content-override" = { Value = 0; Status = "locked"; };
       };
     };
   };
