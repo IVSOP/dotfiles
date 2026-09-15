@@ -253,6 +253,24 @@ hl.gesture({
     action = "workspace"
 })
 
+---- Cursor zoom: SUPER + pinch ----
+-- zoom_rigid centres the view on the pointer (and parks the pointer at screen centre),
+-- so moving the pointer is what pans the zoomed view.
+hl.config({
+    cursor = {
+        zoom_rigid           = true,
+        zoom_detached_camera = false,
+    },
+})
+
+hl.gesture({
+    fingers   = 2,
+    direction = "pinch",
+    mods      = "SUPER",
+    action    = "cursor_zoom",
+    mode      = "live",
+})
+
 hl.device({
     name    = "logitech-pro-x",
     enabled = false,
