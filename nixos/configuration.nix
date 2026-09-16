@@ -329,7 +329,6 @@ in
 
     # ─ Terminals ─
     alacritty
-    kitty
 
     # ─ CLI essentials ─
     neovim
@@ -650,4 +649,15 @@ in
     "L+ /bin/bash - - - - ${pkgs.bashInteractive}/bin/bash"
     "L+ /usr/bin/bash - - - - ${pkgs.bashInteractive}/bin/bash"
   ];
+
+  # ── Nemo "Open in Terminal" ──────────────────────────────────────────
+  # Nemo reads org.cinnamon.desktop.default-applications.terminal, whose
+  # schema default is gnome-terminal (not installed) — so the menu item
+  # silently did nothing.
+  programs.dconf = {
+    enable = true;
+    profiles.user.databases = [{
+      settings."org/cinnamon/desktop/default-applications/terminal".exec = "alacritty";
+    }];
+  };
 }
