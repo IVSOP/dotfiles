@@ -481,8 +481,8 @@ in
     gtk3
     glib
     glibmm
-    cairomm
-    pangomm
+    cairomm_1_0
+    pangomm_1_4
     libsigcxx
     jsoncpp
     fmt
