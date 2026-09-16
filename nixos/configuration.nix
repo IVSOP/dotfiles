@@ -79,7 +79,7 @@ in
 
   # ── System tuning ────────────────────────────────────────────────────
   boot.kernel.sysctl."vm.swappiness" = 1;
-  services.journald.extraConfig = "SystemMaxUse=100M";
+  services.journald.settings.Journal.SystemMaxUse = "100M";
 
   # ── Networking ────────────────────────────────────────────────────────
   networking.networkmanager.enable = true;
