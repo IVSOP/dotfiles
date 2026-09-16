@@ -657,7 +657,7 @@ in
   programs.dconf = {
     enable = true;
     profiles.user.databases = [{
-      settings."org/cinnamon/desktop/default-applications/terminal".exec = "alacritty";
+      settings."org/cinnamon/desktop/applications/terminal".exec = "alacritty";
     }];
   };
 }
