@@ -365,6 +365,7 @@ in
     lazygit
     lazydocker
     claude-code
+    codex
     yazi
     fend
     tldr
