@@ -326,6 +326,7 @@ in
     pavucontrol
     desktop-file-utils
     waybar
+    google-chrome
 
     # ─ Terminals ─
     alacritty
