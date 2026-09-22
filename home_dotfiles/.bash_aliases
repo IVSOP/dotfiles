@@ -11,6 +11,9 @@ alias nv="nvim"
 alias alc='alacritty --working-directory "$(pwd)" > /dev/null 2>&1 & disown'
 
 # dev
+alias cxastra='codex --model gpt-6-astra --config model_reasoning_effort=high'
+alias cxsol='codex --model gpt-6-sol --config model_reasoning_effort=high'
+alias cxluna='codex --model gpt-6-luna --config model_reasoning_effort=high'
 alias npi="npm install"
 alias npr="npm run"
 alias npb="npm run build"
