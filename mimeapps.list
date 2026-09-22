@@ -6,3 +6,7 @@ image/jpeg=nemo-mpv-image.desktop;
 
 [Default Applications]
 x-scheme-handler/claude-cli=claude-code-url-handler.desktop
+x-scheme-handler/http=firefox.desktop
+x-scheme-handler/https=firefox.desktop
+text/html=firefox.desktop
+application/xhtml+xml=firefox.desktop
