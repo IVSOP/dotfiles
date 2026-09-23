@@ -1,3 +1,9 @@
+# Written by hyprmoncfg from the live display layout, so it is machine
+# specific: it hardcodes monitor descriptions, modes and positions.
+# hyprmoncfg-monitors.lua is the current name, monitors.lua the older one
+# that the fallback block at the top of hyprland.lua still reads.
+/hyprmoncfg-monitors.lua
 /monitors.lua
+
 /monitor-profiles/profiles/*.conf
 /monitor-profiles/profiles/*.lua

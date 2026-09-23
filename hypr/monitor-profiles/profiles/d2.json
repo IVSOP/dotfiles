@@ -27,12 +27,13 @@
       "model": "AW2725QF",
       "serial": "B49QC34",
       "enabled": true,
-      "mode": "preferred",
+      "mode": "3840x2160@164.99Hz",
       "width": 3840,
       "height": 2160,
       "x": 1440,
       "y": 506,
-      "scale": 1.5
+      "scale": 1.5,
+      "refresh": 164.99
     }
   ],
   "exec": "~/.config/hypr/scripts/apply-exclusive-monitor.sh 'Dell Inc.|AW2725QF|B49QC34' 'LG Electronics|LG ULTRAGEAR|306MAGP7MC39'"

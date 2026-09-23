@@ -1,11 +1,34 @@
 ------------------
 ---- PLUGINS -----
 
--- on arch I use hyprpm but on nix I need this since I install hy3 through the system
-local hy3_so = "/etc/hypr/libhy3.so"
-local hy3_f = io.open(hy3_so, "r")
-if hy3_f then
-    hy3_f:close()
+-- hy3 has to be loaded from here, not from an exec at hyprland.start: the
+-- keybinds below read hl.plugin.hy3 while this file is still being evaluated,
+-- so anything that loads later is too late.
+--
+-- The two machines get the plugin from different package managers, and neither
+-- path exists on the other box, so try both and take whichever is there:
+--   nix  -> configuration.nix installs it with environment.etc."hypr/libhy3.so"
+--   arch -> hyprpm builds it into /var/cache/hyprpm/<user>/<repo>/<plugin>.so
+--           (hyprpm hardcodes that cache root; re-run `hyprpm update` after
+--            every hyprland upgrade or the build goes stale)
+local user = os.getenv("USER") or (os.getenv("HOME") or ""):match("([^/]+)/?$") or ""
+
+local hy3_paths = {
+    "/etc/hypr/libhy3.so",
+    "/var/cache/hyprpm/" .. user .. "/hy3/hy3.so",
+}
+
+local hy3_so
+for _, path in ipairs(hy3_paths) do
+    local f = io.open(path, "r")
+    if f then
+        f:close()
+        hy3_so = path
+        break
+    end
+end
+
+if hy3_so then
     hl.plugin.load(hy3_so)
 end
 
@@ -39,7 +62,6 @@ local mainMod     = "SUPER"
 -------------------
 
 hl.on("hyprland.start", function()
-    -- hl.exec_cmd("hyprpm reload -n")
     hl.exec_cmd("$HOME/Desktop/Rofi-Themer/Scripts/daemon.sh $HOME/Desktop/Rofi-Themer/data/")
     hl.exec_cmd("~/.config/hypr/scripts/monitor-session.sh")
     hl.exec_cmd("nm-applet")
@@ -297,7 +319,11 @@ hl.bind(mainMod .. " + SHIFT + E", hl.dsp.exec_cmd("command -v hyprshutdown >/de
 hl.bind(mainMod .. " + D", hl.dsp.exec_cmd(menu))
 
 -- hy3 layout controls (i3-style)
-local hy3 = hl.plugin.hy3
+-- A nil here kills the rest of this file, taking every keybind below it with
+-- it, so say why instead of erroring on an index of nil.
+local hy3 = assert(hl.plugin.hy3, hy3_so
+    and ("hyprland refused " .. hy3_so .. " -- built against another hyprland version")
+    or  ("no hy3 plugin at " .. table.concat(hy3_paths, " or ")))
 hl.bind(mainMod .. " + W", hy3.make_group("tab"))
 hl.bind(mainMod .. " + E", hy3.change_group("opposite"))
 hl.bind(mainMod .. " + V", hy3.make_group("v"))
@@ -444,3 +470,6 @@ hl.window_rule({
     move  = "20 monitor_h-120",
     float = true,
 })
+
+-- Added by hyprmoncfg: its generated monitor rules load last, so nothing before this can override the applied layout.
+do local path = os.getenv("HOME") .. "/.config/hypr/hyprmoncfg-monitors.lua"; local file = io.open(path, "r"); if file then file:close(); dofile(path) end end
