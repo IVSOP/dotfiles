@@ -1,0 +1,31 @@
+{
+  "name": "ld1",
+  "created_at": "2026-09-22T22:48:31Z",
+  "updated_at": "2026-09-22T22:48:31Z",
+  "outputs": [
+    {
+      "key": "Dell Inc.|AW2725QF|B49QC34",
+      "match_key": "Dell Inc.|AW2725QF|B49QC34",
+      "description": "Dell Inc. AW2725QF B49QC34",
+      "make": "Dell Inc.",
+      "model": "AW2725QF",
+      "serial": "B49QC34",
+      "enabled": true,
+      "mode": "3840x2160@120.00Hz",
+      "width": 3840,
+      "height": 2160,
+      "refresh": 120,
+      "x": 0,
+      "y": 0,
+      "scale": 1.5
+    },
+    {
+      "key": "Lenovo Group Limited|0x4094",
+      "match_key": "Lenovo Group Limited|0x4094",
+      "make": "Lenovo Group Limited",
+      "model": "0x4094",
+      "enabled": false
+    }
+  ],
+  "exec": "~/.config/hypr/scripts/apply-exclusive-monitor.sh 'Dell Inc.|AW2725QF|B49QC34'"
+}

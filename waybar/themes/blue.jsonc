@@ -3,7 +3,7 @@
     "position": "bottom",
     "spacing": 20,
     "height": 0,
-    "output": "eDP-1",
+    "output": "MONITOR_NAME",
 
     // "margin-top": 8,
     // "margin-right": 8,
@@ -230,4 +230,3 @@
         "unit": "GB"
     }
 }
-

@@ -9,6 +9,7 @@ alias ck="setup_code"
 alias nv="nvim"
 
 alias alc='alacritty --working-directory "$(pwd)" > /dev/null 2>&1 & disown'
+alias monitor='$HOME/.config/hypr/scripts/monitor-profile.sh'
 
 # dev
 alias cxastra='codex --model gpt-6-astra --config model_reasoning_effort=high'
@@ -58,4 +59,3 @@ alias blue="sudo systemctl start bluetooth.service && blueman-manager"
 # network
 alias tup="sudo systemctl start tailscaled"
 alias tdown="sudo systemctl stop tailscaled"
-

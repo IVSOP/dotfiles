@@ -5,10 +5,7 @@ exec_always --no-startup-id $HOME/.config/sway/scripts/set-bg.sh
 #exec --no-startup-id $HOME/I-Themer/Scripts/start_daemon.sh
 exec --no-startup-id $HOME/Desktop/Rofi-Themer/Scripts/daemon.sh $HOME/Desktop/Rofi-Themer/data/
 
-# dunst (notifications)
-# theme
-exec_always --no-startup-id $HOME/.config/dunst/get-theme.sh
-# dunst itself
+# dunst (renders its theme, then starts or reloads)
 exec_always --no-startup-id $HOME/.config/dunst/launch.sh
 
 exec --no-startup-id nm-applet
@@ -35,4 +32,3 @@ exec_always --no-startup-id $HOME/.config/waybar/launch.sh
 exec --no-startup-id solaar --window hide
 
 exec --no-startup-id wlsunset -T 5001 -t 5000
-

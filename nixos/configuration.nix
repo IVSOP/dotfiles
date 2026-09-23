@@ -317,6 +317,7 @@ in
     hyprlock
     hyprsunset
     hyprpicker
+    hyprmoncfg
 
     # ─ Desktop ─
     dunst

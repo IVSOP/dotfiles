@@ -1,0 +1,3 @@
+/monitors.lua
+/monitor-profiles/profiles/*.conf
+/monitor-profiles/profiles/*.lua

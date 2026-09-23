@@ -1,0 +1,40 @@
+{
+  "name": "d2_1080",
+  "created_at": "2026-09-23T11:00:03Z",
+  "updated_at": "2026-09-23T11:00:03Z",
+  "outputs": [
+    {
+      "key": "LG Electronics|LG ULTRAGEAR|306MAGP7MC39",
+      "match_key": "LG Electronics|LG ULTRAGEAR|306MAGP7MC39",
+      "description": "LG Electronics LG ULTRAGEAR 306MAGP7MC39",
+      "make": "LG Electronics",
+      "model": "LG ULTRAGEAR",
+      "serial": "306MAGP7MC39",
+      "enabled": true,
+      "mode": "preferred",
+      "width": 2560,
+      "height": 1440,
+      "x": 0,
+      "y": 0,
+      "scale": 1,
+      "transform": 1
+    },
+    {
+      "key": "Dell Inc.|AW2725QF|B49QC34",
+      "match_key": "Dell Inc.|AW2725QF|B49QC34",
+      "description": "Dell Inc. AW2725QF B49QC34",
+      "make": "Dell Inc.",
+      "model": "AW2725QF",
+      "serial": "B49QC34",
+      "enabled": true,
+      "mode": "1920x1080@330.00Hz",
+      "width": 1920,
+      "height": 1080,
+      "refresh": 330,
+      "x": 1440,
+      "y": 506,
+      "scale": 1.5
+    }
+  ],
+  "exec": "~/.config/hypr/scripts/apply-exclusive-monitor.sh 'Dell Inc.|AW2725QF|B49QC34' 'LG Electronics|LG ULTRAGEAR|306MAGP7MC39'"
+}

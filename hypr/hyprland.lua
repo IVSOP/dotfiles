@@ -13,13 +13,16 @@ end
 ---- MONITORS ----
 ------------------
 
-hl.monitor({
-    output    = "eDP-1",
-    mode      = "preferred",
-    position  = "0x0",
-    scale     = 1,
-    transform = 0
-})
+-- hyprmoncfg writes this file after selecting a profile. The file is absent
+-- on a fresh checkout, so use the laptop panel until the first apply.
+local monitors = os.getenv("HOME") .. "/.config/hypr/monitors.lua"
+local monitor_file = io.open(monitors, "r")
+if monitor_file then
+    monitor_file:close()
+    dofile("/home/ivsopi3/.config/hypr/monitors.lua")
+else
+    hl.monitor({ output = "eDP-1", mode = "preferred", position = "0x0", scale = 1 })
+end
 
 ---------------------
 ------- VARS --------
@@ -37,16 +40,13 @@ local mainMod     = "SUPER"
 
 hl.on("hyprland.start", function()
     -- hl.exec_cmd("hyprpm reload -n")
-    hl.exec_cmd("~/.config/waybar/launch.sh")
-    hl.exec_cmd("nm-applet")
-    hl.exec_cmd("~/.config/dunst/get-theme.sh")
-    hl.exec_cmd("~/.config/dunst/launch.sh")
     hl.exec_cmd("$HOME/Desktop/Rofi-Themer/Scripts/daemon.sh $HOME/Desktop/Rofi-Themer/data/")
+    hl.exec_cmd("~/.config/hypr/scripts/monitor-session.sh")
+    hl.exec_cmd("nm-applet")
     hl.exec_cmd("solaar --window hide")
     hl.exec_cmd("hyprsunset --temperature 5000")
     hl.exec_cmd("hyprpaper")
     hl.exec_cmd("hypridle")
-    hl.exec_cmd("$HOME/.config/dunst/launch.sh")
 end)
 
 -------------------------------
@@ -196,9 +196,7 @@ hl.config({
 ---- WORKSPACE RULES ----
 --------------------------
 
-hl.workspace_rule({ workspace = "1", monitor = "DP-1" })
--- this way when I open steam it is always on DP-3
-hl.workspace_rule({ workspace = "5", monitor = "DP-3" })
+-- Monitor-specific workspace placement belongs in each hyprmoncfg profile.
 
 -----------------------
 ---- WINDOW RULES ----

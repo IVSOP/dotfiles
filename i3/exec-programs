@@ -10,10 +10,7 @@ exec --no-startup-id $HOME/Desktop/Rofi-Themer/Scripts/daemon.sh $HOME/Desktop/R
 # compton for vsync
 exec_always --no-startup-id $HOME/.config/compton/compton_launch.sh
 
-# dunst (notifications)
-# theme
-exec_always --no-startup-id $HOME/.config/dunst/get-theme.sh
-# dunst itself
+# dunst (renders its theme, then starts or reloads)
 exec_always --no-startup-id $HOME/.config/dunst/launch.sh
 
 # Polybar (can be _always since launch.sh kills all bars)
