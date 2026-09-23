@@ -58,6 +58,7 @@
         lanzaboote.nixosModules.lanzaboote
         { nixpkgs.overlays = [ nix4vscode.overlays.default hy3Overlay waybar.overlays.default rust-overlay.overlays.default ]; }
         pinRegistry
+        ./dotfiles.nix
         ./configuration.nix
         ./laptop.nix
       ];
@@ -70,6 +71,7 @@
         lanzaboote.nixosModules.lanzaboote
         { nixpkgs.overlays = [ nix4vscode.overlays.default hy3Overlay waybar.overlays.default rust-overlay.overlays.default ]; }
         pinRegistry
+        ./dotfiles.nix
         ./configuration.nix
         ./desktop.nix
       ];
