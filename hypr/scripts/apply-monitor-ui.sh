@@ -11,6 +11,7 @@ fi
 
 if [[ $# -gt 0 ]]; then
     printf '%s\n' "$1" >"$runtime/primary-identity"
+    : >"$runtime/monitor-change-pending"
 fi
 identity=$(cat "$runtime/primary-identity" 2>/dev/null || true)
 if [[ -z $identity ]]; then
@@ -19,6 +20,21 @@ if [[ -z $identity ]]; then
 fi
 monitors=$(hyprctl -j monitors all)
 active_outputs=$(jq -c '[.[] | select(.disabled == false) | .name] | sort' <<<"$monitors")
+monitor_state=$(jq -c '[.[] | select(.disabled == false) |
+    [.name, .width, .height, .refreshRate, .scale, .transform, .x, .y]] | sort' <<<"$monitors")
+
+# Wait until the full layout has been unchanged for two seconds before touching Waybar.
+observed=$(cat "$runtime/monitor-observed" 2>/dev/null || true)
+observed_at=${observed%%$'\n'*}
+observed_state=${observed#*$'\n'}
+now=$(date +%s%3N)
+if [[ $# -gt 0 || $observed_state != "$monitor_state" || ! $observed_at =~ ^[0-9]+$ ]]; then
+    printf '%s\n%s\n' "$now" "$monitor_state" >"$runtime/monitor-observed"
+    exit 0
+fi
+if (( now - observed_at < 2000 )); then
+    exit 0
+fi
 connector=$(jq -r --arg identity "$identity" '
     def hardware_key: [.make, .model, .serial] |
         map(select(. != null and . != "")) | join("|");
@@ -71,15 +87,17 @@ if update_file "$runtime/waybar.jsonc" "$temp"; then bar_changed=true; fi
 temp=$(mktemp "$runtime/style.css.XXXXXX")
 cp "$bar_style" "$temp"
 if update_file "$runtime/style.css" "$temp"; then bar_changed=true; fi
-target_state="v3 $connector $active_outputs"
+target_state="v4 $connector $monitor_state"
 target_changed=false
-if [[ $(cat "$runtime/waybar-target-state" 2>/dev/null || true) != "$target_state" ]]; then
+if [[ -f $runtime/monitor-change-pending ]] ||
+    [[ $(cat "$runtime/waybar-target-state" 2>/dev/null || true) != "$target_state" ]]; then
     target_changed=true
 fi
 
 record_waybar_update() {
     printf '%s\n' "$target_state" >"$runtime/waybar-target-state"
-    command rm -f "$runtime/waybar-retry-pending" "$runtime/waybar-active-outputs"
+    command rm -f "$runtime/waybar-retry-pending" "$runtime/waybar-active-outputs" \
+        "$runtime/monitor-change-pending"
     printf '%(%F %T)T Waybar %s: %s (active: %s)\n' \
         -1 "$1" "$connector" "$active_outputs" >>"$runtime/ui.log"
 }

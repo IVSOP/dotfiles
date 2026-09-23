@@ -69,4 +69,7 @@ by any other displays to keep on. The
 `monitor-session.sh` loop also retries theme selection when Rofi-Themer starts
 late, and it falls back to an available theme until the daemon responds.
 
+Waybar starts or restarts after the monitor layout has stayed unchanged for
+two seconds, avoiding a layer surface created during a mode change.
+
 These profiles disable any other active output after applying.
