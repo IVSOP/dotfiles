@@ -517,7 +517,7 @@ in
 
     # ─ Gaming ─
     lutris
-    wine
+    wineWow64Packages.stable
     protontricks
 
     # ─ Virtualisation ─
