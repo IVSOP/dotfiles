@@ -129,7 +129,7 @@ in
   # which chgrps /sys/class/backlight/*/brightness to the video group and
   # adds group-write — without it the XF86MonBrightness binds can't write
   # to the backlight (file stays root:root 644).
-  services.udev.packages = [ pkgs.brightnessctl ];
+  services.udev.packages = [ pkgs.brightnessctl pkgs.logitech-udev-rules ];
 
   # ── Removable media ──────────────────────────────────────────────────
   # Nemo's drive sidebar is gvfs talking to udisks2 over D-Bus. gvfs in
