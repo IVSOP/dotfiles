@@ -60,5 +60,5 @@ alias airdrop="sudo nixos-firewall-tool open tcp 53317 && \
 alias blue="sudo systemctl start bluetooth.service && blueman-manager"
 
 # network
-alias tup="sudo systemctl start tailscaled"
+alias tup="sudo systemctl start tailscaled && sudo tailscale up"
 alias tdown="sudo systemctl stop tailscaled"
