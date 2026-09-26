@@ -7,8 +7,9 @@ matches the Dell by make, model, and serial, even if its connector name changes.
 preferred mode, scale 1, rotated 90 degrees at `0x0`. The laptop panel is off,
 and the Dell remains the Waybar and Dunst display.
 `d2` is the desktop version of `ld2`: it omits the laptop panel and uses the
-Dell's preferred mode. `d2_1080` keeps that layout but requests 1920×1080 at
-330 Hz on the Dell. Both keep the Dell as the Waybar and Dunst display.
+Dell's preferred mode. `d2-1080` requests 1920×1080 at 330 Hz on the Dell,
+at `1440x920` with scale 1.5, vertically centered beside the portrait LG.
+Both keep the Dell as the Waybar and Dunst display.
 `ldefault` uses only `eDP-1` at its preferred mode and scale 1. Its UI
 selector is simply `eDP-1`. hyprmoncfg keeps the panel's make and model in
 the saved profile because its automatic matcher uses hardware identities.
@@ -38,7 +39,7 @@ Use these commands to switch profiles:
 ~/.config/hypr/scripts/monitor-profile.sh apply ld2
 ~/.config/hypr/scripts/monitor-profile.sh apply ldefault
 ~/.config/hypr/scripts/monitor-profile.sh apply d2
-~/.config/hypr/scripts/monitor-profile.sh apply d2_1080
+~/.config/hypr/scripts/monitor-profile.sh apply d2-1080
 ~/.config/hypr/scripts/monitor-profile.sh auto
 ~/.config/hypr/scripts/monitor-profile.sh mode
 ```
@@ -48,12 +49,16 @@ layout before reverting. The selected layout stays in place until the set of
 connected displays changes or you run `auto`. In automatic mode, `ld2` wins
 when the Dell and LG are connected; `ld1` wins with only the Dell;
 `ldefault` wins with neither external monitor connected.
-`d2` and `d2_1080` describe the same connected hardware, so automatic matching
-cannot distinguish them; select `d2_1080` manually when you want to force
+`d2` and `d2-1080` describe the same connected hardware, so automatic matching
+cannot distinguish them; select `d2-1080` manually when you want to force
 330 Hz. The mode must appear in `hyprctl monitors all` on the desktop after
 switching the Dell to FHD mode. `preferred` follows the mode the monitor reports
 as preferred, which may change with its OSD setting, but does not guarantee
 330 Hz.
+
+hyprmoncfg converts underscores to hyphens in profile filenames. The 1080p
+profile is therefore named `d2-1080`; the wrapper also accepts the old
+`apply d2_1080` spelling.
 
 hyprmoncfg 1.9.1's TUI marks `preferred` as "unsupported" because it compares
 the literal word against the monitor's numeric mode list. The generated

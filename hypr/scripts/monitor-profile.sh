@@ -23,6 +23,8 @@ case ${1:-} in
             exit 2
         fi
         name=$2
+        # Keep the old spelling working after adopting hyprmoncfg's filename slug.
+        if [[ $name == d2_1080 ]]; then name=d2-1080; fi
         profile_path="$config_dir/profiles/$name.json"
         if [[ ! -f $profile_path ]] ||
             ! jq -e --arg name "$name" '.name == $name' "$profile_path" >/dev/null; then
