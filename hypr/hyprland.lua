@@ -234,6 +234,7 @@ hl.window_rule({ match = { class = "steam" },    workspace = "5 silent" })
 
 hl.config({
     misc = {
+        enable_anr_dialog = false,
         force_default_wallpaper = 0,
         disable_hyprland_logo   = true,
         disable_splash_rendering = true,
