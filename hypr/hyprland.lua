@@ -1,36 +1,43 @@
 ------------------
 ---- PLUGINS -----
 
--- hy3 has to be loaded from here, not from an exec at hyprland.start: the
--- keybinds below read hl.plugin.hy3 while this file is still being evaluated,
--- so anything that loads later is too late.
+-- hy3 is installed directly on Nix and managed by hyprpm on Arch. Hyprland
+-- reloads the config after the plugin loads, so hy3 binds are added then.
 --
--- The two machines get the plugin from different package managers, and neither
--- path exists on the other box, so try both and take whichever is there:
+-- The two machines get the plugin from different package managers:
 --   nix  -> configuration.nix installs it with environment.etc."hypr/libhy3.so"
 --   arch -> hyprpm builds it into /var/cache/hyprpm/<user>/<repo>/<plugin>.so
 --           (hyprpm hardcodes that cache root; re-run `hyprpm update` after
 --            every hyprland upgrade or the build goes stale)
 local user = os.getenv("USER") or (os.getenv("HOME") or ""):match("([^/]+)/?$") or ""
 
-local hy3_paths = {
-    "/etc/hypr/libhy3.so",
-    "/var/cache/hyprpm/" .. user .. "/hy3/hy3.so",
-}
+local nix_hy3_path = "/etc/hypr/libhy3.so"
+local hyprpm_hy3_path = "/var/cache/hyprpm/" .. user .. "/hy3/hy3.so"
 
-local hy3_so
-for _, path in ipairs(hy3_paths) do
+local function exists(path)
     local f = io.open(path, "r")
     if f then
         f:close()
-        hy3_so = path
-        break
+        return true
     end
+    return false
 end
 
-if hy3_so then
-    hl.plugin.load(hy3_so)
+if exists(nix_hy3_path) then
+    hl.plugin.load(nix_hy3_path)
+elseif exists(hyprpm_hy3_path) then
+    -- hyprland.start does not fire again when safe mode's "Load config" is
+    -- pressed. config.reloaded does, and hyprpm can restore its enabled plugin.
+    hl.permission("/usr/bin/hyprpm", "plugin", "allow")
+    hl.on("config.reloaded", function()
+        if not hl.plugin.hy3 then
+            hl.exec_cmd("hyprpm reload")
+        end
+    end)
 end
+
+-- The first pass can run before hy3 is loaded.
+local hy3 = hl.plugin.hy3
 
 -----------------
 ---- MONITORS ----
@@ -102,7 +109,7 @@ hl.config({
         resize_on_border = false,
         allow_tearing = false,
 
-        layout = "hy3",
+        layout = hy3 and "hy3" or "dwindle",
     },
 
     decoration = {
@@ -181,6 +188,7 @@ hl.config({
 })
 
 -- hy3 plugin config
+if hy3 then
 hl.config({
     plugin = {
         hy3 = {
@@ -213,6 +221,7 @@ hl.config({
         },
     },
 })
+end
 
 --------------------------
 ---- WORKSPACE RULES ----
@@ -320,17 +329,14 @@ hl.bind(mainMod .. " + SHIFT + E", hl.dsp.exec_cmd("command -v hyprshutdown >/de
 hl.bind(mainMod .. " + D", hl.dsp.exec_cmd(menu))
 
 -- hy3 layout controls (i3-style)
--- A nil here kills the rest of this file, taking every keybind below it with
--- it, so say why instead of erroring on an index of nil.
-local hy3 = assert(hl.plugin.hy3, hy3_so
-    and ("hyprland refused " .. hy3_so .. " -- built against another hyprland version")
-    or  ("no hy3 plugin at " .. table.concat(hy3_paths, " or ")))
-hl.bind(mainMod .. " + W", hy3.make_group("tab"))
-hl.bind(mainMod .. " + E", hy3.change_group("opposite"))
-hl.bind(mainMod .. " + V", hy3.make_group("v"))
-hl.bind(mainMod .. " + G", hy3.make_group("h"))
-hl.bind(mainMod .. " + A", hy3.change_focus("raise"))   -- focus parent (select group)
-hl.bind(mainMod .. " + SHIFT + A", hy3.change_focus("lower"))  -- focus child
+if hy3 then
+    hl.bind(mainMod .. " + W", hy3.make_group("tab"))
+    hl.bind(mainMod .. " + E", hy3.change_group("opposite"))
+    hl.bind(mainMod .. " + V", hy3.make_group("v"))
+    hl.bind(mainMod .. " + G", hy3.make_group("h"))
+    hl.bind(mainMod .. " + A", hy3.change_focus("raise"))   -- focus parent (select group)
+    hl.bind(mainMod .. " + SHIFT + A", hy3.change_focus("lower"))  -- focus child
+end
 
 -- App launchers
 hl.bind(mainMod .. " + SHIFT + F1", hl.dsp.exec_cmd("firefox"))
@@ -348,24 +354,30 @@ hl.bind(mainMod .. " + Print", hl.dsp.exec_cmd("$HOME/.config/sway/scripts/scree
 hl.bind("Print", hl.dsp.exec_cmd("$HOME/.config/sway/scripts/screenshot.sh -m region"), { release = true })
 hl.bind(mainMod .. " + SHIFT + Print", hl.dsp.exec_cmd("$HOME/.config/sway/scripts/screenshot.sh -m output"), { release = true })
 
--- Move focus with mainMod + arrow keys (hy3-aware)
-hl.bind(mainMod .. " + left",  hy3.move_focus("l"))
-hl.bind(mainMod .. " + right", hy3.move_focus("r"))
-hl.bind(mainMod .. " + up",    hy3.move_focus("u"))
-hl.bind(mainMod .. " + down",  hy3.move_focus("d"))
+if hy3 then
+    -- Move focus with mainMod + arrow keys (hy3-aware)
+    hl.bind(mainMod .. " + left",  hy3.move_focus("l"))
+    hl.bind(mainMod .. " + right", hy3.move_focus("r"))
+    hl.bind(mainMod .. " + up",    hy3.move_focus("u"))
+    hl.bind(mainMod .. " + down",  hy3.move_focus("d"))
 
--- Move window with mainMod + SHIFT + arrow keys (hy3-aware)
-hl.bind(mainMod .. " + SHIFT + left",  hy3.move_window("l"))
-hl.bind(mainMod .. " + SHIFT + right", hy3.move_window("r"))
-hl.bind(mainMod .. " + SHIFT + up",    hy3.move_window("u"))
-hl.bind(mainMod .. " + SHIFT + down",  hy3.move_window("d"))
+    -- Move window with mainMod + SHIFT + arrow keys (hy3-aware)
+    hl.bind(mainMod .. " + SHIFT + left",  hy3.move_window("l"))
+    hl.bind(mainMod .. " + SHIFT + right", hy3.move_window("r"))
+    hl.bind(mainMod .. " + SHIFT + up",    hy3.move_window("u"))
+    hl.bind(mainMod .. " + SHIFT + down",  hy3.move_window("d"))
+end
 
 -- Switch workspaces with mainMod + [0-9]
 -- Move active window to a workspace with mainMod + SHIFT + [0-9]
 for i = 1, 10 do
     local key = i % 10 -- 10 maps to key 0
     hl.bind(mainMod .. " + " .. key,             hl.dsp.focus({ workspace = i}))
-    hl.bind(mainMod .. " + SHIFT + " .. key,     hy3.move_to_workspace(tostring(i), { follow = false }))
+    if hy3 then
+        hl.bind(mainMod .. " + SHIFT + " .. key, hy3.move_to_workspace(tostring(i), { follow = false }))
+    else
+        hl.bind(mainMod .. " + SHIFT + " .. key, hl.dsp.window.move({ workspace = i, follow = false }))
+    end
 end
 
 -- Go to / move window to the previous workspace
