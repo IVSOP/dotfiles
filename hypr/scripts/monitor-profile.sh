@@ -34,11 +34,13 @@ case ${1:-} in
 
         monitors=$(hyprctl -j monitors all)
         if ! jq -e --slurpfile profile "$profile_path" '
+            # hyprmoncfg normalizes saved match keys to lowercase.
             def hardware_key: [.make, .model, .serial] |
-                map(select(. != null and . != "")) | join("|");
+                map(select(. != null and . != "")) | join("|") | ascii_downcase;
             [.[] | hardware_key] as $connected |
             any($profile[0].outputs[];
-                .enabled and (.match_key as $key | $connected | index($key) != null))
+                .enabled and ((.match_key | ascii_downcase) as $key |
+                    $connected | index($key) != null))
         ' <<<"$monitors" >/dev/null; then
             printf 'No enabled output from profile %s is connected\n' "$name" >&2
             exit 1

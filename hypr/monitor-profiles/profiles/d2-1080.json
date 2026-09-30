@@ -1,27 +1,12 @@
 {
   "name": "d2-1080",
   "created_at": "2026-09-23T11:00:03Z",
-  "updated_at": "2026-09-23T11:00:03Z",
+  "updated_at": "2026-09-30T22:10:38.888829115Z",
   "outputs": [
     {
-      "key": "LG Electronics|LG ULTRAGEAR|306MAGP7MC39",
-      "match_key": "LG Electronics|LG ULTRAGEAR|306MAGP7MC39",
-      "description": "LG Electronics LG ULTRAGEAR 306MAGP7MC39",
-      "make": "LG Electronics",
-      "model": "LG ULTRAGEAR",
-      "serial": "306MAGP7MC39",
-      "enabled": true,
-      "mode": "preferred",
-      "width": 2560,
-      "height": 1440,
-      "x": 0,
-      "y": 0,
-      "scale": 1,
-      "transform": 1
-    },
-    {
-      "key": "Dell Inc.|AW2725QF|B49QC34",
-      "match_key": "Dell Inc.|AW2725QF|B49QC34",
+      "key": "dell inc.|aw2725qf|b49qc34",
+      "match_key": "dell inc.|aw2725qf|b49qc34",
+      "name": "",
       "description": "Dell Inc. AW2725QF B49QC34",
       "make": "Dell Inc.",
       "model": "AW2725QF",
@@ -33,8 +18,34 @@
       "refresh": 330,
       "x": 1440,
       "y": 920,
-      "scale": 1.5
+      "scale": 1.0,
+      "transform": 0,
+      "sdr_min_luminance": 0,
+      "min_luminance": 0
+    },
+    {
+      "key": "lg electronics|lg ultragear|306magp7mc39",
+      "match_key": "lg electronics|lg ultragear|306magp7mc39",
+      "name": "",
+      "description": "LG Electronics LG ULTRAGEAR 306MAGP7MC39",
+      "make": "LG Electronics",
+      "model": "LG ULTRAGEAR",
+      "serial": "306MAGP7MC39",
+      "enabled": true,
+      "mode": "preferred",
+      "width": 2560,
+      "height": 1440,
+      "refresh": 0,
+      "x": 0,
+      "y": 0,
+      "scale": 1,
+      "transform": 1,
+      "sdr_min_luminance": 0,
+      "min_luminance": 0
     }
   ],
+  "workspaces": {
+    "enabled": false
+  },
   "exec": "~/.config/hypr/scripts/apply-exclusive-monitor.sh 'Dell Inc.|AW2725QF|B49QC34' 'LG Electronics|LG ULTRAGEAR|306MAGP7MC39'"
 }
