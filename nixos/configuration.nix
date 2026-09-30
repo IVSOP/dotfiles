@@ -473,26 +473,6 @@ in
     wayland
     libxkbcommon
 
-    # ─ Waybar build deps ─
-    wayland-scanner
-    wayland-protocols
-    gobject-introspection
-    gtkmm3
-    gtk-layer-shell
-    gtk3
-    glib
-    glibmm
-    cairomm_1_0
-    pangomm_1_4
-    libsigcxx
-    jsoncpp
-    fmt
-    spdlog
-    libnl
-    libpulseaudio
-    upower
-    libevdev
-
     # ─ Media ─
     ffmpeg-full
     libavif                        # avifenc, the encoder sway/scripts/screenshot*.sh pipe into
