@@ -43,6 +43,17 @@
       };
     };
 
+    serverSource = builtins.path {
+      path = ./.;
+      name = "rock-server-configuration";
+      filter = path: type: builtins.baseNameOf path != ".git";
+    };
+    server = nixpkgs.lib.nixosSystem {
+      system = "aarch64-linux";
+      specialArgs = { inherit serverSource; };
+      modules = [ ./radxa/server-image.nix ];
+    };
+
     hy3Overlay = final: prev: {
       hy3 = final.callPackage "${hy3}/default.nix" {
         inherit (final) hyprland;
@@ -51,6 +62,10 @@
     };
 
   in {
+    nixosConfigurations.rock-server = server;
+    packages.aarch64-linux.server = server.config.system.build.toplevel;
+    packages.aarch64-linux.server-image = server.config.system.build.sdImage;
+    # x86 builders can select the image too, using ARM binfmt or a remote builder.
     nixosConfigurations.ivX13 = nixpkgs.lib.nixosSystem {
       inherit system;
       specialArgs = { inherit nixpkgs-anchor; };
@@ -77,9 +92,12 @@
       ];
     };
 
-    packages.${system}.iso = (nixpkgs.lib.nixosSystem {
-      inherit system;
-      modules = [ ./iso.nix ];
-    }).config.system.build.isoImage;
+    packages.${system} = {
+      server-image = server.config.system.build.sdImage;
+      iso = (nixpkgs.lib.nixosSystem {
+        inherit system;
+        modules = [ ./iso.nix ];
+      }).config.system.build.isoImage;
+    };
   };
 }
