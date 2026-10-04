@@ -1,7 +1,13 @@
 { config, lib, pkgs, modulesPath, serverSource, ... }:
 
 let
-  firmware = pkgs.ubootRock4CPlus;
+  firmware = pkgs.ubootRock4CPlus.overrideAttrs (old: {
+    # Backport nixpkgs 86b713c6: dtc 1.8 rejects binman's @...-SEQ templates.
+    postPatch = builtins.replaceStrings
+      [ ''--replace-fail -Wno-graph_child_address ""'' ]
+      [ ''--replace-fail -Wno-graph_child_address -Eno-node_name_not_empty'' ]
+      old.postPatch;
+  });
 in {
   imports = [
     ./rock-server.nix

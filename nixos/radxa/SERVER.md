@@ -30,8 +30,9 @@ An x86 Linux build host needs ARM64 binfmt/QEMU or a remote ARM64 builder for AR
 build steps. On NixOS, use `boot.binfmt.emulatedSystems = [ "aarch64-linux" ];`.
 On other Linux hosts, register an AArch64 QEMU binfmt interpreter and allow
 `aarch64-linux` in Nix's `extra-platforms`. An ARM64 Linux host can build natively.
-Installing Nix alone does not enable ARM execution. The GPIO compatibility kernel
-builds on this host and can take a while initially; later builds reuse it.
+Installing Nix alone does not enable ARM execution. The x86 image target builds
+the GPIO compatibility kernel with a native x86-to-ARM64 compiler. The ARM64
+image target builds its kernel natively. Later builds reuse the kernel.
 The separate `~/nix/build-iso.sh` builds your PC installer ISO.
 
 ## Your manual steps

@@ -48,10 +48,18 @@
       name = "rock-server-configuration";
       filter = path: type: builtins.baseNameOf path != ".git";
     };
-    server = nixpkgs.lib.nixosSystem {
+    rock4Config = nixpkgs.lib.nixosSystem {
       system = "aarch64-linux";
       specialArgs = { inherit serverSource; };
       modules = [ ./radxa/server-image.nix ];
+    };
+    rock4ConfigForX86Build = rock4Config.extendModules {
+      modules = [
+        ({ lib, pkgs, ... }: {
+          boot.kernelPackages = lib.mkForce (pkgs.linuxPackagesFor
+            nixpkgs.legacyPackages.${system}.pkgsCross.aarch64-multiplatform.linux);
+        })
+      ];
     };
 
     hy3Overlay = final: prev: {
@@ -62,9 +70,9 @@
     };
 
   in {
-    nixosConfigurations.rock-server = server;
-    packages.aarch64-linux.server = server.config.system.build.toplevel;
-    packages.aarch64-linux.server-image = server.config.system.build.sdImage;
+    nixosConfigurations.rock-server = rock4Config;
+    packages.aarch64-linux.server = rock4Config.config.system.build.toplevel;
+    packages.aarch64-linux.server-image = rock4Config.config.system.build.sdImage;
     # x86 builders can select the image too, using ARM binfmt or a remote builder.
     nixosConfigurations.ivX13 = nixpkgs.lib.nixosSystem {
       inherit system;
@@ -93,7 +101,7 @@
     };
 
     packages.${system} = {
-      server-image = server.config.system.build.sdImage;
+      server-image = rock4ConfigForX86Build.config.system.build.sdImage;
       iso = (nixpkgs.lib.nixosSystem {
         inherit system;
         modules = [ ./iso.nix ];

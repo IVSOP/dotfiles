@@ -20,7 +20,7 @@
     # Include the USB controllers and PHYs when installing onto a USB card reader.
     "phy_rockchip_inno_usb2" "phy_rockchip_typec"
     "dwc3" "dwc3_of_simple" "usb_storage" "uas"
-    "xhci_pci" "xhci_platform" "ehci_platform" "ohci_platform"
+    "xhci_pci" "xhci-plat-hcd" "ehci_platform" "ohci_platform"
   ];
 
   # gpio-cdev 0.6 in the Rust counter uses character-device API v1.

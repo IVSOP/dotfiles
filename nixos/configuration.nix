@@ -97,6 +97,8 @@ in
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nixpkgs.config.allowUnfree = true;
 
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+
   # ── Graphics (VM) ────────────────────────────────────────────────────
   hardware.graphics.enable = true;
 
