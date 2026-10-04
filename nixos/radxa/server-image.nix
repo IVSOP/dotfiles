@@ -20,8 +20,8 @@ in {
   # Bootstrap through a local root login, then set both passwords manually.
   # mutableUsers preserves passwd changes; server.nix forbids root/password SSH.
   users.users.root.initialHashedPassword = "";
-  users.users.ivsopi3.initialHashedPassword = "!";
-  services.getty.helpLine = "Initial setup: log in locally as root (no password), run passwd root and passwd ivsopi3, then log in as ivsopi3 and run sudo tailscale up.";
+  users.users.radxa.initialHashedPassword = "!";
+  services.getty.helpLine = "Initial setup: log in locally as root (no password), run passwd root and passwd radxa, then log in as radxa and run sudo tailscale up.";
 
   sdImage = {
     rootVolumeLabel = "ROCK_SERVER";

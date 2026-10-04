@@ -158,7 +158,7 @@ this workload would need testing. MPP video acceleration is a separate concern.
 Sources: [FFmpeg hardware acceleration options](https://ffmpeg.org/ffmpeg.html#Advanced-Video-options),
 [ffmpeg-rockchip requirements and filters](https://github.com/nyanmisaka/ffmpeg-rockchip).
 
-`ivsopi3` has the standard `lp` and `dialout` groups for kernel printer and serial
+`radxa` has the standard `lp` and `dialout` groups for kernel printer and serial
 nodes. No CUPS daemon, printer driver suite, or FFmpeg package is installed yet;
 the app is transferred separately. Some thermal printers accept ESC/POS directly.
 A model-specific CUPS driver, libusb permissions, or serial settings may be needed.

@@ -6,7 +6,7 @@
   time.timeZone = "Europe/Lisbon";
 
   users.mutableUsers = true; # passwd changes survive rebuilds and reboots.
-  users.users.ivsopi3 = {
+  users.users.radxa = {
     isNormalUser = true;
     extraGroups = [
       "wheel" "docker" "networkmanager" "lp" "dialout"
@@ -82,7 +82,7 @@
   };
 
   environment.defaultPackages = [ ];
-  environment.systemPackages = [ pkgs.docker-compose ];
+  environment.systemPackages = [ pkgs.docker-compose pkgs.rsync ];
   documentation.enable = false;
   programs.command-not-found.enable = false;
   services.journald.settings.Journal = {

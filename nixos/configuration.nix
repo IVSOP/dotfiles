@@ -5,6 +5,7 @@ let
   rustTargets = [
     "wasm32-unknown-unknown"   # wasm-bindgen / wasm-pack / wasm-server-runner
     "aarch64-linux-android"    # real ARM devices
+    "aarch64-unknown-linux-musl" # ROCK 4C+ static Linux binaries
     "x86_64-linux-android"     # emulator
     "x86_64-pc-windows-gnu"    # cross-linked via mingw-w64
   ];

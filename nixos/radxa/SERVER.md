@@ -2,10 +2,10 @@
 
 `server.nix` contains the server policy; `rock-4c-plus.nix` contains board support;
 `rock-server.nix` combines them. No workstation configuration, desktop, or development
-packages are imported. The username is `ivsopi3`, hostname is `rock-server`, and the
+packages are imported. The username is `radxa`, hostname is `rock-server`, and the
 six public keys in `../trusted-ssh-keys.nix` are shared with both existing computers.
 `radxa-defaults.nix` ports Radxa's applicable system and hardware configuration;
-`rock-wireless-firmware.nix` packages only the ROCK's AP6256 wireless firmware.
+`rock-wireless-firmware.nix` packages the ROCK's Broadcom Wi-Fi and Bluetooth firmware.
 Add any further trusted public keys there before building. Passwords and Tailscale
 credentials are set on the machine and survive rebuilds.
 
@@ -35,6 +35,46 @@ the GPIO compatibility kernel with a native x86-to-ARM64 compiler. The ARM64
 image target builds its kernel natively. Later builds reuse the kernel.
 The separate `~/nix/build-iso.sh` builds your PC installer ISO.
 
+## SSH keys
+
+For SSH **into the ROCK**, the connecting laptop or desktop needs a private key
+whose public key is listed in `../trusted-ssh-keys.nix`. Reuse an existing matching
+keypair; the image already authorizes the six listed public keys.
+
+If the connecting computer has no suitable keypair, run these commands **on that
+computer**, choosing an unused filename:
+
+```sh
+install -d -m 700 ~/.ssh
+ssh-keygen -t ed25519 -f ~/.ssh/rock4_ed25519 -C "radxa-to-rock4"
+cat ~/.ssh/rock4_ed25519.pub
+```
+
+Add the public key line to `../trusted-ssh-keys.nix`, then build the image or
+build and deploy an updated configuration for an already installed ROCK (see the
+later update instructions). Keep the private key on the connecting computer.
+Connect over Tailscale with:
+
+```sh
+ssh -i ~/.ssh/rock4_ed25519 radxa@TAILSCALE_IP
+```
+
+The ROCK stores authorized keys in `/etc/ssh/authorized_keys.d/radxa`.
+`/home/radxa/.ssh` does not need to exist for incoming SSH, and this configuration
+does not read `~/.ssh/authorized_keys`. SSH host keys identifying the ROCK are
+created automatically under `/etc/ssh`.
+
+If the ROCK itself needs to initiate SSH connections, such as accessing a private
+Git repository, log in on the ROCK as `radxa` and run:
+
+```sh
+ssh-keygen -t ed25519 -C "radxa@rock4"
+```
+
+Accept the default filename to create `~/.ssh/id_ed25519` and its `.pub` file.
+Authorize that public key on the destination service or computer. This outgoing
+keypair is optional and is separate from the keys used to log into the ROCK.
+
 ## Your manual steps
 
 1. **Flash the final SD card.** Check the device name with `lsblk`. For example:
@@ -54,18 +94,18 @@ The separate `~/nix/build-iso.sh` builds your PC installer ISO.
 
    ```sh
    passwd root
-   passwd ivsopi3
+   passwd radxa
    exit
    ```
 
    The first password protects local root recovery; the second is your console
-   and sudo password. `ivsopi3` starts password-locked until you set it. There
+   and sudo password. `radxa` starts password-locked until you set it. There
    is no guided password service or autologin. Password changes survive reboots
    and rebuilds because `users.mutableUsers` is enabled. Root/password SSH is
    disabled, so the initial passwordless root access is local-console-only.
 
-3. **Tailscale login.** Log in as `ivsopi3`, run `sudo tailscale up`, and follow
-   the login URL. Then run `tailscale ip -4` and SSH to `ivsopi3@TAILSCALE_IP` using
+3. **Tailscale login.** Log in as `radxa`, run `sudo tailscale up`, and follow
+   the login URL. Then run `tailscale ip -4` and SSH to `radxa@TAILSCALE_IP` using
    a trusted key. Tailscale reconnects after reboot; tailnet access policy and
    credential expiry are managed separately in your Tailscale account.
 
@@ -78,6 +118,24 @@ NetworkManager handles Ethernet DHCP. Optional Wi-Fi setup is
 reboots without putting its password in the Nix store. Bluetooth starts too.
 SSH is blocked on the LAN; root SSH and password SSH are disabled. After password
 setup and Tailscale login, remove the display and keyboard if desired.
+
+## Wi-Fi detection
+
+Before connecting, check `nmcli device status`. A Wi-Fi interface should appear;
+`nmcli radio wifi on` enables the radio but cannot fix a failed driver probe.
+For a missing interface, inspect:
+
+```sh
+sudo journalctl -k -b --no-pager | grep -Ei 'brcm|firmware|mmc|sdio|rfkill'
+ls -l /sys/bus/sdio/devices/
+```
+
+The tested board identifies its Wi-Fi chip as BCM4345/6. Mainline Linux requests
+`brcm/brcmfmac43455-sdio.bin`, its NVRAM `.txt`, and its `.clm_blob`; Bluetooth
+requests `brcm/BCM4345C0.hcd`. The small firmware package includes these alongside
+the existing 43456/C5 files. A failed generic firmware request with error `-2`
+means a file is missing. A failed board-specific request alone can be harmless
+when the driver successfully falls back to the generic filename.
 
 ## Network and GPIO behavior
 
@@ -96,7 +154,7 @@ custom bridge names need corresponding changes to the forwarding rules. Avoid
 macvlan/ipvlan networks if you expect this host firewall to protect the containers,
 because those network types can bypass the host's network stack.
 
-`gpio` group membership gives `ivsopi3` access to `/dev/gpiochip*`; no sudo is needed
+`gpio` group membership gives `radxa` access to `/dev/gpiochip*`; no sudo is needed
 for the Rust counter after login. The board kernel explicitly enables
 `CONFIG_GPIO_CDEV` and `CONFIG_GPIO_CDEV_V1`, which `gpio-cdev` 0.6 needs. The existing
 physical pins and bank-local offsets stay the same; chip device numbering may
@@ -130,7 +188,7 @@ and remote sudo. Do not reinstall/reformat for routine updates: `/var/lib/docker
 
 ## Printer and QR reader
 
-`ivsopi3` is also in `lp` and `dialout` for printer/serial device access. No printing
+`radxa` is also in `lp` and `dialout` for printer/serial device access. No printing
 daemon or printer suite is installed. Once the models are known, choose direct
 ESC/POS, CUPS, serial, or libusb access and add any device-specific udev rule.
 The app's Compose file will need the relevant device paths/groups passed through.
