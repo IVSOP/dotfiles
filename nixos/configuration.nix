@@ -79,6 +79,7 @@ in
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
   # ── System tuning ────────────────────────────────────────────────────
+  boot.tmp.useTmpfs = true;
   boot.kernel.sysctl."vm.swappiness" = 1;
   services.journald.settings.Journal.SystemMaxUse = "100M";
 
