@@ -1,10 +1,12 @@
 [Added Associations]
+image/avif=nemo-mpv-image.desktop;
 image/png=nemo-mpv-image.desktop;
 video/x-matroska=nemo-mpv-video.desktop;
 video/mp4=nemo-mpv-video.desktop;
 image/jpeg=nemo-mpv-image.desktop;
 
 [Default Applications]
+image/avif=nemo-mpv-image.desktop;
 x-scheme-handler/claude-cli=claude-code-url-handler.desktop
 x-scheme-handler/http=firefox.desktop
 x-scheme-handler/https=firefox.desktop

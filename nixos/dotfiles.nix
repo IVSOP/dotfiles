@@ -68,13 +68,17 @@ let
   # Anything that doesn't follow the patterns above.
   extraLinks = {
     "${home}/.config/hyprmoncfg" = "${dots}/hypr/monitor-profiles";
+    "${home}/.local/share/applications/nemo-mpv-image.desktop" = "${dots}/nemo/nemo-mpv-image.desktop";
   };
 in
 {
   systemd.tmpfiles.rules =
     # Parents of the nested links, in case the directory doesn't exist yet on
     # a fresh machine. `d` leaves an existing directory and its contents alone.
-    [ (dir "${home}/.ssh" "0700") ]
+    [
+      (dir "${home}/.ssh" "0700")
+      (dir "${home}/.local/share/applications" "0755")
+    ]
     ++ map (n: link "${home}/.config/${n}" "${dots}/${n}") configLinks
     ++ map (n: link "${home}/${n}" "${dots}/home_dotfiles/${n}") (homeLinks ++ nestedLinks)
     ++ builtins.attrValues (builtins.mapAttrs link extraLinks);
