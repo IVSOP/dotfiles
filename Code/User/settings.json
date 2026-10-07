@@ -148,7 +148,11 @@
     "editor.bracketPairColorization.enabled": false
     },
     "workbench.colorTheme": "Iana",
-    "extensions.autoUpdate": false,
+    "extensions.autoUpdate": "off",
     "extensions.autoCheckUpdates": false,
-    "scm.defaultViewMode": "tree"
+    "scm.defaultViewMode": "tree",
+    "workbench.experimental.modernUI": false,
+    "git.decorations.enabled": true,
+    "explorer.decorations.colors": true,
+    "workbench.editor.decorations.colors": true
 }
