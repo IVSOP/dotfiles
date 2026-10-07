@@ -28,15 +28,8 @@ export LANGUAGE=en_US.UTF-8
 export _JAVA_OPTIONS='-Dawt.useSystemAAFontSettings=on'
 export EDITOR=nvim
 
-# print return code in red if it is an error code
-function statstring {
-    RC=$?
-    if [ "0" != $RC ]; then
-        printf "[$RC] "
-    fi
-}
-
-PROMPT='%B%F{red}$(statstring)%f%F{green}%n@%m%f %F{blue}%~%f $%b '
+# Print nonzero return codes in red on their own line above the prompt.
+PROMPT=$'%B%(?..%F{red}[%?]%f\n)%F{green}%n@%m%f %F{blue}%~%f $%b '
 
 export ANDROID_HOME=/opt/android-sdk
 export PATH=$PATH:$ANDROID_HOME/tools
