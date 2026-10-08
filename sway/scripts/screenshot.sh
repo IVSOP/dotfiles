@@ -40,7 +40,7 @@ satty --filename "$raw" \
     --early-exit \
     --actions-on-enter save-to-clipboard \
     --save-after-copy \
-    --actions-on-escape "save-to-clipboard,save-to-file" \
+    --actions-on-escape exit \
     --output-filename "$annotated" \
     --copy-command 'wl-copy'
 
