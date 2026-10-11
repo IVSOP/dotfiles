@@ -413,6 +413,7 @@ in
     nodejs
     yarn                           # anchor test runner shells out to yarn
     python3
+    postgresql
     typst
     fastfetch
     gdb
