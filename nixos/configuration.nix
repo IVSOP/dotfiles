@@ -636,7 +636,7 @@ in
     "L+ /usr/bin/bash - - - - ${pkgs.bashInteractive}/bin/bash"
   ];
 
-  # ── Nemo "Open in Terminal" ──────────────────────────────────────────
+  # ── Nemo defaults ────────────────────────────────────────────────────
   # Nemo reads org.cinnamon.desktop.default-applications.terminal, whose
   # schema default is gnome-terminal (not installed) — so the menu item
   # silently did nothing.
@@ -644,6 +644,7 @@ in
     enable = true;
     profiles.user.databases = [{
       settings."org/cinnamon/desktop/applications/terminal".exec = "alacritty";
+      settings."org/nemo/preferences".show-hidden-files = true;
     }];
   };
 }
