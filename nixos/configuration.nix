@@ -64,7 +64,7 @@ let
 in
 
 {
-  imports = [ ./solana.nix ./dns-tools.nix ./obsidian.nix ];
+  imports = [ ./solana.nix ./obsidian.nix ];
 
   # Consumed by solana.nix's rustup shim.
   _module.args = { inherit rustDefault rustNightly; };
@@ -519,6 +519,8 @@ in
     backrest
 
     # ─ Network tools ─
+    dnsutils # dig, nslookup, host, nsupdate
+    doggo    # Modern DNS client with DoH and DoT support
     somo
     cloudflare-warp
     tailscale

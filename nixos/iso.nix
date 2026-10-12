@@ -3,7 +3,6 @@
 {
   imports = [
     "${modulesPath}/installer/cd-dvd/installation-cd-minimal.nix"
-    ./dns-tools.nix
   ];
 
   nixpkgs.config.allowUnfree = true;  # claude-code
@@ -30,6 +29,8 @@
     codex
 
     # ─ Network ─
+    dnsutils # dig, nslookup, host, nsupdate
+    doggo    # Modern DNS client with DoH and DoT support
     curl
     wget
     rsync
