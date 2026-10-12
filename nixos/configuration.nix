@@ -64,7 +64,7 @@ let
 in
 
 {
-  imports = [ ./solana.nix ./dns-tools.nix ];
+  imports = [ ./solana.nix ./dns-tools.nix ./obsidian.nix ];
 
   # Consumed by solana.nix's rustup shim.
   _module.args = { inherit rustDefault rustNightly; };
@@ -490,6 +490,7 @@ in
     # ─ Apps ─
     discord
     obs-studio
+    obsidian
     pinta
     inkscape
     kdePackages.kdenlive
