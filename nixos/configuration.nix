@@ -64,7 +64,7 @@ let
 in
 
 {
-  imports = [ ./solana.nix ];
+  imports = [ ./solana.nix ./dns-tools.nix ];
 
   # Consumed by solana.nix's rustup shim.
   _module.args = { inherit rustDefault rustNightly; };

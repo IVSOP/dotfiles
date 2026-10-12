@@ -1,6 +1,8 @@
 { lib, pkgs, ... }:
 
 {
+  imports = [ ../dns-tools.nix ];
+
   # Standalone server policy: deliberately does not import configuration.nix.
   networking.hostName = lib.mkDefault "rock-server";
   time.timeZone = "Europe/Lisbon";

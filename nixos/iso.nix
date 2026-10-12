@@ -3,6 +3,7 @@
 {
   imports = [
     "${modulesPath}/installer/cd-dvd/installation-cd-minimal.nix"
+    ./dns-tools.nix
   ];
 
   nixpkgs.config.allowUnfree = true;  # claude-code
