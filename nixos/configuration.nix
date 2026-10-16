@@ -381,6 +381,7 @@ in
 
     # ─ Wayland clipboard / utils ─
     wl-clipboard
+    wl-clip-persist
     brightnessctl
     playerctl
     libnotify
