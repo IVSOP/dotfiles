@@ -489,6 +489,7 @@ in
     qpwgraph
 
     # ─ Apps ─
+    telegram-desktop
     discord
     obs-studio
     obsidian
