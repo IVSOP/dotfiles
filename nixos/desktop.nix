@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 
 {
-  imports = [ ./hardware-configuration.nix ];
+  imports = [ ./desktop-hardware-configuration.nix ];
 
   # ── Machine identity ────────────────────────────────────────────────
   networking.hostName = "IVPC";
@@ -11,7 +11,8 @@
   users.users.ivsopi3.openssh.authorizedKeys.keys = import ./trusted-ssh-keys.nix;
 
   # ── Disk ─────────────────────────────────────────────────────────────
-  # TODO: set EFI mount point and LUKS devices when installing
+  # Replace desktop-hardware-configuration.nix with this machine's generated
+  # hardware configuration when installing. Set any LUKS devices here.
   # boot.loader.efi.efiSysMountPoint = "/boot/efi";
   # boot.initrd.luks.devices."crypt_0" = {
   #   device = "/dev/disk/by-uuid/REPLACE-ME";

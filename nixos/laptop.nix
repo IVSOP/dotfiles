@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 
 {
-  imports = [ ./hardware-configuration.nix ];
+  imports = [ ./laptop-hardware-configuration.nix ];
 
   # ── Machine identity ────────────────────────────────────────────────
   networking.hostName = "ivX13";
