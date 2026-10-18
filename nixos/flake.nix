@@ -71,6 +71,16 @@
 
   in {
     nixosConfigurations.rock-server = rock4Config;
+    nixosConfigurations.server = nixpkgs.lib.nixosSystem {
+      inherit system;
+      specialArgs = { inherit nixpkgs-anchor; };
+      modules = [
+        { nixpkgs.overlays = [ nix4vscode.overlays.default rust-overlay.overlays.default ]; }
+        pinRegistry
+        ./server.nix
+        ./server-hardware-configuration.nix
+      ];
+    };
     packages.aarch64-linux.server = rock4Config.config.system.build.toplevel;
     packages.aarch64-linux.server-image = rock4Config.config.system.build.sdImage;
     # x86 builders can select the image too, using ARM binfmt or a remote builder.

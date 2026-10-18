@@ -1,73 +1,7 @@
-{ config, lib, pkgs, nixpkgs-anchor, ... }:
-
-let
-  # Cross-compilation targets, installed for both toolchains.
-  rustTargets = [
-    "wasm32-unknown-unknown"   # wasm-bindgen / wasm-pack / wasm-server-runner
-    "aarch64-linux-android"    # real ARM devices
-    "aarch64-unknown-linux-musl" # ROCK 4C+ static Linux binaries
-    "x86_64-linux-android"     # emulator
-    "x86_64-pc-windows-gnu"    # cross-linked via mingw-w64
-  ];
-
-  # Stable toolchain, minus rustfmt (nightly supplies that below).
-  rustStable = pkgs.rust-bin.stable.latest.minimal.override {
-    extensions = [ "rust-src" "rust-analyzer" "clippy" ];
-    targets = rustTargets;
-  };
-
-  # Latest nightly that actually has all these components built.
-  rustNightly = pkgs.rust-bin.selectLatestNightlyWith (toolchain:
-    toolchain.default.override {
-      extensions = [ "rust-src" "rustfmt" "clippy" ];
-      targets = rustTargets;
-    });
-
-  # Native libraries C-sys crates need. Bevy (alsa/udev at build time, plus
-  # vulkan/wayland/xkbcommon/X11 dlopened at runtime) is the driving case.
-  rustNativeDeps = with pkgs; [
-    alsa-lib
-    systemdLibs      # libudev
-    openssl
-    libxkbcommon
-    wayland
-    vulkan-loader
-    libGL            # libglvnd: gl.pc/egl.pc/glesv2.pc + libGL.so.1, libEGL.so.1
-    libGLU
-    libx11
-    libxcursor
-    libxi
-    libxrandr
-  ];
-
-  # What lands on PATH by default: stable, with nightly rustfmt/cargo-fmt
-  # so `cargo fmt` accepts nightly-only rustfmt.toml options.
-  rustDefault = pkgs.runCommand "rust-default" { } ''
-    mkdir -p $out/bin
-    ln -s ${rustStable}/bin/* $out/bin/
-    ln -sf ${rustNightly}/bin/rustfmt   $out/bin/rustfmt
-    ln -sf ${rustNightly}/bin/cargo-fmt $out/bin/cargo-fmt
-  '';
-
-  # Full nightly toolchain as cargo-nightly, rustc-nightly, ...
-  # PATH is prefixed so nightly cargo finds nightly rustc/rustfmt, not stable.
-  rustNightlySuffixed = pkgs.runCommand "rust-nightly-suffixed"
-    { nativeBuildInputs = [ pkgs.makeWrapper ]; } ''
-    mkdir -p $out/bin
-    for bin in ${rustNightly}/bin/*; do
-      name=$(basename "$bin")
-      makeWrapper "$bin" "$out/bin/$name-nightly" \
-        --prefix PATH : ${rustNightly}/bin
-    done
-  '';
-
-in
+{ lib, pkgs, ... }:
 
 {
-  imports = [ ./solana.nix ./obsidian.nix ];
-
-  # Consumed by solana.nix's rustup shim.
-  _module.args = { inherit rustDefault rustNightly; };
+  imports = [ ./common.nix ./development.nix ./obsidian.nix ];
 
   # ── Boot (lanzaboote / secure boot) ───────────────────────────────────
   boot.loader.systemd-boot.enable = lib.mkForce false;
@@ -76,12 +10,6 @@ in
     enable = true;
     pkiBundle = "/var/lib/sbctl";
   };
-  boot.kernelPackages = pkgs.linuxPackages_latest;
-
-  # ── System tuning ────────────────────────────────────────────────────
-  boot.tmp.useTmpfs = true;
-  boot.kernel.sysctl."vm.swappiness" = 1;
-  services.journald.settings.Journal.SystemMaxUse = "100M";
 
   # ── Networking ────────────────────────────────────────────────────────
   networking.networkmanager.enable = true;
@@ -90,16 +18,6 @@ in
   # ── Power button ─────────────────────────────────────────────────────
   # systemd's HandlePowerKey default is "poweroff"; suspend instead.
   services.logind.settings.Login.HandlePowerKey = "suspend";
-
-  # ── Time / Locale ────────────────────────────────────────────────────
-  time.timeZone = "Europe/Lisbon";
-  i18n.defaultLocale = "en_US.UTF-8";
-
-  # ── Nix settings ─────────────────────────────────────────────────────
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  nixpkgs.config.allowUnfree = true;
-
-  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
   # ── Graphics (VM) ────────────────────────────────────────────────────
   hardware.graphics.enable = true;
@@ -164,13 +82,6 @@ in
   # key dropped into a home dir by hand no longer grants access.
   services.openssh.authorizedKeysInHomedir = false;
 
-  # ssh-agent as a systemd user service, socket at $XDG_RUNTIME_DIR/ssh-agent.
-  # Replaces the hand-rolled ssh-agent block that used to live in .zshrc:
-  # this starts before the session, so graphical launches (hyprland keybinds,
-  # .desktop entries) get SSH_AUTH_SOCK too, not just interactive shells.
-  programs.ssh.startAgent = true;
-  programs.ssh.agentTimeout = "3h";
-
   # ── Docker ───────────────────────────────────────────────────────────
   virtualisation.docker.enable = true;
   # Fully manual: `systemctl start docker`. enableOnBoot drops dockerd from
@@ -231,14 +142,6 @@ in
     extraGroups = [ "wheel" "networkmanager" "video" "audio" "docker" "libvirtd" ];
   };
 
-  # ── Shell ─────────────────────────────────────────────────────────────
-  programs.zsh.enable = true;
-
-  # ── Foreign binaries (nix-ld) ─────────────────────────────────────────
-  # Lets prebuilt, non-Nix binaries run: the Android NDK toolchain that
-  # Android Studio's SDK Manager downloads into ~/Android/Sdk, pip wheels, etc.
-  programs.nix-ld.enable = true;
-
   # ── GTK / Theming ────────────────────────────────────────────────────
   environment.variables = {
     GTK_THEME = "Adwaita:dark";
@@ -248,45 +151,10 @@ in
     MOZ_ENABLE_WAYLAND = "1";
     GDK_BACKEND = "wayland,x11";
     XCURSOR_SIZE = "24";
-    EDITOR = "nvim";
   };
 
   # ── Cursor ────────────────────────────────────────────────────────────
   environment.sessionVariables.XCURSOR_THEME = "Adwaita";
-
-  # ── Rust ──────────────────────────────────────────────────────────────
-  # Linker + libpthread search path for the x86_64-pc-windows-gnu target.
-  environment.variables.CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER =
-    "${pkgs.pkgsCross.mingwW64.stdenv.cc}/bin/x86_64-w64-mingw32-gcc";
-  environment.variables.CARGO_TARGET_X86_64_PC_WINDOWS_GNU_RUSTFLAGS =
-    "-L ${pkgs.pkgsCross.mingwW64.windows.pthreads}/lib";
-  # cargo-examples / wasm-server-runner are not in nixpkgs; `cargo install` them.
-  environment.sessionVariables.PATH = [ "$HOME/.cargo/bin" ];
-
-  # pkg-config does not search /run/current-system/sw by default, so point it
-  # straight at the dev outputs. Build-time only, so this is safe globally.
-  environment.variables.PKG_CONFIG_PATH =
-    lib.makeSearchPathOutput "dev" "lib/pkgconfig" rustNativeDeps;
-
-  # Libraries that get dlopened at runtime (vulkan, wayland, xkbcommon, X11)
-  # carry no RPATH, so they need a search path. Scoped to interactive shells
-  # rather than set session-wide: a global LD_LIBRARY_PATH can break unrelated
-  # Nix-built apps through library version skew.
-  programs.zsh.interactiveShellInit = ''
-    export LD_LIBRARY_PATH="${lib.makeLibraryPath rustNativeDeps}''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-  '';
-
-  # ── Android ───────────────────────────────────────────────────────────
-  # SDK and NDK are managed by Android Studio's SDK Manager, not by Nix,
-  # so they live in a writable dir Studio can update. nix-ld (above) is what
-  # makes the NDK's prebuilt clang runnable outside Studio's FHS sandbox.
-  environment.sessionVariables.ANDROID_HOME = "$HOME/Android/Sdk";
-
-  # Blank Swing windows under Hyprland. This is all android-studio's
-  # `tiling_wm = true` override did, minus the rebuild.
-  environment.sessionVariables._JAVA_AWT_WM_NONREPARENTING = "1";
-  # cargo-ndk needs a concrete version dir; set once the NDK is installed:
-  # environment.sessionVariables.ANDROID_NDK_HOME = "$HOME/Android/Sdk/ndk/<version>";
 
   # ── Fonts ─────────────────────────────────────────────────────────────
   fonts = {
@@ -336,49 +204,6 @@ in
     # ─ Terminals ─
     alacritty
 
-    # ─ CLI essentials ─
-    neovim
-    delta
-    tmux
-    wget
-    curl
-    unzip
-    zip
-    file
-    tree
-    man-pages
-    usbutils         # lsusb
-    pciutils         # lspci
-
-    # ─ CLI tools ─
-    eza
-    bat
-    fzf
-    ripgrep
-    fd
-    jq
-    pv
-    zstd
-    age
-    gum
-    chafa
-    rsync
-    psmisc
-    gdu
-    duf
-    nethogs
-    lazygit
-    lazydocker
-    claude-code
-    codex
-    yazi
-    fend
-    tldr
-    gnupg
-    sshfs
-    netcat-openbsd
-    w3m
-
     # ─ Wayland clipboard / utils ─
     wl-clipboard
     wl-clip-persist
@@ -394,90 +219,6 @@ in
     wlprop
     libsForQt5.qtwayland
     kdePackages.qtwayland
-
-    # ─ Dev tools ─
-    gcc
-    gnumake
-    cmake
-    meson
-    ninja
-    pkg-config
-    cpio
-    rustDefault
-    rustNightlySuffixed
-    cargo-edit
-    cargo-expand
-    wasm-bindgen-cli
-    wasm-pack
-    cargo-ndk                      # wires the NDK linker for android targets
-    pkgsCross.mingwW64.stdenv.cc   # x86_64-w64-mingw32-gcc, linker for windows-gnu
-    nodejs
-    yarn                           # anchor test runner shells out to yarn
-    python3
-    postgresql
-    typst
-    fastfetch
-    gdb
-    valgrind
-    glew
-
-    (vscode-with-extensions.override {
-      vscodeExtensions = pkgs.nix4vscode.forVscode [
-        "anthropic.claude-code"
-        "astro-build.astro-vscode"
-        "dtoplak.vscode-glsllint"
-        "expertlsp.expert"
-        "fwcd.kotlin"
-        "ianandhum.protobuf-support"
-        "ivsop.iana"
-        "jeff-hykin.polacode-2019"
-        "jgclark.vscode-todo-highlight"
-        "llvm-vs-code-extensions.vscode-clangd"
-        "ms-dotnettools.csdevkit"
-        "ms-dotnettools.csharp"
-        "ms-dotnettools.vscode-dotnet-runtime"
-        "ms-python.debugpy"
-        "ms-python.python"
-        "ms-python.vscode-pylance"
-        "ms-python.vscode-python-envs"
-        "ms-toolsai.jupyter"
-        "ms-toolsai.jupyter-keymap"
-        "ms-toolsai.jupyter-renderers"
-        "ms-toolsai.vscode-jupyter-cell-tags"
-        "ms-toolsai.vscode-jupyter-slideshow"
-        "ms-vscode.hexeditor"
-        "ms-vsliveshare.vsliveshare"
-        "myriad-dreamin.tinymist"
-        "naumovs.color-highlight"
-        "pgourlain.erlang"
-        "polymeilex.wgsl"
-        "raczzalan.webgl-glsl-editor"
-        "redhat.java"
-        "redhat.vscode-xml"
-        "rickynormandeau.mariana-pro"
-        "rust-lang.rust-analyzer"
-        "slevesque.shader"
-        "streetsidesoftware.code-spell-checker"
-        "svelte.svelte-vscode"
-        "tamasfe.even-better-toml"
-        "tomoki1207.pdf"
-        "vadimcn.vscode-lldb"
-        "visualstudiotoolsforunity.vstuc"
-        "vscjava.vscode-gradle"
-        "vscjava.vscode-maven"
-        "wakatime.vscode-wakatime"
-      ];
-    })
-    renderdoc
-
-    # ─ Hyprland plugin build deps ─
-    hyprland.dev
-    pixman
-    libdrm
-    pango
-    libinput
-    wayland
-    libxkbcommon
 
     # ─ Media ─
     ffmpeg-full
@@ -512,10 +253,6 @@ in
     virt-viewer
     swtpm
 
-    # ─ Databases ─
-    mongodb-ce
-    mongosh
-
     # ─ Backup / Sync ─
     restic
     backrest
@@ -535,60 +272,12 @@ in
     # ─ Encryption / Security ─
     veracrypt
 
-    # ─ Game / mobile dev ─
-    unityhub
-    # NB: no .override here. android-studio isn't on cache.nixos.org (unfree),
-    # so any override forks the derivation into a 4 GB local rebuild fed by a
-    # 1.3 GB source fetch. tiling_wm only sets _JAVA_AWT_WM_NONREPARENTING,
-    # which sessionVariables does for free — see below.
-    android-studio
-    android-tools # adb/fastboot; programs.adb was removed (systemd 258 uaccess)
-
     # ─ Misc ─
     adwaita-icon-theme
     solaar
     wdisplays
     sbctl
   ];
-
-  # ── Git ──────────────────────────────────────────────────────────────
-  programs.git = {
-    enable = true;
-    lfs.enable = true;
-    config = {
-      user = {
-        name = "Ivan Ribeiro";
-        email = "ivan.ribeiro09s@gmail.com";
-      };
-      core = {
-        editor = "code --wait";
-        pager = "bat";
-      };
-      interactive.diffFilter = "delta --color-only";
-      delta = {
-        navigate = true;
-        dark = true;
-      };
-      merge.conflictstyle = "zdiff3";
-      init.defaultBranch = "master";
-      credential.helper = "cache";
-      alias = {
-        lg = "lg4";
-        lg1 = "lg1-specific --all";
-        lg2 = "lg2-specific --all";
-        lg3 = "lg3-specific --all";
-        lg4 = "log --graph --oneline --decorate --all";
-        grhh = "reset --hard";
-        nuke = "!git reset --hard && git clean -fdx";
-        history = "!git log --color=always --oneline | fzf --reverse --multi --ansi --preview 'git show --color=always {+1}'";
-        rank = "!git shortlog -n -s --no-merges | nl | grep --color -z -E 'Ivan Ribeiro|IVSOP'";
-        review = "!git diff --name-only | fzf -m --ansi --preview 'git diff --color=always -- {-1}'";
-        lg1-specific = "log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)'";
-        lg2-specific = "log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(auto)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)'";
-        lg3-specific = "log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset) %C(bold cyan)(committed: %cD)%C(reset) %C(auto)%d%C(reset)%n''          %C(white)%s%C(reset)%n''          %C(dim white)- %an <%ae> %C(reset) %C(dim white)(committer: %cn <%ce>)%C(reset)'";
-      };
-    };
-  };
 
   # ── Firefox ──────────────────────────────────────────────────────────
   programs.firefox = {
@@ -630,15 +319,6 @@ in
 
   # ── stateVersion ─────────────────────────────────────────────────────
   system.stateVersion = "26.05";
-
-  # FHS shebang paths. NixOS ships only /bin/sh and /usr/bin/env, so scripts
-  # written on Arch (where /bin is a symlink to /usr/bin) need the path they
-  # actually name. Prefer `#!/usr/bin/env bash` in new scripts over growing
-  # this list.
-  systemd.tmpfiles.rules = [
-    "L+ /bin/bash - - - - ${pkgs.bashInteractive}/bin/bash"
-    "L+ /usr/bin/bash - - - - ${pkgs.bashInteractive}/bin/bash"
-  ];
 
   # ── Nemo defaults ────────────────────────────────────────────────────
   # Nemo reads org.cinnamon.desktop.default-applications.terminal, whose

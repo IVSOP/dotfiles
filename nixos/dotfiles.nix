@@ -7,11 +7,18 @@
 #
 # Symlinks (not copies) on purpose: editing ~/.config/hypr/hyprland.conf edits
 # the repo, no rebuild needed. Nix only owns the wiring, not the contents.
-{ ... }:
+{ pkgs, ... }:
 let
   user = "ivsopi3";
   home = "/home/${user}";
   dots = "${home}/dotfiles";
+
+  # .zshrc sources this path and expects fzf-tab under custom/plugins.
+  ohMyZsh = pkgs.runCommand "oh-my-zsh-with-fzf-tab" { } ''
+    cp -rs ${pkgs.oh-my-zsh}/share/oh-my-zsh $out
+    chmod u+w $out $out/custom $out/custom/plugins
+    ln -s ${pkgs.zsh-fzf-tab}/share/fzf-tab $out/custom/plugins/fzf-tab
+  '';
 
   link = target: source: "L+ ${target} - ${user} users - ${source}";
   dir = target: mode: "d ${target} ${mode} ${user} users - -";
@@ -72,12 +79,18 @@ let
   };
 in
 {
+  # Stable target follows rebuilds while the home link preserves manual installs.
+  environment.etc."oh-my-zsh".source = ohMyZsh;
+
   systemd.tmpfiles.rules =
     # Parents of the nested links, in case the directory doesn't exist yet on
     # a fresh machine. `d` leaves an existing directory and its contents alone.
     [
+      (dir "${home}/.config" "0755")
       (dir "${home}/.ssh" "0700")
       (dir "${home}/.local/share/applications" "0755")
+      # L (without +) preserves an existing, manually installed Oh My Zsh.
+      "L ${home}/.oh-my-zsh - ${user} users - /etc/oh-my-zsh"
     ]
     ++ map (n: link "${home}/.config/${n}" "${dots}/${n}") configLinks
     ++ map (n: link "${home}/${n}" "${dots}/home_dotfiles/${n}") (homeLinks ++ nestedLinks)
