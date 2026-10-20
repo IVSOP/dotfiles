@@ -196,6 +196,7 @@
     rofi
     networkmanagerapplet
     nemo-with-extensions
+    file-roller
     pavucontrol
     desktop-file-utils
     waybar
@@ -230,6 +231,7 @@
     qpwgraph
 
     # ─ Apps ─
+    dbeaver-bin
     telegram-desktop
     discord
     obs-studio

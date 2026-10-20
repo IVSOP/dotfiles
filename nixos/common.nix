@@ -1,7 +1,24 @@
 # Shared shell, CLI tools, and system defaults for the desktop, laptop, and server.
-{ pkgs, ... }:
+{ lib, pkgs, ... }:
 
 {
+  # Apply to all LUKS mappings, including those in generated hardware configs.
+  # Discards expose unused block locations; devices can opt out with false.
+  imports = [
+    {
+      options.boot.initrd.luks.devices = lib.mkOption {
+        type = lib.types.attrsOf (lib.types.submodule {
+          config.allowDiscards = lib.mkDefault true;
+        });
+      };
+    }
+  ];
+
+  services.fstrim = {
+    enable = lib.mkDefault true;
+    interval = lib.mkDefault "weekly";
+  };
+
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
   # ── System tuning ────────────────────────────────────────────────────
