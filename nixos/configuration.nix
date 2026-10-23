@@ -247,7 +247,6 @@
     localsend
 
     # ─ Gaming ─
-    lutris
     wineWow64Packages.stable
     protontricks
 
