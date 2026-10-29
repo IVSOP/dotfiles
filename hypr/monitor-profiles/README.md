@@ -44,6 +44,36 @@ Use these commands to switch profiles:
 ~/.config/hypr/scripts/monitor-profile.sh mode
 ```
 
+The shell alias is `monitor`. Run `monitor --help` for all commands.
+
+For temporary layouts in tools such as wdisplays, use `monitor pause` (or
+`monitor stop`) first. This stops the automatic profile daemon without changing
+the current layout, and remains paused across display connections and
+disconnections. `monitor resume`, `monitor start`, and `monitor auto` all resume
+automatic selection. `monitor mode` reports `paused`, `mirror`, `auto`, or the
+manually selected profile name.
+
+`monitor mirror` uses gum to ask which active screen to copy and which connected
+screen should receive its image. The receiver may initially be disabled. The
+source's mode, scaling, and rotation are left alone; an active receiver keeps its
+mode, scaling, and rotation, while a disabled receiver starts at its preferred
+mode and scale 1. Mirroring pauses automatic management temporarily and does not
+write saved profiles. Only one temporary mirror session is managed at a time.
+
+`monitor unmirror` restores the receiver's previous settings and prior management
+mode. The session loop checks every two seconds and also ends mirroring if either
+screen disappears or the mirror is removed externally (including by a config
+reload). Unplugging the receiver leaves the source untouched. If the source is
+unplugged instead, the receiver is made independent and is kept on if it is the
+last usable screen, even if it had originally been disabled. Explicitly paused
+management stays paused after this cleanup; a held profile resumes only while its
+original hardware set still matches, otherwise normal automatic matching resumes.
+`resume` and `apply` also end the temporary mirror before proceeding.
+
+These controls update the session loop automatically on first use in a login that
+was already running the older loop. Their temporary state lives under
+`$XDG_RUNTIME_DIR/hypr-monitor-ui/`.
+
 Run `apply` from a terminal. It gives you 10 seconds to confirm a changed
 layout before reverting. The selected layout stays in place until the set of
 connected displays changes or you run `auto`. In automatic mode, `ld2` wins

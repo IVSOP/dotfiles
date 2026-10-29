@@ -6,6 +6,7 @@ mkdir -p "$runtime"
 exec 9>"$runtime/session.lock"
 flock -n 9 || exit 0
 printf '%s\n' "$$" >"$runtime/session.pid"
+printf '%s\n' 2 >"$runtime/session-version"
 command rm -f "$runtime/daemon-mode"
 
 daemon_pid=""
@@ -30,7 +31,7 @@ start_daemon() {
 }
 cleanup() {
     stop_daemon
-    command rm -f "$runtime/session.pid" "$runtime/daemon-mode" "$runtime/manual-profile"
+    command rm -f "$runtime/session.pid" "$runtime/session-version" "$runtime/daemon-mode"
 }
 trap cleanup EXIT
 trap 'exit 0' INT TERM
@@ -38,8 +39,16 @@ trap 'exit 0' INT TERM
 # The theme daemon may still be starting. Each pass retries its queries and
 # the first pass creates the runtime files before Waybar or Dunst start.
 while :; do
+    # The helper uses a nonblocking lock: an interactive mirror command must
+    # be able to wait for this loop to acknowledge that the daemon is stopped.
+    python3 "$HOME/.config/hypr/scripts/monitor-mirror.py" check \
+        9>&- 2>>"$runtime/session.log" || true
     desired_mode=auto
-    if [[ -f $runtime/manual-profile ]]; then
+    if [[ -f $runtime/mirror.json ]]; then
+        desired_mode=mirror
+    elif [[ -f $runtime/paused ]]; then
+        desired_mode=paused
+    elif [[ -f $runtime/manual-profile ]]; then
         saved_hardware=$(sed -n '2p' "$runtime/manual-profile")
         current_hardware=$(hyprctl -j monitors all 2>/dev/null |
             jq -c '[.[] | [.make, .model, .serial]] | sort' 2>/dev/null || true)
@@ -61,6 +70,6 @@ while :; do
             start_daemon
         fi
     fi
-    "$HOME/.config/hypr/scripts/apply-monitor-ui.sh" 2>>"$runtime/ui.log" || true
+    "$HOME/.config/hypr/scripts/apply-monitor-ui.sh" 9>&- 2>>"$runtime/ui.log" || true
     sleep 2
 done

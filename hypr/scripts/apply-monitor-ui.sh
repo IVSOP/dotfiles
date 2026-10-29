@@ -21,7 +21,7 @@ fi
 monitors=$(hyprctl -j monitors all)
 active_outputs=$(jq -c '[.[] | select(.disabled == false) | .name] | sort' <<<"$monitors")
 monitor_state=$(jq -c '[.[] | select(.disabled == false) |
-    [.name, .width, .height, .refreshRate, .scale, .transform, .x, .y]] | sort' <<<"$monitors")
+    [.name, .width, .height, .refreshRate, .scale, .transform, .x, .y, .mirrorOf]] | sort' <<<"$monitors")
 
 # Wait until the full layout has been unchanged for two seconds before touching Waybar.
 observed=$(cat "$runtime/monitor-observed" 2>/dev/null || true)
@@ -38,9 +38,11 @@ fi
 connector=$(jq -r --arg identity "$identity" '
     def hardware_key: [.make, .model, .serial] |
         map(select(. != null and . != "")) | join("|");
+    # Mirrored outputs cannot host their own Waybar layer surface.
+    def independent: .disabled == false and ((.mirrorOf // "none") | IN("none", ""));
     [.[] | select((.name == $identity or hardware_key == $identity or .serial == $identity)
-        and .disabled == false) | .name][0] //
-    [.[] | select(.disabled == false) | .name][0] // empty
+        and independent) | .name][0] //
+    [.[] | select(independent) | .name][0] // empty
 ' <<<"$monitors")
 if [[ ! $connector =~ ^[a-zA-Z0-9._-]+$ ]]; then
     printf 'No active monitor found for the UI\n' >&2
