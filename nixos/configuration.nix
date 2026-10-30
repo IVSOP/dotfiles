@@ -203,6 +203,7 @@
     rofi
     networkmanagerapplet
     nemo-with-extensions
+    glib.bin # gio command-line tools
     android-file-transfer          # aft-mtp-mount / aft-mtp-cli
     file-roller
     pavucontrol
