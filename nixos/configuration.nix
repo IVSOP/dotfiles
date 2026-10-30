@@ -197,6 +197,7 @@
     rofi
     networkmanagerapplet
     nemo-with-extensions
+    android-file-transfer          # aft-mtp-mount / aft-mtp-cli
     file-roller
     pavucontrol
     desktop-file-utils
