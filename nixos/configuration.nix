@@ -94,8 +94,8 @@
   systemd.sockets.docker.wantedBy = lib.mkForce [ ];
 
   # ── Firewall ─────────────────────────────────────────────────────────
-  # NixOS' own firewall (nftables backend), not ufw. Input policy is drop and
-  # nothing is opened globally; SSH is reachable over tailscale0 only.
+  # NixOS' own firewall (nftables backend), with input dropped by default.
+  # LocalSend opens TCP/UDP 53317; SSH is reachable over tailscale0 only.
   # Outbound traffic is never filtered, so there is no "allow out" to write.
   # Temporary holes: `sudo nixos-firewall-tool open tcp 8888` / `... reset`.
   networking.firewall = {
@@ -104,6 +104,12 @@
     allowedTCPPorts = [ ];
     allowedUDPPorts = [ ];
     interfaces."tailscale0".allowedTCPPorts = [ 22 ];
+  };
+
+  # ── LocalSend ────────────────────────────────────────────────────────
+  programs.localsend = {
+    enable = true;
+    openFirewall = true;
   };
 
   # ── Tailscale ────────────────────────────────────────────────────────
@@ -246,7 +252,6 @@
     blender
     qbittorrent
     pandoc
-    localsend
 
     # ─ Gaming ─
     wineWow64Packages.stable

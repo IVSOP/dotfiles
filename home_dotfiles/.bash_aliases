@@ -51,10 +51,6 @@ alias frg="rg --column --line-number --no-heading --color=always --smart-case . 
                 --preview-window '~4,+{2}+4/3,<80(up)'"
 alias ls="eza -lh --group-directories-first --icons=auto"
 alias lt="eza --tree --level=2 --long --icons --git"
-alias airdrop="sudo nixos-firewall-tool open tcp 53317 && \
-    sudo nixos-firewall-tool open udp 53317 && \
-    localsend_app; \
-    sudo nixos-firewall-tool reset"
 
 # bluetooth
 alias blue="sudo systemctl start bluetooth.service && blueman-manager"
