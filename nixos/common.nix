@@ -19,6 +19,26 @@
     interval = lib.mkDefault "weekly";
   };
 
+  # Include removable drives in the existing weekly TRIM job.
+  systemd.services.fstrim.serviceConfig.ExecStart = lib.mkForce [
+    ""
+    "${pkgs.util-linux}/sbin/fstrim --all --verbose --quiet-unsupported"
+  ];
+
+  # This enclosure advertises UNMAP but not LBPME, leaving discard disabled.
+  # Limit requests to its reported maximum, rounded down to a 4 KiB boundary.
+  services.udev.extraRules = ''
+    ACTION=="add|change", SUBSYSTEM=="scsi_disk", ATTRS{idVendor}=="152d", ATTRS{idProduct}=="0583", ATTRS{serial}=="DD564198838A1", ATTR{provisioning_mode}="unmap"
+    ACTION=="add|change", SUBSYSTEM=="block", ENV{DEVTYPE}=="disk", ATTRS{idVendor}=="152d", ATTRS{idProduct}=="0583", ATTRS{serial}=="DD564198838A1", ATTR{queue/discard_max_bytes}!="0", ATTR{queue/discard_max_bytes}="33550336"
+  '';
+
+  # This NTFS3 driver also requires the discard mount option for fstrim.
+  # This enables discard on deletion as well as the weekly TRIM job.
+  services.udisks2.settings."mount_options.conf"."/dev/disk/by-uuid/373583FA59E52445" = {
+    ntfs_drivers = "ntfs3";
+    "ntfs:ntfs3_defaults" = "uid=$UID,gid=$GID,discard";
+  };
+
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
   # ── System tuning ────────────────────────────────────────────────────

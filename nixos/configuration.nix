@@ -33,7 +33,8 @@
   # XDG portal for screen sharing, file dialogs, etc.
   xdg.portal = {
     enable = true;
-    extraPortals = [ pkgs.xdg-desktop-portal-hyprland pkgs.xdg-desktop-portal-gtk ];
+    # programs.hyprland provides the matching Hyprland portal.
+    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
   };
 
   # ── Audio (PipeWire) ─────────────────────────────────────────────────

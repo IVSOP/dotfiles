@@ -16,7 +16,6 @@
 
   boot.initrd.luks.devices."crypt_0" = {
     device = "/dev/disk/by-uuid/fdf5ac6a-f27e-4113-a33c-a71ff236b252";
-    preLVM = true;
   };
 
   # ── Lid switch ───────────────────────────────────────────────────────
