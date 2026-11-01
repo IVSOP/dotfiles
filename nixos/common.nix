@@ -74,6 +74,7 @@
     tmux
     wget
     curl
+    openssl
     unzip
     zip
     file
