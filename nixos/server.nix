@@ -1,5 +1,8 @@
 { config, lib, pkgs, ... }:
 
+let
+  useAdguardDNS = false; # Set to true after the first install and AdGuard setup.
+in
 {
   imports = [ ./common.nix ./development.nix ./dotfiles.nix ];
 
@@ -18,8 +21,10 @@
 
   networking.networkmanager = {
     enable = true; # Includes nmcli and nmtui.
+    dns = if useAdguardDNS then "none" else "default";
     unmanaged = [ "interface-name:tailscale0" "interface-name:docker0" "interface-name:br-*" ];
   };
+  networking.nameservers = lib.optionals useAdguardDNS [ "127.0.0.1" ];
   hardware.bluetooth = {
     enable = true; # Includes bluez/bluetoothctl.
     powerOnBoot = true;
@@ -40,6 +45,7 @@
     enable = true;
     openFirewall = true; # UDP transport for direct peer connections only.
     useRoutingFeatures = "none";
+    extraSetFlags = [ "--accept-dns=${if useAdguardDNS then "false" else "true"}" ];
     # Authenticate once with sudo tailscale up; state survives reboot.
   };
 
