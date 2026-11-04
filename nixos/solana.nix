@@ -10,9 +10,19 @@ let
     paths = [ (import nixpkgs-anchor { inherit (pkgs.stdenv.hostPlatform) system; }).anchor ];
     nativeBuildInputs = [ pkgs.makeWrapper ];
     postBuild = ''
-      wrapProgram $out/bin/anchor --prefix PATH : ${rustupShim}/bin
+      wrapProgram $out/bin/anchor --prefix PATH : ${anchorCargoShim}/bin:${rustupShim}/bin
     '';
   };
+
+  # Anchor 1.0.2 hardcodes v1.52. Redirect only its build invocation to
+  # our pinned tools; direct cargo-build-sbf calls keep their CLI overrides.
+  anchorCargoShim = pkgs.writeShellScriptBin "cargo" ''
+    if [ "$1" = "build-sbf" ] && [ "$2" = "--tools-version" ] && [ "$3" = "v1.52" ]; then
+      shift 3
+      exec ${rustupShim}/bin/cargo build-sbf --tools-version ${platformTools.version} "$@"
+    fi
+    exec ${rustupShim}/bin/cargo "$@"
+  '';
 
   solanaCli = pkgs.solana-cli;
 
@@ -51,11 +61,11 @@ let
   # its target is a symlink, which the tmpfiles rule below provides.
   platformTools = pkgs.stdenv.mkDerivation rec {
     pname = "solana-platform-tools";
-    version = "v1.52";                 # what anchor 1.0.2 asks for
+    version = "v1.58";                 # Rust 1.95.0 / LLVM 22
 
     src = pkgs.fetchurl {
       url = "https://github.com/anza-xyz/platform-tools/releases/download/${version}/platform-tools-linux-x86_64.tar.bz2";
-      hash = "sha256-izhh6T2vCF7BK2XE+sN02b7EWHo94Whx2msIqwwdkH4=";
+      hash = "sha256-e4LrQgta69HlWQ2wriXFI+ygZyTUI4rgITlpBTVjbDc=";
     };
 
     sourceRoot = ".";                  # tarball has no top-level dir
@@ -97,39 +107,40 @@ let
     '';
   };
 
-  # What `anchor build` shells out to. nixpkgs' solana-cli can't ship it:
-  # agave's root Cargo.toml excludes platform-tools-sdk/ from the workspace.
+  # What `anchor build` shells out to, pinned independently of solana-cli.
+  # Upstream now releases the builder from its own repository.
   cargoBuildSbf = pkgs.rustPlatform.buildRustPackage rec {
     pname = "solana-cargo-build-sbf";
 
     # Pinned separately from pkgs.solana-cli so nixpkgs bumps can't move
     # cargoHash or break the postPatch below.
-    version = "4.0.3";
+    version = "4.5.0";
     src = pkgs.fetchFromGitHub {
       owner = "anza-xyz";
-      repo = "agave";
-      tag = "v${version}";
-      hash = "sha256-lbkuywAuLeTIoe/5zbKmxCbnNcEx96BiX6ftNJHutZE=";
+      repo = "cargo-build-sbf";
+      tag = "cargo-build-sbf@v${version}";
+      hash = "sha256-67ZdFbKFqZHU2odJoyZ2GLBL7F4QVcNhg6DjYZIEV2s=";
     };
 
-    sourceRoot = "${src.name}/platform-tools-sdk";
-    cargoHash = "sha256-VYNVdO2nMcLvE6AWd1IJpixnZaIQHfKY79+gzekxiK8=";
+    cargoHash = "sha256-2KsSpuxc4/1+8e4Wu4T+Pzd3wK/22Dus7kYDSkiZ0MQ=";
 
     buildInputs = [ pkgs.openssl pkgs.bzip2 ];
 
-    # anchor passes --tools-version v1.52 itself; upstream defaults to
-    # v1.54, so retarget it or a hand-run build misses the symlink and
-    # fetches its own 1.6 GB copy.
+    # Match the Nix-provided tools so direct builds do not fetch another copy.
+    # Preserve the existing v0 target; migrating programs to SBPFv3 is separate.
     postPatch = ''
       substituteInPlace cargo-build-sbf/src/toolchain.rs \
-        --replace-fail 'DEFAULT_PLATFORM_TOOLS_VERSION: &str = "v1.54"' \
-                       'DEFAULT_PLATFORM_TOOLS_VERSION: &str = "v1.52"'
+        --replace-fail 'DEFAULT_PLATFORM_TOOLS_VERSION: &str = "v1.57"' \
+                       'DEFAULT_PLATFORM_TOOLS_VERSION: &str = "${platformTools.version}"'
+      substituteInPlace cargo-build-sbf/src/bin/{build_sbf,test_sbf}.rs \
+        --replace-fail '.default_value("v3")' '.default_value("v0")'
     '';
 
     cargoBuildFlags = [
-      "-p" "solana-cargo-build-sbf"
-      "-p" "solana-cargo-test-sbf"
+      "-p" "cargo-build-sbf"
     ];
+
+    passthru = { inherit platformTools; };
 
     doCheck = false;                   # suite wants network and a toolchain
 
