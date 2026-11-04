@@ -177,6 +177,8 @@
       liberation_ttf
       freefont_ttf
       ibm-plex
+      source-sans-pro
+      roboto
     ];
     fontconfig = {
       antialias = true;
