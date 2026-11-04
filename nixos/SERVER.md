@@ -14,6 +14,13 @@ provides `nmcli`/`nmtui`; BlueZ provides `bluetoothctl`. Sleep targets are disab
 The requested DNS, transfer, compression, media, backup, and monitoring tools are
 installed; restic repositories and backup schedules are configured separately.
 
+Intel CPU microcode updates are enabled explicitly. On Intel machines,
+`nixos-generate-config` normally enables them through a default in the generated
+hardware configuration too. Native host applications have hardware graphics
+enabled with `intel-media-driver` for VA-API and `intel-compute-runtime` for
+OpenCL. Docker images provide their own user-space acceleration libraries and
+access the GPU through their Compose device mappings.
+
 ## Installation
 
 1. Replace `server-hardware-configuration.nix` with the target machine's hardware
@@ -47,18 +54,42 @@ After tracking those files in Git, `.#server` also works.
 ## Firewall and containers
 
 The NixOS firewall uses nftables and trusts `tailscale0`, so host services are
-reachable from the tailnet, subject to its access rules. No TCP ports are opened
-on physical interfaces. UDP 41641 is opened for Tailscale's encrypted transport;
-normal firewall allowances for DHCP and ICMP remain enabled.
+reachable from the tailnet, subject to its access rules. No host-service TCP
+ports are opened on physical interfaces; published container exceptions are
+described below. UDP 41641 is opened for Tailscale's encrypted transport; normal
+firewall allowances for DHCP and ICMP remain enabled.
 
 Docker's published ports traverse forwarding rules after DNAT, so the server
-also filters container ingress in a separate nftables table. Physical-interface
-traffic to published ports or standard Docker bridges is dropped; Tailscale,
-container egress, inter-container traffic, and established replies are allowed.
+also filters container ingress in a separate nftables table. On `enp2s0`, this
+allows published AdGuard DNS on TCP/UDP 53 from the LAN (`192.168.1.0/24`) and
+published qBittorrent peer traffic on TCP/UDP 6881 from any source. The checks
+match both the original published port and the container's destination port.
+Other physical-interface traffic to published ports or standard Docker bridges
+is dropped; Tailscale, container egress, inter-container traffic, and established
+replies are allowed. Check the interface and LAN subnet when installing.
 Reloading nftables preserves Docker's and Tailscale's own tables. This follows
 Docker's documented [packet filtering behavior](https://docs.docker.com/engine/network/packet-filtering-firewalls/).
 Containers using host networking follow the host firewall; macvlan/ipvlan networks
 and custom bridge interface names need their own policy.
+
+Published Docker ports can bypass the normal host firewall on both Arch/UFW and
+NixOS. The separate forwarding filter above enforces these restrictions; opening
+only `networking.firewall.allowedTCPPorts` or `allowedUDPPorts` does not create
+exceptions to it. For incoming internet torrent peers, forward TCP/UDP 6881 on
+the router to the server's fixed LAN address (currently `192.168.1.228`).
+qBittorrent's web UI remains behind Traefik over Tailscale. Jellyfin uses its
+existing Tailscale HTTPS URL. Palworld also needs no LAN exception when players
+use Tailscale: connect directly to `server:8211` in the game, rather than through
+the HTTPS proxy. Game port 8211, query port 27015, and the admin API remain
+restricted to Tailscale and local/container traffic.
+
+The server initially uses its normal network/Tailscale DNS. Once AdGuard is
+configured and running, verify both `dig @127.0.0.1 example.org` and
+`dig +tcp @127.0.0.1 example.org`, then set `useAdguardDNS = true` in `server.nix`
+and rebuild. That selects `127.0.0.1` for the host, disables NetworkManager DNS
+management, and sets Tailscale's `--accept-dns=false`. Keep AdGuard's upstream
+and bootstrap resolvers independent of the host's loopback resolver. LAN clients
+can use the server's fixed LAN address for DNS before this host-side switch.
 
 The uncommitted Radxa additions now live here:
 

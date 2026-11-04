@@ -2,6 +2,8 @@
 
 let
   useAdguardDNS = false; # Set to true after the first install and AdGuard setup.
+  lanInterface = "enp2s0";
+  lanSubnet = "192.168.1.0/24";
 in
 {
   imports = [ ./common.nix ./development.nix ./dotfiles.nix ];
@@ -10,6 +12,15 @@ in
   boot.loader.systemd-boot.enable = lib.mkDefault true;
   boot.loader.efi.canTouchEfiVariables = lib.mkDefault true;
   hardware.enableRedistributableFirmware = true;
+  hardware.cpu.intel.updateMicrocode = true;
+  hardware.graphics = {
+    enable = true;
+    # VA-API and OpenCL for native host applications; containers ship their own.
+    extraPackages = with pkgs; [
+      intel-media-driver
+      intel-compute-runtime
+    ];
+  };
 
   users.users.ivsopi3 = {
     isNormalUser = true;
@@ -104,6 +115,12 @@ in
           ct state established,related accept
           iifname { "tailscale0", "lo", "docker0" } accept
           iifname "br-*" accept
+          # AdGuard serves household DNS; the host can use its loopback binding.
+          iifname "${lanInterface}" ip saddr ${lanSubnet} ct status dnat tcp dport 53 ct original proto-dst 53 counter accept
+          iifname "${lanInterface}" ip saddr ${lanSubnet} ct status dnat udp dport 53 ct original proto-dst 53 counter accept
+          # Incoming torrent peers, including connections forwarded by the router.
+          iifname "${lanInterface}" ct status dnat tcp dport 6881 ct original proto-dst 6881 counter accept
+          iifname "${lanInterface}" ct status dnat udp dport 6881 ct original proto-dst 6881 counter accept
           # Published container ports bypass INPUT after DNAT.
           ct status dnat counter drop
           # Block direct routing from physical interfaces into Docker too.
