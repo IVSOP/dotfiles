@@ -4,6 +4,8 @@
   imports = [ ./common.nix ./development.nix ./obsidian.nix ];
 
   # ── Boot (lanzaboote / secure boot) ───────────────────────────────────
+  # Installation: enable systemd-boot and disable Lanzaboote until signing keys exist.
+  # Restore these defaults after setting up /var/lib/sbctl and enrolling the keys.
   boot.loader.systemd-boot.enable = lib.mkForce false;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.lanzaboote = {

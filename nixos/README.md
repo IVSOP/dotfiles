@@ -9,6 +9,10 @@ This configuration manages four separate machines:
 | Server | `server` | `x86_64-linux` | `ivsopi3` | [server.nix](server.nix) |
 | Radxa server (ROCK 4C+) | `rock-server` | `aarch64-linux` | `radxa` | [radxa/rock-server.nix](radxa/rock-server.nix) |
 
+For a fresh laptop, desktop, or x86 server install, start with the
+[simple installation guide](INSTALL.md). It covers disk preparation with optional
+LUKS encryption and installation from files copied into `/mnt/etc/nixos`.
+
 The server and Radxa server have separate configurations and setup procedures:
 
 - [Server setup](SERVER.md): the x86 server, installed with `nixos-install`.

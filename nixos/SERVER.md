@@ -22,8 +22,10 @@ static IPv4 address `192.168.1.228/24` on `enp2s0` and gateway `192.168.1.1`,
 matching the live Arch server. IPv4 DHCP is disabled for this profile, and
 NetworkManager does not create automatic DHCP profiles for unused Ethernet ports.
 IPv6 remains automatic. Exclude or reserve `192.168.1.228` in the router's DHCP
-pool to prevent address conflicts. The profile uses the router for DNS until
-`useAdguardDNS` is enabled; Tailscale DNS remains accepted during that initial setup.
+pool to prevent address conflicts. By default, the server uses local AdGuard DNS
+at `127.0.0.1`. Temporarily set `useAdguardDNS = false` during installation to use
+router DNS until AdGuard is running. Set `enableTailscale = false` to keep
+Tailscale off until post-install setup.
 
 Intel CPU microcode updates are enabled explicitly. On Intel machines,
 `nixos-generate-config` normally enables them through a default in the generated
@@ -34,33 +36,83 @@ access the GPU through their Compose device mappings.
 
 ## Installation
 
-1. Replace `server-hardware-configuration.nix` with the target machine's hardware
-   configuration from `nixos-generate-config`. The checked-in file is a template
-   using `NIXOS_SERVER` and `NIXOS_SERVER_BOOT` filesystem labels, with no swap;
-   it does not describe the laptop's or desktop's disks. The default bootloader
-   is systemd-boot for UEFI, without the workstations' Secure Boot key requirement.
-   Adjust `server.nix` if the server uses legacy BIOS.
-2. Keep a checkout of the full dotfiles repository at `/home/ivsopi3/dotfiles`
-   on the installed server. The symlinks point into that checkout and do not copy
-   its contents into the Nix store. Fresh installs also get packaged Oh My Zsh
-   with `fzf-tab`; an existing `~/.oh-my-zsh` directory is preserved.
-3. From the checkout's `nixos` directory, evaluate/build before installing:
+Follow [INSTALL.md](INSTALL.md): copy the configuration into `/mnt/etc/nixos`,
+generate this server's hardware file, and install with the `server` target.
 
-   ```sh
-   nix build 'path:./#nixosConfigurations.server.config.system.build.toplevel'
-   ```
+- Copy the generated `hardware-configuration.nix` to `server-hardware-configuration.nix`.
+- Check network settings in `server.nix`.
+- Keep the full dotfiles checkout at `/home/ivsopi3/dotfiles`.
 
-   For a new installation with its filesystems mounted at `/mnt`, use
-   `sudo nixos-install --flake 'path:./#server'`. For an existing server, use
-   `sudo nixos-rebuild switch --flake 'path:./#server'`.
-4. Set a local password for `ivsopi3` using `passwd ivsopi3` on the server console
-   (or through `nixos-enter --root /mnt` before reboot) so sudo works. SSH accepts
-   only the keys in `trusted-ssh-keys.nix`; root SSH and password SSH are disabled.
-5. From the console, run `sudo tailscale up` once. Subsequent boots reconnect
-   using the saved state. Connect with `ssh ivsopi3@server` over the tailnet.
+SSH accepts configured keys only; root SSH and password SSH are disabled.
 
-The `path:./` form includes new, untracked Nix files while preparing the config.
-After tracking those files in Git, `.#server` also works.
+## Post-install setup
+
+### 1. Console login
+
+Log in locally as `ivsopi3` with the password set during installation.
+Keep `useAdguardDNS = false` while setting up the services below.
+
+### 2. SSH keys
+
+For outgoing SSH/Git access, restore the server's private keys into `~/.ssh`,
+or create a key if none exists:
+
+```sh
+install -d -m 700 ~/.ssh
+test -f ~/.ssh/id_ed25519 || ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519
+chmod 600 ~/.ssh/id_ed25519
+ssh-add ~/.ssh/id_ed25519
+```
+
+Register `~/.ssh/id_ed25519.pub` with the Git hosts or machines the server accesses.
+
+For incoming SSH, keep the private key on your laptop/client. Its public key must
+be listed in `/etc/nixos/trusted-ssh-keys.nix`; rebuild after adding a new key.
+Editing `~/.ssh/authorized_keys` is not used by this configuration.
+
+### 3. Tailscale login and remote SSH
+
+Set `enableTailscale = true` in `/etc/nixos/server.nix`, then:
+
+```sh
+sudo nixos-rebuild switch --flake 'path:/etc/nixos#server'
+sudo tailscale up
+tailscale status
+tailscale ip -4
+```
+
+Open the login URL printed by `tailscale up`. On your laptop/client, connect
+to Tailscale, then run:
+
+```sh
+ssh -i ~/.ssh/id_ed25519 ivsopi3@server
+```
+
+Use the server's printed Tailscale IP instead of `server` if needed.
+The console password is used for `sudo`; SSH uses your client key.
+
+### 4. Start AdGuard and switch DNS
+
+Restore the AdGuard Compose stack and its data. From its directory:
+
+```sh
+sudo docker compose up -d
+dig @127.0.0.1 example.org
+dig +tcp @127.0.0.1 example.org
+```
+
+After both DNS checks succeed, restore `useAdguardDNS = true` in
+`/etc/nixos/server.nix`, then:
+
+```sh
+sudo nixos-rebuild switch --flake 'path:/etc/nixos#server'
+cat /etc/resolv.conf
+getent hosts example.org
+```
+
+The resolver should be `127.0.0.1`. This also disables NetworkManager DNS
+management and Tailscale DNS acceptance. Keep AdGuard's upstream and bootstrap
+resolvers independent of the host's loopback resolver.
 
 ## Firewall and containers
 
@@ -93,14 +145,6 @@ existing Tailscale HTTPS URL. Palworld also needs no LAN exception when players
 use Tailscale: connect directly to `server:8211` in the game, rather than through
 the HTTPS proxy. Game port 8211, query port 27015, and the admin API remain
 restricted to Tailscale and local/container traffic.
-
-The server initially uses its normal network/Tailscale DNS. Once AdGuard is
-configured and running, verify both `dig @127.0.0.1 example.org` and
-`dig +tcp @127.0.0.1 example.org`, then set `useAdguardDNS = true` in `server.nix`
-and rebuild. That selects `127.0.0.1` for the host, disables NetworkManager DNS
-management, and sets Tailscale's `--accept-dns=false`. Keep AdGuard's upstream
-and bootstrap resolvers independent of the host's loopback resolver. LAN clients
-can use the server's fixed LAN address for DNS before this host-side switch.
 
 The x86 server also configures the following Docker infrastructure:
 

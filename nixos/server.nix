@@ -1,7 +1,11 @@
 { config, lib, pkgs, ... }:
 
 let
-  useAdguardDNS = false; # Set to true after the first install and AdGuard setup.
+  # Installation: temporarily set false to use router/Tailscale DNS before AdGuard runs.
+  # Restore true once AdGuard answers DNS on 127.0.0.1, then rebuild.
+  useAdguardDNS = true;
+  # Installation: temporarily set false; restore true and rebuild before tailscale up.
+  enableTailscale = true;
   lanInterface = "enp2s0";
   lanSubnet = "192.168.1.0/24";
 in
@@ -11,6 +15,7 @@ in
   networking.hostName = lib.mkDefault "server";
   boot.loader.systemd-boot.enable = lib.mkDefault true;
   boot.loader.efi.canTouchEfiVariables = lib.mkDefault true;
+  boot.loader.efi.efiSysMountPoint = lib.mkDefault "/boot/efi";
   hardware.enableRedistributableFirmware = true;
   hardware.cpu.intel.updateMicrocode = true;
   hardware.graphics = {
@@ -73,7 +78,7 @@ in
     };
   };
   services.tailscale = {
-    enable = true;
+    enable = enableTailscale;
     openFirewall = true; # UDP transport for direct peer connections only.
     useRoutingFeatures = "none";
     extraSetFlags = [ "--accept-dns=${if useAdguardDNS then "false" else "true"}" ];
