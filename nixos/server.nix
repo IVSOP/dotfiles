@@ -30,10 +30,30 @@ in
     # Set the local login/sudo password during installation.
   };
 
+  networking.useDHCP = false;
+  networking.dhcpcd.enable = false;
   networking.networkmanager = {
     enable = true; # Includes nmcli and nmtui.
     dns = if useAdguardDNS then "none" else "default";
     unmanaged = [ "interface-name:tailscale0" "interface-name:docker0" "interface-name:br-*" ];
+    # Do not create DHCP profiles for otherwise unconfigured Ethernet ports.
+    settings.main.no-auto-default = "*";
+    ensureProfiles.profiles.server-lan = {
+      connection = {
+        id = "server-lan";
+        type = "ethernet";
+        interface-name = lanInterface;
+        autoconnect = true;
+      };
+      ipv4 = {
+        method = "manual";
+        address1 = "192.168.1.228/24";
+        gateway = "192.168.1.1";
+        dns = if useAdguardDNS then "127.0.0.1;" else "192.168.1.1;";
+        ignore-auto-dns = true;
+      };
+      ipv6.method = "auto";
+    };
   };
   networking.nameservers = lib.optionals useAdguardDNS [ "127.0.0.1" ];
   hardware.bluetooth = {

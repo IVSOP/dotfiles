@@ -1,4 +1,7 @@
-# Regular x86 server
+# Server (x86)
+
+This guide covers the x86 `server`, one of the [four machines](README.md).
+For the separate Radxa server (`rock-server`), see [its setup guide](radxa/SERVER.md).
 
 The flake target is `server`, with hostname `server` and user `ivsopi3`.
 `server.nix` imports the same `common.nix`, `development.nix`, and `dotfiles.nix`
@@ -13,6 +16,14 @@ Docker, SSH, Tailscale, NetworkManager, and Bluetooth start at boot. NetworkMana
 provides `nmcli`/`nmtui`; BlueZ provides `bluetoothctl`. Sleep targets are disabled.
 The requested DNS, transfer, compression, media, backup, and monitoring tools are
 installed; restic repositories and backup schedules are configured separately.
+
+The LAN connection uses a declarative NetworkManager profile, `server-lan`, with
+static IPv4 address `192.168.1.228/24` on `enp2s0` and gateway `192.168.1.1`,
+matching the live Arch server. IPv4 DHCP is disabled for this profile, and
+NetworkManager does not create automatic DHCP profiles for unused Ethernet ports.
+IPv6 remains automatic. Exclude or reserve `192.168.1.228` in the router's DHCP
+pool to prevent address conflicts. The profile uses the router for DNS until
+`useAdguardDNS` is enabled; Tailscale DNS remains accepted during that initial setup.
 
 Intel CPU microcode updates are enabled explicitly. On Intel machines,
 `nixos-generate-config` normally enables them through a default in the generated
@@ -91,7 +102,7 @@ management, and sets Tailscale's `--accept-dns=false`. Keep AdGuard's upstream
 and bootstrap resolvers independent of the host's loopback resolver. LAN clients
 can use the server's fixed LAN address for DNS before this host-side switch.
 
-The uncommitted Radxa additions now live here:
+The x86 server also configures the following Docker infrastructure:
 
 - `docker-proxy-network.service` ensures the external `proxy` bridge exists at
   `172.18.0.0/16`, gateway `172.18.0.1`, whenever Docker starts. Existing networks

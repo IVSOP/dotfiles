@@ -1,9 +1,14 @@
-# ROCK 4C+ server
+# Radxa server (ROCK 4C+)
 
-`server.nix` contains the server policy; `rock-4c-plus.nix` contains board support;
+This guide covers the Radxa `rock-server`, one of the [four machines](../README.md).
+For the separate x86 server (`server`), see [its setup guide](../SERVER.md).
+
+Within this `radxa/` directory, `server.nix` contains the server policy;
+`rock-4c-plus.nix` contains board support;
 `rock-server.nix` combines them. No workstation configuration, desktop, or development
 packages are imported. The username is `radxa`, hostname is `rock-server`, and the
-six public keys in `../trusted-ssh-keys.nix` are shared with both existing computers.
+public keys in `../trusted-ssh-keys.nix` are shared with the laptop, desktop,
+and x86 server.
 `radxa-defaults.nix` ports Radxa's applicable system and hardware configuration;
 `rock-wireless-firmware.nix` packages the ROCK's Broadcom Wi-Fi and Bluetooth firmware.
 Add any further trusted public keys there before building. Passwords and Tailscale
