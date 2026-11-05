@@ -317,6 +317,32 @@ send_to_server_compressed() {
   rsync -avPz "$@" server:
 }
 
+get_from_server() {
+  if [ "$#" -lt 1 ]; then
+    echo "Usage: get_from_server REMOTE_PATH [REMOTE_PATH...]"
+    return 1
+  fi
+  local remote_path
+  local -a sources=()
+  for remote_path in "$@"; do
+    sources+=("server:$remote_path")
+  done
+  rsync -avP --protect-args -- "${sources[@]}" .
+}
+
+get_from_server_compressed() {
+  if [ "$#" -lt 1 ]; then
+    echo "Usage: get_from_server_compressed REMOTE_PATH [REMOTE_PATH...]"
+    return 1
+  fi
+  local remote_path
+  local -a sources=()
+  for remote_path in "$@"; do
+    sources+=("server:$remote_path")
+  done
+  rsync -avPz --protect-args -- "${sources[@]}" .
+}
+
 hotwallet() {
   cd /tmp && \
   decompress-decrypt $HOME/priv/hot_wallet.tar.zst.age && \
