@@ -50,16 +50,16 @@
     "hy3": {
       "flake": false,
       "locked": {
-        "lastModified": 1785411383,
-        "narHash": "sha256-tjGTha7Kz/XlEOKTFtb7LQ8yia3Pm9hh2JeUWRjxlTI=",
+        "lastModified": 1793890851,
+        "narHash": "sha256-j+mUK79d8ZtJI8WG7bCQ+uvQYtVrv/OdRXczeXa+JZI=",
         "owner": "IVSOP",
         "repo": "hy3",
-        "rev": "338ba492b191c5bea99c8bc823afb8d3c8ffe7c8",
+        "rev": "a4c8154710a941a683afbd46731503ed92551817",
         "type": "github"
       },
       "original": {
         "owner": "IVSOP",
-        "ref": "indicator-0.56",
+        "ref": "indicator-0.57",
         "repo": "hy3",
         "type": "github"
       }
@@ -140,6 +140,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-hyprland": {
+      "locked": {
+        "lastModified": 1793726008,
+        "narHash": "sha256-jQp1wKvbwWdLBASTXkSi/VYmDJ5AbBi1WvcMt9HWJC8=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "1d060086d60cb76a40cf37109f979d88a5bd6396",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "pre-commit": {
       "inputs": {
         "flake-compat": "flake-compat",
@@ -169,6 +185,7 @@
         "nix4vscode": "nix4vscode",
         "nixpkgs": "nixpkgs",
         "nixpkgs-anchor": "nixpkgs-anchor",
+        "nixpkgs-hyprland": "nixpkgs-hyprland",
         "rust-overlay": "rust-overlay_2",
         "waybar": "waybar"
       }

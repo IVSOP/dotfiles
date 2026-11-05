@@ -20,8 +20,11 @@
     nixpkgs-anchor = {
       url = "github:NixOS/nixpkgs/536c906eb9a9a2a38e7a454f4a4ff254b1e6f493";
     };
+    # Keep Hyprland and its portal on the same package set without updating
+    # the rest of the system. hy3 must build against that exact Hyprland.
+    nixpkgs-hyprland.url = "github:NixOS/nixpkgs/nixos-unstable";
     hy3 = {
-      url = "github:IVSOP/hy3/indicator-0.56";
+      url = "github:IVSOP/hy3/indicator-0.57";
       flake = false;
     };
     waybar = {
@@ -30,7 +33,7 @@
     };
   };
 
-  outputs = { nixpkgs, nixpkgs-anchor, lanzaboote, nix4vscode, hy3, waybar, rust-overlay, ... }: let
+  outputs = { nixpkgs, nixpkgs-hyprland, nixpkgs-anchor, lanzaboote, nix4vscode, hy3, waybar, rust-overlay, ... }: let
     system = "x86_64-linux";
 
     # This registry pin is on by default, but without the narHash, so nix reads
@@ -62,10 +65,13 @@
       ];
     };
 
-    hy3Overlay = final: prev: {
-      hy3 = final.callPackage "${hy3}/default.nix" {
-        inherit (final) hyprland;
-	hlversion = final.hyprland.version;
+    hy3Overlay = final: prev: let
+      hyprlandPkgs = nixpkgs-hyprland.legacyPackages.${final.stdenv.hostPlatform.system};
+    in {
+      inherit (hyprlandPkgs) hyprland xdg-desktop-portal-hyprland;
+      hy3 = hyprlandPkgs.callPackage "${hy3}/default.nix" {
+        inherit (hyprlandPkgs) hyprland;
+        hlversion = hyprlandPkgs.hyprland.version;
       };
     };
 
