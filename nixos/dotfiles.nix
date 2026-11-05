@@ -83,11 +83,13 @@ in
   environment.etc."oh-my-zsh".source = ohMyZsh;
 
   systemd.tmpfiles.rules =
-    # Parents of the nested links, in case the directory doesn't exist yet on
-    # a fresh machine. `d` leaves an existing directory and its contents alone.
+    # Explicit parents prevent tmpfiles from creating root-owned home directories.
     [
+      (dir "${home}/.cache" "0700")
       (dir "${home}/.config" "0755")
       (dir "${home}/.ssh" "0700")
+      (dir "${home}/.local" "0755")
+      (dir "${home}/.local/share" "0755")
       (dir "${home}/.local/share/applications" "0755")
       # L (without +) preserves an existing, manually installed Oh My Zsh.
       "L ${home}/.oh-my-zsh - ${user} users - /etc/oh-my-zsh"

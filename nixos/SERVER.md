@@ -45,74 +45,8 @@ generate this server's hardware file, and install with the `server` target.
 
 SSH accepts configured keys only; root SSH and password SSH are disabled.
 
-## Post-install setup
-
-### 1. Console login
-
-Log in locally as `ivsopi3` with the password set during installation.
-Keep `useAdguardDNS = false` while setting up the services below.
-
-### 2. SSH keys
-
-For outgoing SSH/Git access, restore the server's private keys into `~/.ssh`,
-or create a key if none exists:
-
-```sh
-install -d -m 700 ~/.ssh
-test -f ~/.ssh/id_ed25519 || ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519
-chmod 600 ~/.ssh/id_ed25519
-ssh-add ~/.ssh/id_ed25519
-```
-
-Register `~/.ssh/id_ed25519.pub` with the Git hosts or machines the server accesses.
-
-For incoming SSH, keep the private key on your laptop/client. Its public key must
-be listed in `/etc/nixos/trusted-ssh-keys.nix`; rebuild after adding a new key.
-Editing `~/.ssh/authorized_keys` is not used by this configuration.
-
-### 3. Tailscale login and remote SSH
-
-Set `enableTailscale = true` in `/etc/nixos/server.nix`, then:
-
-```sh
-sudo nixos-rebuild switch --flake 'path:/etc/nixos#server'
-sudo tailscale up
-tailscale status
-tailscale ip -4
-```
-
-Open the login URL printed by `tailscale up`. On your laptop/client, connect
-to Tailscale, then run:
-
-```sh
-ssh -i ~/.ssh/id_ed25519 ivsopi3@server
-```
-
-Use the server's printed Tailscale IP instead of `server` if needed.
-The console password is used for `sudo`; SSH uses your client key.
-
-### 4. Start AdGuard and switch DNS
-
-Restore the AdGuard Compose stack and its data. From its directory:
-
-```sh
-sudo docker compose up -d
-dig @127.0.0.1 example.org
-dig +tcp @127.0.0.1 example.org
-```
-
-After both DNS checks succeed, restore `useAdguardDNS = true` in
-`/etc/nixos/server.nix`, then:
-
-```sh
-sudo nixos-rebuild switch --flake 'path:/etc/nixos#server'
-cat /etc/resolv.conf
-getent hosts example.org
-```
-
-The resolver should be `127.0.0.1`. This also disables NetworkManager DNS
-management and Tailscale DNS acceptance. Keep AdGuard's upstream and bootstrap
-resolvers independent of the host's loopback resolver.
+For console login, SSH keys, Tailscale, and AdGuard DNS, follow
+[post-install setup in INSTALL.md](INSTALL.md#5-post-install-setup).
 
 ## Firewall and containers
 

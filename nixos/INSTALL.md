@@ -176,18 +176,116 @@ nixos-enter --root /mnt -c 'chown -R ivsopi3:users /home/ivsopi3/dotfiles'
 reboot
 ```
 
-Remove the USB and log in at the server's console as `ivsopi3`, using the
-password just set. Follow [post-install setup](SERVER.md#post-install-setup)
-for SSH keys, Tailscale login, AdGuard, and switching DNS.
+Remove the USB and log in locally as `ivsopi3` with the password just set.
 
-## 5. Later changes
+## 5. Post-install setup
 
-Edit `/etc/nixos`, then rebuild. For the server:
+Run as `ivsopi3`. Set your machine's target again after reboot:
 
 ```sh
-sudo nixos-rebuild switch --flake 'path:/etc/nixos#server'
+target=server # ivX13 for laptop; IVPC for desktop
 ```
 
-See [SERVER.md](SERVER.md) for server services, or the
-[Lanzaboote guide](https://nix-community.github.io/lanzaboote/) to enable Secure Boot later.
-Restore the temporary Tailscale, DNS, or boot settings after their setup.
+### SSH keys (all machines)
+
+Restore your private keys into `~/.ssh`, or create a key if none exists:
+
+```sh
+install -d -m 700 ~/.ssh
+test -f ~/.ssh/id_ed25519 || ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519
+chmod 600 ~/.ssh/id_ed25519
+ssh-add ~/.ssh/id_ed25519
+```
+
+Register `~/.ssh/id_ed25519.pub` with the Git hosts or machines you access.
+For incoming SSH, add the connecting client's public key to
+`/etc/nixos/trusted-ssh-keys.nix` and rebuild. Its private key stays on the client.
+
+### Tailscale and remote login (all machines)
+
+Server: restore `enableTailscale = true` in `/etc/nixos/server.nix`, keep
+`useAdguardDNS = false`, then rebuild:
+
+```sh
+sudo nixos-rebuild switch --flake "path:/etc/nixos#$target"
+```
+
+This starts Tailscale immediately and enables it for future boots on the server.
+
+Laptop/desktop only: start the manually configured daemon:
+
+```sh
+sudo systemctl start tailscaled
+```
+
+Then, on all machines:
+
+```sh
+sudo tailscale up
+tailscale status
+tailscale ip -4
+```
+
+Open the login URL printed by `tailscale up`.
+On laptop/desktop, also start SSH when you want incoming connections:
+
+```sh
+sudo systemctl start sshd
+```
+
+From another device on Tailscale, replace `HOST` with the machine's hostname
+or printed Tailscale IP:
+
+```sh
+ssh -i ~/.ssh/id_ed25519 ivsopi3@HOST
+```
+
+SSH uses the client key; `sudo` uses your local password. On laptop/desktop,
+start `tailscaled` and `sshd` again after reboot when needed.
+
+### AdGuard and DNS (server only)
+
+Restore the AdGuard Compose stack and data. From its directory:
+
+```sh
+sudo docker compose up -d
+dig @127.0.0.1 example.org
+dig +tcp @127.0.0.1 example.org
+```
+
+Once both checks pass, restore `useAdguardDNS = true` in `/etc/nixos/server.nix`:
+
+```sh
+sudo nixos-rebuild switch --flake "path:/etc/nixos#$target"
+cat /etc/resolv.conf
+getent hosts example.org
+```
+
+The resolver should be `127.0.0.1`. Keep AdGuard's upstream and bootstrap
+resolvers independent of the host's loopback resolver.
+
+### Secure Boot (laptop/desktop only)
+
+```sh
+sudo sbctl create-keys
+```
+
+Restore the existing settings in `/etc/nixos/configuration.nix`:
+
+```nix
+boot.loader.systemd-boot.enable = lib.mkForce false;
+boot.lanzaboote.enable = true;
+```
+
+Rebuild, then follow the [Lanzaboote guide](https://nix-community.github.io/lanzaboote/)
+for key enrollment and verification before enabling Secure Boot in firmware.
+
+## 6. Later changes
+
+Edit `/etc/nixos`, then rebuild with your machine's target:
+
+```sh
+sudo nixos-rebuild switch --flake "path:/etc/nixos#$target"
+```
+
+See [SERVER.md](SERVER.md) for server services.

@@ -160,8 +160,10 @@ in
   ];
 
   # Where cargo-build-sbf looks for platform-tools. Interpolating the store
-  # path also GC-roots it.
+  # path also GC-roots it. Explicit parents keep the cache writable by the user.
   systemd.tmpfiles.rules = [
-    "L+ /home/ivsopi3/.cache/solana/${platformTools.version}/platform-tools - - - - ${platformTools}"
+    "d /home/ivsopi3/.cache/solana 0755 ivsopi3 users - -"
+    "d /home/ivsopi3/.cache/solana/${platformTools.version} 0755 ivsopi3 users - -"
+    "L+ /home/ivsopi3/.cache/solana/${platformTools.version}/platform-tools - ivsopi3 users - ${platformTools}"
   ];
 }
