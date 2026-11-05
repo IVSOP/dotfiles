@@ -1,3 +1,6 @@
+# Trailing space enables alias expansion after sudo.
+alias sudo='sudo '
+
 #eval $(thefuck --alias)
 alias open="xdg-open . & disown"
 alias browser="w3m google.com"
