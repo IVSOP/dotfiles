@@ -147,12 +147,13 @@ useAdguardDNS = false;
 enableTailscale = false;
 ```
 
-Laptop/desktop: edit the existing settings in `configuration.nix`:
+All x86 machines: edit the existing boot settings in `server.nix` for the
+server, or `configuration.nix` for the laptop/desktop:
 
 ```nix
 # Boot without signing until Secure Boot keys are set up.
 boot.loader.systemd-boot.enable = lib.mkForce true;
-# Restore true after creating and enrolling the signing keys.
+# Restore true after creating the signing keys, before rebuilding and enrolling.
 boot.lanzaboote.enable = false;
 ```
 
@@ -264,21 +265,32 @@ getent hosts example.org
 The resolver should be `127.0.0.1`. Keep AdGuard's upstream and bootstrap
 resolvers independent of the host's loopback resolver.
 
-### Secure Boot (laptop/desktop only)
+### Secure Boot (all x86 machines)
 
 ```sh
 sudo sbctl create-keys
 ```
 
-Restore the existing settings in `/etc/nixos/configuration.nix`:
+Restore the existing settings in `/etc/nixos/server.nix` for the server, or
+`/etc/nixos/configuration.nix` for the laptop/desktop:
 
 ```nix
 boot.loader.systemd-boot.enable = lib.mkForce false;
 boot.lanzaboote.enable = true;
 ```
 
-Rebuild, then follow the [Lanzaboote guide](https://nix-community.github.io/lanzaboote/)
-for key enrollment and verification before enabling Secure Boot in firmware.
+Rebuild and verify the signed boot files:
+
+```sh
+sudo nixos-rebuild switch --flake "path:/etc/nixos#$target"
+sudo sbctl verify
+```
+
+Follow the [Lanzaboote guide](https://nix-community.github.io/lanzaboote/getting-started/enable-secure-boot.html)
+to enter firmware Setup Mode and enroll the keys with
+`sudo sbctl enroll-keys --microsoft`. Enable Secure Boot in firmware if needed,
+then reboot and check `bootctl status` and `sudo sbctl status`: Secure Boot
+must be enabled and Setup Mode disabled.
 
 ## 6. Later changes
 

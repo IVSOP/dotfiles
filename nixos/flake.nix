@@ -81,6 +81,7 @@
       inherit system;
       specialArgs = { inherit nixpkgs-anchor; };
       modules = [
+        lanzaboote.nixosModules.lanzaboote
         { nixpkgs.overlays = [ nix4vscode.overlays.default rust-overlay.overlays.default ]; }
         pinRegistry
         ./server.nix

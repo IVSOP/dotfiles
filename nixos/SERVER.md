@@ -4,6 +4,11 @@ This guide covers the x86 `server`, one of the [four machines](README.md).
 For the separate Radxa server (`rock-server`), see [its setup guide](radxa/SERVER.md).
 
 The flake target is `server`, with hostname `server` and user `ivsopi3`.
+Lanzaboote signs the boot files using keys in `/var/lib/sbctl`, and `sbctl` is
+installed for key management and verification. Follow the Secure Boot steps in
+[INSTALL.md](INSTALL.md#secure-boot-all-x86-machines) to create and enroll keys;
+enabling Lanzaboote in Nix does not itself enable firmware enforcement.
+
 `server.nix` imports the same `common.nix`, `development.nix`, and `dotfiles.nix`
 used by the desktop and laptop. These share the CLI packages, Git configuration,
 Zsh/SSH agent, development packages (including stable/nightly Rust, cross targets,

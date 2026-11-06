@@ -13,9 +13,14 @@ in
   imports = [ ./common.nix ./development.nix ./dotfiles.nix ];
 
   networking.hostName = lib.mkDefault "server";
-  boot.loader.systemd-boot.enable = lib.mkDefault true;
+  # Installation: use systemd-boot without Lanzaboote until signing keys exist.
+  boot.loader.systemd-boot.enable = lib.mkForce false;
   boot.loader.efi.canTouchEfiVariables = lib.mkDefault true;
   boot.loader.efi.efiSysMountPoint = lib.mkDefault "/boot/efi";
+  boot.lanzaboote = {
+    enable = true;
+    pkiBundle = "/var/lib/sbctl";
+  };
   hardware.enableRedistributableFirmware = true;
   hardware.cpu.intel.updateMicrocode = true;
   hardware.graphics = {
@@ -170,6 +175,7 @@ in
   };
 
   environment.systemPackages = with pkgs; [
+    sbctl
     docker-compose
     dnsutils
     doggo
