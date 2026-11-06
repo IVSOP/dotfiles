@@ -44,6 +44,7 @@
     usbutils
 
     # ─ Disk / recovery ─
+    duf
     testdisk
     ddrescue
     gptfdisk
