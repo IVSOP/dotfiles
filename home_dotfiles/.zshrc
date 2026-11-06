@@ -17,6 +17,7 @@ source $HOME/.bash_funcs
 
 zstyle ':omz:update' mode disabled
 zstyle ':completion:*' use-cache on
+zstyle ':completion:*' list-colors 'di=01;34'
 zstyle ':completion:*' matcher-list '' # so that egg. D matches Downloads but not dotfiles
 # unsetopt nocaseglob
 # autoload -Uz compinit && compinit
