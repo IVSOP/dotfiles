@@ -23,6 +23,11 @@
   # warns on every eval.) Power button is in configuration.nix.
   services.logind.settings.Login.HandleLidSwitch = "ignore";
 
+  # Ignore the ThinkPad sleep shortcut (Fn+4, or the physical Ctrl+4 with
+  # Fn/Ctrl swapped in firmware). Keep power-button/manual suspend working.
+  services.logind.settings.Login.HandleSuspendKey = "ignore";
+  services.logind.settings.Login.HandleSuspendKeyLongPress = "ignore";
+
   # ── TLP (power management) ─────────────────────────────────────────
   services.tlp = {
     enable = true;
