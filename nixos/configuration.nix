@@ -237,6 +237,14 @@
     # ─ Media ─
     ffmpeg-full
     libavif                        # avifenc, the encoder sway/scripts/screenshot*.sh pipe into
+    # libavif's pixbuf loader rejects valid AVIFs with a 28-byte ftyp box.
+    # Override its thumbnailer with FFmpeg, which handles those files too.
+    (lib.hiPrio (pkgs.writeTextDir "share/thumbnailers/avif.thumbnailer" ''
+      [Thumbnailer Entry]
+      TryExec=${pkgs.ffmpegthumbnailer}/bin/ffmpegthumbnailer
+      Exec=${pkgs.ffmpegthumbnailer}/bin/ffmpegthumbnailer -i %i -o %o -s %s -t 0
+      MimeType=image/avif;
+    ''))
     mpv
     ffmpegthumbnailer              # Nemo previews for MP4, MKV, WebM, etc.
     mediainfo
