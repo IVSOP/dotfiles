@@ -238,7 +238,7 @@
     ffmpeg-full
     libavif                        # avifenc, the encoder sway/scripts/screenshot*.sh pipe into
     mpv
-    ffmpegthumbnailer
+    ffmpegthumbnailer              # Nemo previews for MP4, MKV, WebM, etc.
     mediainfo
     imagemagick
     qpwgraph
@@ -341,7 +341,12 @@
     enable = true;
     profiles.user.databases = [{
       settings."org/cinnamon/desktop/applications/terminal".exec = "alacritty";
-      settings."org/nemo/preferences".show-hidden-files = true;
+      settings."org/nemo/preferences" = {
+        show-hidden-files = true;
+        show-image-thumbnails = "local-only";
+        # Nemo shares this limit across images and videos; allow up to 10 GiB.
+        thumbnail-limit = lib.gvariant.mkUint64 (10 * 1024 * 1024 * 1024);
+      };
     }];
   };
 }
