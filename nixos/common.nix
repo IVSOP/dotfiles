@@ -74,6 +74,7 @@
     tmux
     wget
     curl
+    yt-dlp
     openssl
     unzip
     zip
