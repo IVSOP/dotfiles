@@ -2,6 +2,14 @@
 { lib, pkgs, ... }:
 
 let
+  # Keep the profiler compatible with 0.13.1 clients, even after nixpkgs updates.
+  # Use native Wayland under Hyprland and GTK for open/save dialogs.
+  tracy = assert pkgs.tracy_0_13.version == "0.13.1";
+    pkgs.tracy_0_13.override {
+      withWayland = true;
+      withGtkFileSelector = true;
+    };
+
   # Cross-compilation targets, installed for both toolchains.
   rustTargets = [
     "wasm32-unknown-unknown"   # wasm-bindgen / wasm-pack / wasm-server-runner
@@ -135,6 +143,7 @@ in
     fastfetch
     gdb
     valgrind
+    tracy
     glew
 
     (vscode-with-extensions.override {
