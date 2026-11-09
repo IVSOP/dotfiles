@@ -75,6 +75,26 @@
       };
     };
 
+    waybarOverlay = nixpkgs.lib.composeManyExtensions [
+      waybar.overlays.default
+      (final: prev: {
+        waybar = prev.waybar.overrideAttrs (old: {
+          # Temporary: the thread stress test's 5-second watchdog can expire
+          # during a busy system build. Match upstream's proposed 60-second
+          # budget while keeping the tests enabled.
+          # After future Waybar updates, try removing this override and using
+          # waybar.overlays.default directly again once its tests pass reliably.
+          # Upstream: https://github.com/Alexays/Waybar/pull/5432
+          postPatch = (old.postPatch or "") + ''
+            substituteInPlace test/utils/sleeper_thread.cpp \
+              --replace-fail 'alarm(5);' 'alarm(60);'
+          '';
+          # Let the suite outlive the subprocess watchdog (Meson defaults to 30s).
+          mesonCheckFlags = (old.mesonCheckFlags or [ ]) ++ [ "--timeout-multiplier" "3" ];
+        });
+      })
+    ];
+
   in {
     nixosConfigurations.rock-server = rock4Config;
     nixosConfigurations.server = nixpkgs.lib.nixosSystem {
@@ -96,7 +116,7 @@
       specialArgs = { inherit nixpkgs-anchor; };
       modules = [
         lanzaboote.nixosModules.lanzaboote
-        { nixpkgs.overlays = [ nix4vscode.overlays.default hy3Overlay waybar.overlays.default rust-overlay.overlays.default ]; }
+        { nixpkgs.overlays = [ nix4vscode.overlays.default hy3Overlay waybarOverlay rust-overlay.overlays.default ]; }
         pinRegistry
         ./dotfiles.nix
         ./configuration.nix
@@ -109,7 +129,7 @@
       specialArgs = { inherit nixpkgs-anchor; };
       modules = [
         lanzaboote.nixosModules.lanzaboote
-        { nixpkgs.overlays = [ nix4vscode.overlays.default hy3Overlay waybar.overlays.default rust-overlay.overlays.default ]; }
+        { nixpkgs.overlays = [ nix4vscode.overlays.default hy3Overlay waybarOverlay rust-overlay.overlays.default ]; }
         pinRegistry
         ./dotfiles.nix
         ./configuration.nix

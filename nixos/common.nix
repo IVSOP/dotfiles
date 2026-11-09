@@ -2,9 +2,10 @@
 { lib, pkgs, ... }:
 
 {
-  # Apply to all LUKS mappings, including those in generated hardware configs.
-  # Discards expose unused block locations; devices can opt out with false.
   imports = [
+    ./codex.nix
+    # Apply to all LUKS mappings, including those in generated hardware configs.
+    # Discards expose unused block locations; devices can opt out with false.
     {
       options.boot.initrd.luks.devices = lib.mkOption {
         type = lib.types.attrsOf (lib.types.submodule {

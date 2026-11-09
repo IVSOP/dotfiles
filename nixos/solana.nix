@@ -1,5 +1,5 @@
-# Solana/anchor toolchain. Versions are pinned because Anchor.toml pins
-# them and the CLI aborts on a mismatch rather than warning.
+# Solana/Anchor toolchain. Anchor and the SBF tools are pinned to match projects;
+# solana-cli follows the main nixpkgs input and can change when it is updated.
 { pkgs, nixpkgs-anchor, rustDefault, rustNightly, ... }:
 
 let
@@ -24,7 +24,19 @@ let
     exec ${rustupShim}/bin/cargo "$@"
   '';
 
-  solanaCli = pkgs.solana-cli;
+  # Temporary workaround: nixpkgs' cargoSetupHook now requires system libraries
+  # that solana-cli 4.0.3 omits. After future nixpkgs/Solana updates, try removing
+  # this override and rebuilding; keep just `solanaCli = pkgs.solana-cli;` once
+  # it builds successfully without the workaround.
+  solanaCli = pkgs.solana-cli.overrideAttrs (old: {
+    buildInputs = (old.buildInputs or [ ]) ++ [
+      pkgs.zstd
+      pkgs.zlib
+      # Agave enables unprefixed_malloc_on_supported_platforms. This helper
+      # supplies a matching allocator and sets JEMALLOC_OVERRIDE for Cargo.
+      pkgs.rust-jemalloc-sys-unprefixed
+    ];
+  });
 
   # anchor and cargo-build-sbf assume rustup, which can't go in
   # systemPackages (cargo/rustc collide with rustDefault). Dispatches per
