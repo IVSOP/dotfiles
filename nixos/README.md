@@ -40,22 +40,35 @@ The server and Radxa server have separate configurations and setup procedures:
 
 ## Rebuild an installed x86 machine
 
-Run the matching command from this directory on the machine being updated.
-Target names are case-sensitive:
+Edit the files in this repository, then run these scripts as your normal user
+(they call `sudo` where needed):
 
 ```sh
-# Laptop
-sudo nixos-rebuild switch --flake 'path:./#ivX13'
+# Copy the configuration to /etc/nixos and switch to it
+./rebuild.sh
 
-# Desktop
-sudo nixos-rebuild switch --flake 'path:./#IVPC'
+# Update only nixpkgs in the repository's flake.lock, then copy and rebuild
+./update.sh
 
-# Server
-sudo nixos-rebuild switch --flake 'path:./#server'
+# Copy the configuration, collect garbage, delete old generations,
+# and rebuild the boot configuration
+./gc.sh
 ```
 
-The `path:./` form includes new files before they are tracked in Git. Once all
-configuration files are tracked, `.#TARGET` also works.
+Each script works from any directory and defaults to the current hostname.
+You can pass a case-sensitive target explicitly, for example
+`./rebuild.sh IVPC`; supported targets are `ivX13`, `IVPC`, and `server`.
+The target selects the configuration on the local machine, not a remote host.
+
+All three copy the top-level `.nix` files and `flake.lock` to `/etc/nixos`
+before rebuilding with `--flake path:/etc/nixos#TARGET`. This includes new
+files before they are tracked in Git. Existing unrelated files in `/etc/nixos`
+are preserved; the `radxa/` directory is not copied.
+
+`gc.sh` runs `sudo nix-store --gc`, `sudo nix-collect-garbage -d`, and then
+`sudo nixos-rebuild boot`. It deletes old generations and updates the boot
+configuration without switching the running system. Scripts stop if a command
+fails.
 
 For the Radxa server, follow the [image build and deployment guide](radxa/SERVER.md).
 The `packages.x86_64-linux.server-image` and

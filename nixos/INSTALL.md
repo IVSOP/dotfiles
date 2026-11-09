@@ -294,10 +294,17 @@ must be enabled and Setup Mode disabled.
 
 ## 6. Later changes
 
-Edit `/etc/nixos`, then rebuild with your machine's target:
+For routine changes, edit `~/dotfiles/nixos` and use the maintenance scripts.
+They copy the configuration and lock file to `/etc/nixos` before rebuilding:
 
 ```sh
-sudo nixos-rebuild switch --flake "path:/etc/nixos#$target"
+cd ~/dotfiles/nixos
+./rebuild.sh
+./update.sh  # Update nixpkgs, then copy and rebuild
+./gc.sh      # Copy, remove old generations, and rebuild the boot configuration
 ```
+
+The scripts default to your hostname; pass `ivX13`, `IVPC`, or `server` to
+select a target explicitly. See [README.md](README.md) for details.
 
 See [SERVER.md](SERVER.md) for server services.
