@@ -111,10 +111,13 @@
   # ── LocalSend ────────────────────────────────────────────────────────
   programs.localsend = {
     enable = true;
-    # The bundled Flutter executable needs libz.so.1, but the upstream
-    # package does not include zlib in its ELF runtime path.
+    # Flutter's executable needs libz.so.1 directly. Adding a build input
+    # alone does not put zlib in its runtime search path.
     package = pkgs.localsend.overrideAttrs (old: {
-      buildInputs = (old.buildInputs or [ ]) ++ [ pkgs.zlib ];
+      postFixup = (old.postFixup or "") + ''
+        ${lib.getExe pkgs.patchelf} --add-rpath ${lib.makeLibraryPath [ pkgs.zlib ]} \
+          "$out/app/localsend/localsend_app"
+      '';
     });
     openFirewall = true;
   };
