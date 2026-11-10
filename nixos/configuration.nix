@@ -111,6 +111,11 @@
   # ── LocalSend ────────────────────────────────────────────────────────
   programs.localsend = {
     enable = true;
+    # The bundled Flutter executable needs libz.so.1, but the upstream
+    # package does not include zlib in its ELF runtime path.
+    package = pkgs.localsend.overrideAttrs (old: {
+      buildInputs = (old.buildInputs or [ ]) ++ [ pkgs.zlib ];
+    });
     openFirewall = true;
   };
 
