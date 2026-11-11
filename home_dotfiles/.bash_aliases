@@ -46,7 +46,13 @@ alias ff="fzf --preview 'bat --style=numbers --color=always {}'"
 #                 --delimiter : \
 #                 --preview 'bat --style=full --color=always --highlight-line {2} {1}' \
 #                 --preview-window '~4,+{2}+4/3,<80(up)'"
-alias frg="rg --column --line-number --no-heading --color=always --smart-case . | fzf --ansi \
+alias frg="rg --hidden --no-ignore-dot --glob '!.git' --column --line-number --no-heading --color=always --smart-case . | fzf --ansi \
+                --bind 'enter:become(code --goto {1}:{2})' \
+                --delimiter : \
+                --nth 4.. \
+                --preview 'bat --style=full --color=always --highlight-line {2} {1}' \
+                --preview-window '~4,+{2}+4/3,<80(up)'"
+alias frgi="rg --no-ignore --hidden --text --follow --column --line-number --no-heading --color=always --smart-case . | fzf --ansi \
                 --bind 'enter:become(code --goto {1}:{2})' \
                 --delimiter : \
                 --nth 4.. \
