@@ -3,48 +3,7 @@ let
   user = "ivsopi3";
   home = "/home/${user}";
   settings = "${home}/Documents/Vault/.obsidian";
-  plugins = {
-    obsidian-excalidraw-plugin = {
-      repo = "zsviczian/obsidian-excalidraw-plugin";
-      version = "2.22.0";
-      enable = true;
-      hashes = {
-        "main.js" = "sha256-j31dxTgigCCAWiVduWFbov24KpwOYIHxs37nwnUKs34=";
-        "manifest.json" = "sha256-5HiL0AyYkPYsk51RZ27S6qOSdIpzjyktR3Id9v4QBVM=";
-        "styles.css" = "sha256-VYGvZ9mozBM3dEIMeXTQOny8tevOIJ1ujgpT4AvePwA=";
-      };
-    };
-    file-tree-alternative = {
-      repo = "ozntel/file-tree-alternative";
-      version = "2.6.0";
-      enable = false;
-      hashes = {
-        "main.js" = "sha256-vnY+ZH7iAiaul61OxGez3AN5oZ2xPQNg3zqxrBCafE8=";
-        "manifest.json" = "sha256-BOZZiDBOWSEiLE5BMbqkHM5eQrjUlBCrpKpC5NvhWxk=";
-        "styles.css" = "sha256-otCr8aeB9uMxK+hpBOpeh9h3SG/aXxidB1uD/bHl1wI=";
-      };
-    };
-    obsidian-git = {
-      repo = "Vinzent03/obsidian-git";
-      version = "2.41.1";
-      enable = false;
-      hashes = {
-        "main.js" = "sha256-KKGK/KsdLxUqDTyJr/OOKpetC+GuqvmWMGEyM7vsbBs=";
-        "manifest.json" = "sha256-XU0PQRUYY2wdKkgxQlqONIe5JbW9QTvgyiLm3jilk/c=";
-        "styles.css" = "sha256-v6j71F/kn/NA/bGWuEut1jGu3l1vlnQPM26nec1EEAU=";
-      };
-    };
-    obsidian-livesync = {
-      repo = "vrtmrz/obsidian-livesync";
-      version = "0.25.56";
-      enable = true;
-      hashes = {
-        "main.js" = "sha256-cuvvN24GCMC/V2w292TrGkypPlzcrzcDUeJc7e1cvRM=";
-        "manifest.json" = "sha256-PE6kuSkKJIYUsoEbhu4ENC6WumruT7Hp1Pf9BdKJx0c=";
-        "styles.css" = "sha256-SKokAKsGwX0YAoczW+1++6ukiOc9QAi8NB8LJsrox8E=";
-      };
-    };
-  };
+  plugins = (builtins.fromJSON (builtins.readFile ./sources.json)).obsidianPlugins;
   enabled = lib.attrNames (lib.filterAttrs (_: plugin: plugin.enable) plugins);
   dir = path: "d ${path} 0700 ${user} users - -";
 

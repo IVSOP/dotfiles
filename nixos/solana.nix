@@ -1,13 +1,16 @@
-# Solana/Anchor toolchain. Anchor and the SBF tools are pinned to match projects;
-# solana-cli follows the main nixpkgs input and can change when it is updated.
-{ pkgs, nixpkgs-anchor, rustDefault, rustNightly, ... }:
+# Solana CLI, Anchor, and the SBF tools are pinned independently of general Rust.
+{ pkgs, nixpkgs-anchor, nixpkgs-solana, rustDefault, rustNightly, ... }:
 
 let
+  pins = import ./pins.nix;
+  solanaPkgs = import nixpkgs-solana { inherit (pkgs.stdenv.hostPlatform) system; };
+  anchorPackage = (import nixpkgs-anchor { inherit (pkgs.stdenv.hostPlatform) system; }).anchor;
+
   # 1.0.2, from the last nixpkgs that packaged it; this system's nixpkgs
   # ships 1.1.2. Imported bare, without the system's overlays.
-  anchorPinned = pkgs.symlinkJoin {
-    name = "anchor-1.0.2";
-    paths = [ (import nixpkgs-anchor { inherit (pkgs.stdenv.hostPlatform) system; }).anchor ];
+  anchorPinned = assert anchorPackage.version == pins.anchor.version; pkgs.symlinkJoin {
+    name = "anchor-${pins.anchor.version}";
+    paths = [ anchorPackage ];
     nativeBuildInputs = [ pkgs.makeWrapper ];
     postBuild = ''
       wrapProgram $out/bin/anchor --prefix PATH : ${anchorCargoShim}/bin:${rustupShim}/bin
@@ -26,15 +29,15 @@ let
 
   # Temporary workaround: nixpkgs' cargoSetupHook now requires system libraries
   # that solana-cli 4.0.3 omits. After future nixpkgs/Solana updates, try removing
-  # this override and rebuilding; keep just `solanaCli = pkgs.solana-cli;` once
+  # this override and rebuilding; keep just `solanaCli = solanaPkgs.solana-cli;` once
   # it builds successfully without the workaround.
-  solanaCli = pkgs.solana-cli.overrideAttrs (old: {
+  solanaCli = assert solanaPkgs.solana-cli.version == pins.solanaCli.version; solanaPkgs.solana-cli.overrideAttrs (old: {
     buildInputs = (old.buildInputs or [ ]) ++ [
-      pkgs.zstd
-      pkgs.zlib
+      solanaPkgs.zstd
+      solanaPkgs.zlib
       # Agave enables unprefixed_malloc_on_supported_platforms. This helper
       # supplies a matching allocator and sets JEMALLOC_OVERRIDE for Cargo.
-      pkgs.rust-jemalloc-sys-unprefixed
+      solanaPkgs.rust-jemalloc-sys-unprefixed
     ];
   });
 
@@ -73,7 +76,7 @@ let
   # its target is a symlink, which the tmpfiles rule below provides.
   platformTools = pkgs.stdenv.mkDerivation rec {
     pname = "solana-platform-tools";
-    version = "v1.58";                 # Rust 1.95.0 / LLVM 22
+    version = pins.solanaPlatformTools.version; # Rust 1.95.0 / LLVM 22
 
     src = pkgs.fetchurl {
       url = "https://github.com/anza-xyz/platform-tools/releases/download/${version}/platform-tools-linux-x86_64.tar.bz2";
@@ -126,7 +129,7 @@ let
 
     # Pinned separately from pkgs.solana-cli so nixpkgs bumps can't move
     # cargoHash or break the postPatch below.
-    version = "4.5.0";
+    version = pins.cargoBuildSbf.version;
     src = pkgs.fetchFromGitHub {
       owner = "anza-xyz";
       repo = "cargo-build-sbf";

@@ -27,5 +27,5 @@ sync_configuration() {
     printf 'Copying configuration from %s to /etc/nixos\n' "$config_dir"
     sudo install -d -m 0755 /etc/nixos
     # All x86 modules live at the top level; leave radxa/ out for now.
-    sudo install -m 0644 -- "$config_dir"/*.nix "$config_dir/flake.lock" /etc/nixos/
+    sudo install -m 0644 -- "$config_dir"/*.nix "$config_dir/flake.lock" "$config_dir/sources.json" /etc/nixos/
 }

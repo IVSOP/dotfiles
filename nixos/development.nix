@@ -2,10 +2,12 @@
 { lib, pkgs, ... }:
 
 let
+  pins = import ./pins.nix;
+
   # Keep the profiler compatible with 0.13.1 clients, even after nixpkgs updates.
   # Use native Wayland under Hyprland and GTK for open/save dialogs.
-  tracy = assert pkgs.tracy_0_13.version == "0.13.1";
-    pkgs.tracy_0_13.override {
+  tracy = assert pkgs.${pins.tracy.attribute}.version == pins.tracy.version;
+    pkgs.${pins.tracy.attribute}.override {
       withWayland = true;
       withGtkFileSelector = true;
     };

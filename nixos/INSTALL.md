@@ -300,7 +300,7 @@ They copy the configuration and lock file to `/etc/nixos` before rebuilding:
 ```sh
 cd ~/dotfiles/nixos
 ./rebuild.sh
-./update.sh  # Update nixpkgs, then copy and rebuild
+./update.sh  # Show manual pins, update other inputs/sources, copy and rebuild
 ./gc.sh      # Copy, remove old generations, and rebuild the boot configuration
 ```
 

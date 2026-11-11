@@ -1,0 +1,90 @@
+{
+  "obsidianPlugins": {
+    "file-tree-alternative": {
+      "enable": false,
+      "hashes": {
+        "main.js": "sha256-dqlU3SRg348+W+F96JU9lcscwygb3x5nlKWnknXGQes=",
+        "manifest.json": "sha256-VjIB+wI0gzQBLFfc1JSlPu/TIkaZPdd34MDAJk0DF6g=",
+        "styles.css": "sha256-qvRA28pZ4ZTohMPp74+SEQH6egIvWgFMS/kbVVb/chE="
+      },
+      "repo": "ozntel/file-tree-alternative",
+      "version": "2.6.4"
+    },
+    "obsidian-excalidraw-plugin": {
+      "enable": true,
+      "hashes": {
+        "main.js": "sha256-Sd/FZnp3MNvBJM38KkqOiRiBAGNkk6OdZJO/VpalVUE=",
+        "manifest.json": "sha256-joKCj9kSVhXoo2HQ8VVT5UjKwu56MD5VOHN4pTuSX9k=",
+        "styles.css": "sha256-bHqZFPgzBdCfmVckiJf/LyXPLC1LRrLZq0Lzx+4dKfA="
+      },
+      "repo": "zsviczian/obsidian-excalidraw-plugin",
+      "version": "2.29.2"
+    },
+    "obsidian-git": {
+      "enable": false,
+      "hashes": {
+        "main.js": "sha256-WL6wmBh1xnL8gzUOOx8g22yh3zyiBHol9JGQseMeJEM=",
+        "manifest.json": "sha256-TzRQ8yAfAuLh6L8qhzC/yDfPQqJduZG7XZMFbRcJOVE=",
+        "styles.css": "sha256-kq6A0mAOW8dkPdq8qjfYiOEul2Pv/2PcqVzJSkQhB4E="
+      },
+      "repo": "Vinzent03/obsidian-git",
+      "version": "2.43.0"
+    },
+    "obsidian-livesync": {
+      "enable": true,
+      "hashes": {
+        "main.js": "sha256-+Hlc2KC/KDPuRuP0ULx4j4rmBsbBsuByTYuMOjZKvPI=",
+        "manifest.json": "sha256-kz9Ki09v3zcc5FmAbFJalTJtyYXrNSv7lnLmhuh+S/s=",
+        "styles.css": "sha256-tq+dIUwI8AWD6z/jWikb7RmojJzk7553jC3wr7Pzq30="
+      },
+      "repo": "vrtmrz/obsidian-livesync",
+      "version": "1.0.49"
+    }
+  },
+  "radxaFirmware": {
+    "repo": "radxa-pkg/radxa-firmware",
+    "revision": "ba359c9d72a0864224ea7a787234c1cf60ca9e6b",
+    "files": [
+      {
+        "directory": "brcm",
+        "name": "brcmfmac43456-sdio.bin",
+        "hash": "sha256-eXhyeng9sJ9E3i6HszSK3w+gscb4XuCTVF+U8OV/GA8="
+      },
+      {
+        "directory": "brcm",
+        "name": "brcmfmac43456-sdio.clm_blob",
+        "hash": "sha256-Lb19Ivya8OtWDOq0WxlkbSEbx7NKHdAMa/rF3WuiXoo="
+      },
+      {
+        "directory": "brcm",
+        "name": "brcmfmac43456-sdio.txt",
+        "hash": "sha256-ZscetTtHxJ1COGtmc1E0V4ZAsJRvP0bkTzhP71qs/Z4="
+      },
+      {
+        "directory": "brcm",
+        "name": "BCM4345C5.hcd",
+        "hash": "sha256-ayQSw+vwo9+tG3Fpz5LHpf3o+rQHs910vBj3Sj77ajo="
+      },
+      {
+        "directory": "cypress",
+        "name": "cyfmac43455-sdio.bin",
+        "hash": "sha256-1QEIeFJuEnNW/T6nrVdUjq6XYkgpnOxhhNt/Kmma4ec="
+      },
+      {
+        "directory": "cypress",
+        "name": "cyfmac43455-sdio.clm_blob",
+        "hash": "sha256-NYzCMVqggebiCeFWf9pR2NFYaI6LgtYUI05Ds/UxyJQ="
+      },
+      {
+        "directory": "cypress",
+        "name": "cyfmac43455-sdio.txt",
+        "hash": "sha256-LQnjsYCAnvsNGYAE4qX6gPitjooLSkySXf7/izb95Dk="
+      },
+      {
+        "directory": "brcm",
+        "name": "BCM4345C0_003.001.025.0162.0000_Generic_UART_37_4MHz_wlbga_ref_iLNA_iTR_eLG.hcd",
+        "hash": "sha256-R8Pu23R63ffAt+NNuSgaEAZDV5wbofBRAUdPjvCtALg="
+      }
+    ]
+  }
+}
