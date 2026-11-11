@@ -137,7 +137,7 @@ in
     pkgsCross.mingwW64.stdenv.cc   # x86_64-w64-mingw32-gcc, linker for windows-gnu
     nodejs
     yarn                           # anchor test runner shells out to yarn
-    python3
+    (python3.withPackages (ps: [ ps.pyyaml ])) # YAML inventory parsing in deployment scripts
     postgresql
     typst
     fastfetch
