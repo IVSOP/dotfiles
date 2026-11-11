@@ -18,7 +18,11 @@ source $HOME/.bash_funcs
 zstyle ':omz:update' mode disabled
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' list-colors 'di=01;34'
-zstyle ':completion:*' matcher-list '' # so that egg. D matches Downloads but not dotfiles
+zstyle ':completion:*' matcher-list '' # keep completion case-sensitive
+# Include hidden files and all file types in fzf-tab's completion candidates.
+_comp_options+=(globdots)
+zstyle ':completion:*' file-patterns '*:all-files'
+fignore=()
 # unsetopt nocaseglob
 # autoload -Uz compinit && compinit
 ENABLE_CORRECTION="false"
