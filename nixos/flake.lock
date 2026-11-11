@@ -1,5 +1,25 @@
 {
   "nodes": {
+    "backup-parser": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1794421844,
+        "narHash": "sha256-lJDIMH5jM1tbRH3MGy5fZ135/a5PD1AILAmb93hdmJg=",
+        "owner": "IVSOP",
+        "repo": "backup_parser",
+        "rev": "29289112dcd786c61970dba99c3f003655a26b90",
+        "type": "github"
+      },
+      "original": {
+        "owner": "IVSOP",
+        "repo": "backup_parser",
+        "type": "github"
+      }
+    },
     "bootvine": {
       "inputs": {
         "crane": "crane",
@@ -234,6 +254,7 @@
     },
     "root": {
       "inputs": {
+        "backup-parser": "backup-parser",
         "bootvine": "bootvine",
         "hy3": "hy3",
         "lanzaboote": "lanzaboote",

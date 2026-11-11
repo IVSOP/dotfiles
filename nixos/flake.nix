@@ -1,6 +1,10 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    backup-parser = {
+      url = "github:IVSOP/backup_parser";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # Bootvine 0.1.3: update this reviewed commit explicitly.
     bootvine = {
       url = "git+https://codeberg.org/wvhulle/bootvine?rev=a7e33b453a82ecfe9e98d060008b3b20b6924f62";
@@ -138,7 +142,7 @@
     nixosConfigurations.rock-server = rock4Config;
     nixosConfigurations.server = nixpkgs.lib.nixosSystem {
       inherit system;
-      specialArgs = { inherit nixpkgs-anchor nixpkgs-solana; };
+      specialArgs = { inherit inputs nixpkgs-anchor nixpkgs-solana; };
       modules = [
         lanzaboote.nixosModules.lanzaboote
         { nixpkgs.overlays = [ nix4vscode.overlays.default rust-overlay.overlays.default ]; }
@@ -153,7 +157,7 @@
     # x86 builders can select the image too, using ARM binfmt or a remote builder.
     nixosConfigurations.ivX13 = nixpkgs.lib.nixosSystem {
       inherit system;
-      specialArgs = { inherit nixpkgs-anchor nixpkgs-solana; };
+      specialArgs = { inherit inputs nixpkgs-anchor nixpkgs-solana; };
       modules = [
         lanzaboote.nixosModules.lanzaboote
         { nixpkgs.overlays = [ nix4vscode.overlays.default hy3Overlay waybarOverlay rust-overlay.overlays.default ]; }
@@ -167,7 +171,7 @@
 
     nixosConfigurations.IVPC = nixpkgs.lib.nixosSystem {
       inherit system;
-      specialArgs = { inherit nixpkgs-anchor nixpkgs-solana; };
+      specialArgs = { inherit inputs nixpkgs-anchor nixpkgs-solana; };
       modules = [
         lanzaboote.nixosModules.lanzaboote
         { nixpkgs.overlays = [ nix4vscode.overlays.default hy3Overlay waybarOverlay rust-overlay.overlays.default ]; }

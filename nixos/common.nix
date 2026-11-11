@@ -1,5 +1,5 @@
 # Shared shell, CLI tools, and system defaults for the desktop, laptop, and server.
-{ lib, pkgs, ... }:
+{ lib, pkgs, inputs, ... }:
 
 {
   imports = [
@@ -100,6 +100,7 @@
     rsync
     psmisc
     gdu
+    inputs.backup-parser.packages.${pkgs.stdenv.hostPlatform.system}.default
     duf
     nethogs
     lazygit
