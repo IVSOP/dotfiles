@@ -1,6 +1,10 @@
 # Manual pins. Package definitions and the update reminder read these values.
 # Fixed flake input commits are declared in flake.nix and recorded in flake.lock.
 {
+  codex = {
+    version = "0.167.0";
+    hash = "sha256-O7916D3mtYrtKPLPbjOtQj7DH9RwChRXuUvlV+pafG4=";
+  };
   anchor.version = "1.0.2";
   solanaCli.version = "4.0.3";
   tracy = {

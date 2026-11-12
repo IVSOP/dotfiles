@@ -134,6 +134,7 @@
       (fromInput "hy3" "hy3" (hy3Overlay hyprlandPkgs {}).hy3.version)
       (fromInput "nixpkgs-solana" "Solana CLI" pins.solanaCli.version)
       (fromInput "nixpkgs-anchor" "Anchor" pins.anchor.version)
+      { component = "Codex (official binary)"; version = pins.codex.version; revision = ""; location = "pins.nix (version + archive hash)"; }
       { component = "Tracy"; version = pins.tracy.version; revision = ""; location = "pins.nix"; }
       { component = "cargo-build-sbf"; version = pins.cargoBuildSbf.version; revision = ""; location = "pins.nix + solana.nix hashes"; }
       { component = "Solana platform-tools"; version = pins.solanaPlatformTools.version; revision = ""; location = "pins.nix + solana.nix hash"; }

@@ -73,9 +73,15 @@ configuration without switching the running system. Scripts stop if a command
 fails.
 
 `update.sh` updates all inputs except those fixed to commits in `flake.nix`.
-The manual pins are Hyprland and its portal, hy3, Solana CLI, Anchor, the SBF
+The manual pins are Codex, Hyprland and its portal, hy3, Solana CLI, Anchor, the SBF
 builder and platform tools, Tracy, and Bootvine. General stable/nightly Rust,
 Lanzaboote, VS Code extensions, and Waybar update normally.
+
+Codex uses the official prebuilt Linux x86_64 bundle through [codex.nix](codex.nix),
+shared by the three x86 hosts and PC installer ISO. It is never compiled from
+source. To update it, change `codex.version` and `codex.hash` in [pins.nix](pins.nix)
+to match the release's `codex-package-x86_64-unknown-linux-musl.tar.gz` archive.
+A missing archive or checksum mismatch stops the build; there is no source fallback.
 
 The warning table shows the selected versions and revisions and where to update
 them manually. Package pins live in [pins.nix](pins.nix); fixed flake inputs live
