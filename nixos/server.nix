@@ -66,6 +66,8 @@ in
     };
   };
   networking.nameservers = lib.optionals useAdguardDNS [ "127.0.0.1" ];
+  # Expand short Tailscale names; AdGuard forwards this domain to 100.100.100.100.
+  networking.search = lib.optionals useAdguardDNS [ "tail122f46.ts.net" ];
   hardware.bluetooth = {
     enable = true; # Includes bluez/bluetoothctl.
     powerOnBoot = true;
