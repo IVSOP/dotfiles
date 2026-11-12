@@ -98,6 +98,7 @@
     gum
     chafa
     rsync
+    immich-cli
     psmisc
     gdu
     inputs.backup-parser.packages.${pkgs.stdenv.hostPlatform.system}.default
