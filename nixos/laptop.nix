@@ -11,6 +11,15 @@
   # which sshd no longer reads (authorizedKeysInHomedir in configuration.nix).
   users.users.ivsopi3.openssh.authorizedKeys.keys = import ./trusted-ssh-keys.nix;
 
+  # Allow wheel members to read the CPU energy counter for wattage in btop.
+  security.wrappers.btop = {
+    source = "${pkgs.btop}/bin/btop";
+    owner = "root";
+    group = "wheel";
+    permissions = "u+rx,g+rx,o-rwx";
+    capabilities = "cap_dac_read_search+ep";
+  };
+
   # ── Disk ─────────────────────────────────────────────────────────────
   boot.loader.efi.efiSysMountPoint = "/boot/efi";
 

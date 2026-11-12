@@ -174,6 +174,15 @@ in
     suspend-then-hibernate.enable = false;
   };
 
+  # Allow wheel members to read CPU energy and Intel GPU performance counters.
+  security.wrappers.btop = {
+    source = "${pkgs.btop}/bin/btop";
+    owner = "root";
+    group = "wheel";
+    permissions = "u+rx,g+rx,o-rwx";
+    capabilities = "cap_perfmon,cap_dac_read_search+ep";
+  };
+
   environment.systemPackages = with pkgs; [
     sbctl
     docker-compose
