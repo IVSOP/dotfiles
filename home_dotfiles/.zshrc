@@ -22,6 +22,8 @@ zstyle ':completion:*' matcher-list '' # keep completion case-sensitive
 # Include hidden files and all file types in fzf-tab's completion candidates.
 _comp_options+=(globdots)
 zstyle ':completion:*' file-patterns '*:all-files'
+# Exclude . and .. while keeping hidden files visible.
+zstyle ':completion:*' special-dirs false
 fignore=()
 # unsetopt nocaseglob
 # autoload -Uz compinit && compinit
