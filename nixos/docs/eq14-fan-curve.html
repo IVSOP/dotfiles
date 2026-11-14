@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Beelink EQ14 — fan curve before and now</title>
+  <style>
+    :root { color-scheme: light dark; --background: #fafafa; --foreground: #222; --muted: #60646c; --grid: #d5d8dd; --series: #1566bd; --band: #1566bd12; }
+    @media (prefers-color-scheme: dark) { :root { --background: #17191c; --foreground: #edf0f4; --muted: #aeb4bf; --grid: #3d434c; --series: #82baff; --band: #82baff15; } }
+    * { box-sizing: border-box; }
+    body { margin: 0 auto; max-width: 980px; padding: 28px 20px; background: var(--background); color: var(--foreground); font: 16px/1.55 system-ui, sans-serif; }
+    h1, h2 { font-weight: 500; line-height: 1.25; }
+    h1 { margin: 0 0 10px; font-size: 28px; }
+    h2 { margin-top: 28px; font-size: 21px; }
+    p { margin: 10px 0; }
+    .muted { color: var(--muted); }
+    a { color: var(--series); overflow-wrap: anywhere; }
+    .legend { display: flex; flex-wrap: wrap; gap: 12px 24px; margin-top: 14px; }
+    .swatch { display: inline-block; width: 28px; vertical-align: middle; margin-right: 8px; border-top: 3px solid var(--series); }
+    .swatch.reference { border-top: 2px dashed var(--muted); }
+    #curve { display: block; width: 100%; height: 360px; }
+    #curve text { fill: var(--foreground); font: 13px system-ui, sans-serif; }
+    #curve .grid { stroke: var(--grid); stroke-width: 1; }
+    #curve .current { stroke: var(--series); stroke-width: 3; fill: none; }
+    #curve .original { stroke: var(--muted); stroke-width: 2; stroke-dasharray: 7 5; fill: none; }
+    table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+    th, td { padding: 10px 8px; border-bottom: 1px solid var(--grid); text-align: left; overflow-wrap: anywhere; }
+    th { font-weight: 500; }
+    th:first-child, td:first-child { padding-left: 0; }
+    code { font-size: .9em; overflow-wrap: anywhere; }
+    @media (max-width: 480px) { body { padding: 20px 12px; } h1 { font-size: 24px; } th, td { padding: 8px 4px; } }
+    @media print { body { --background: #fff; --foreground: #222; --muted: #60646c; --grid: #d5d8dd; --series: #1566bd; --band: #1566bd12; } }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Beelink EQ14 · fan curve before and now</h1>
+    <p><strong>Corrected curve applied · fan stop and subsequent restart observed.</strong></p>
+    <p>This document contains both the original hardware settings and the current Nix configuration. The dashed line and “Before” column show the original curve; the solid line and “Now” column show the applied curve. The chart and data are embedded and work offline.</p>
+    <p>The active Nix configuration writes <strong>50°C to the off register</strong>, <strong>50°C to the ramp-start register</strong> and <strong>70°C to the full-speed register</strong>, with a <strong>3°C hysteresis offset</strong> giving an absolute readback of <strong>47°C</strong>. Readback confirmed all settings after rebuilding. The fan stopped at a sampled controller temperature of 46°C, remained stopped in the next sample at 47°C, and was running again in later samples at 53°C. Exact switching boundaries remain unmeasured.</p>
+    <p>The preceding revision wrote 45/50/70°C with zero hysteresis offset. Hardware readback confirmed those settings, but the fan cycled around 44–46°C. Raising only the start register to 50°C did not prevent running below 50°C, and removing the offset did not improve that behavior. The corrected curve raises the off register as well and restores a nonzero offset. The intended switching range is about 47–50°C; the samples demonstrate stopping and restarting but do not prove a precise 50°C restart boundary or long periods of idle silence.</p>
+    <p class="muted">Original snapshot: 13 November 2026. Current configuration checked: 14 November 2026. Scope: the automatic PWM2 channel associated with the fan2 speed readout. Other controller channels were not modified.</p>
+
+    <div class="legend" aria-label="Chart legend">
+      <span><span class="swatch" aria-hidden="true"></span>Now · current running-output model</span>
+      <span><span class="swatch reference" aria-hidden="true"></span>Before · original running-output model</span>
+    </div>
+    <svg id="curve" role="img" aria-labelledby="curve-title curve-description">
+      <title id="curve-title">Configured output while the fan is running; switching behavior excluded</title>
+      <desc id="curve-description">The corrected running-output model starts at PWM 65 at the 50°C ramp setting, rises by 4 PWM units per degree, and jumps to PWM 255 at the 70°C full-speed setting. The original holds PWM 60 between 35°C and 40°C, rises by 1 unit per degree, and reaches full output at 90°C. The shaded 47–50°C band is the intended switching range; exact boundaries remain unmeasured. These curves do not predict exact on/off transitions. PWM is a control signal, not a measured percentage of maximum RPM.</desc>
+    </svg>
+    <noscript><p>The settings table below contains both configurations. Enable JavaScript to draw the chart; no internet connection is needed.</p></noscript>
+    <p class="muted">Configured running-output models, not measured RPM curves. The shaded 47–50°C range is the intended switching range, not a calibrated pair of thresholds. See the latest live samples below. On/off transitions are deliberately excluded from the lines. Boundary timing and PWM quantization are simplified.</p>
+
+    <h2>Before and now</h2>
+    <table aria-label="Original and current automatic fan settings">
+      <thead><tr><th scope="col">Setting</th><th scope="col">Before · hardware readback</th><th scope="col">Now · applied Nix settings</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Mode</th><td>Automatic</td><td>Automatic</td></tr>
+        <tr><th scope="row">Temperature input</th><td>Controller temp1</td><td>Controller temp1</td></tr>
+        <tr><th scope="row">Fan off temperature register</th><td>35°C</td><td>50°C</td></tr>
+        <tr><th scope="row">Fan start temperature limit</th><td>40°C</td><td>50°C</td></tr>
+        <tr><th scope="row">Fan full speed temperature limit</th><td>90°C</td><td>70°C</td></tr>
+        <tr><th scope="row">Fan start PWM</th><td>60 / 255 ≈ 24%</td><td>65 / 255 ≈ 25%</td></tr>
+        <tr><th scope="row">PWM slope setting</th><td>1 PWM unit / °C</td><td>4 PWM units / °C</td></tr>
+        <tr><th scope="row">Linux slope encoding</th><td>8</td><td>32</td></tr>
+        <tr><th scope="row">Extra hysteresis delta</th><td>4°C; absolute readback 31°C</td><td>3°C; verified absolute readback 47°C</td></tr>
+      </tbody>
+    </table>
+    <p>The original snapshot at 22:27 UTC on 13 November recorded controller temp1 at 40°C, CPU package at 51°C and fan2 at 1781 RPM. The current curve has been observed stopping and restarting; the latest measurements are included below. These snapshots were taken under different workloads and are not a controlled performance or temperature comparison.</p>
+    <p>The slope readback uses eighths of a PWM unit: 32 ÷ 8 = 4 PWM units per °C. While running between 50°C and 70°C, the current model is <code>PWM = 65 + 4 × (temperature − 50)</code>. At the full-speed threshold it switches to 255, so the jump in the chart is intentional.</p>
+
+    <h2>Hysteresis, delays and response speed</h2>
+    <p><strong>Hysteresis is memory expressed as a temperature gap.</strong> In a hypothetical controller with actual on/off thresholds of 50°C and 45°C, the fan starts on warming to the on threshold and stays on while cooling through 49°C, 48°C and so on, until the off threshold is reached. While between 45°C and 50°C, the previous on/off state matters. This avoids toggling around a single threshold. This is a general example, not a verified description of the EQ14’s current register settings.</p>
+    <table aria-label="Different fan-control settings and their availability">
+      <thead><tr><th scope="col">Control</th><th scope="col">What it does</th><th scope="col">This configuration</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Temperature hysteresis / deadband</th><td>Different on and off thresholds; measured in °C.</td><td>Target: stop near 47°C / resume near 50°C. Stopped at sampled 46°C, remained off at 47°C, running again by 53°C. Exact boundaries remain unmeasured.</td></tr>
+        <tr><th scope="row">Additional chip hysteresis offset</th><td>Lowers the absolute hysteresis readback relative to the off setting.</td><td>Current configuration: off register 50°C minus 3°C offset = 47°C readback. The earlier assumption that separate off/start registers guaranteed a switching gap was not supported by observations.</td></tr>
+        <tr><th scope="row">Start delay / sustained-temperature requirement</th><td>For example, require a threshold to be exceeded for several seconds, so one brief spike does not trigger the fan. Sensor averaging can have a similar filtering effect.</td><td>No exposed Linux control was found; none is configured. Hysteresis does not provide a fixed waiting time.</td></tr>
+        <tr><th scope="row">Spin-up/down time / slew-rate limit</th><td>Controls how quickly output moves toward the curve’s target over time.</td><td>No exposed Linux control was found; existing firmware behavior is retained.</td></tr>
+        <tr><th scope="row">Curve slope</th><td>Changes the target output per degree, rather than per second.</td><td>4 PWM units per °C, encoded as 32 in sysfs.</td></tr>
+        <tr><th scope="row">PWM carrier frequency</th><td>The electrical switching frequency that drives the fan.</td><td>Readback 23,437 Hz; unchanged. This is not the temperature sampling rate or fan response delay.</td></tr>
+      </tbody>
+    </table>
+    <p>The inspected PWM2 interface exposes automatic curve points, starting PWM, slope, temperature mapping, mode and carrier frequency. It exposes no configurable start delay, averaging window or spin-up/down duration. Beelink’s published EQ14 instructions also list curve settings rather than these timing controls. This does not establish that the silicon has no internal smoothing; it means no supported control for changing it has been identified here.</p>
+    <p>If short bursts later cause objectionable starts or speed changes, filtering and response timing would be worth investigating. First verify the temperature thresholds and actual start/stop behavior with the current automatic controller. Do not treat slope, carrier frequency or sensor polling as substitutes for a delay. A custom temporal policy would require a supported firmware option or a continuously running software controller, which this Nix service does not provide.</p>
+
+    <h2>Why start at 50°C?</h2>
+    <p>You report that the machine is usually below 55°C. The fan controller uses a different sensor from the CPU package: a saved snapshot recorded <strong>40°C at controller temp1 and 51°C at the CPU package</strong>. A later reading was 39°C and 50°C respectively. These snapshots do not establish a fixed offset, particularly during bursts of CPU activity.</p>
+    <p>For that reason, the current configuration uses 50°C on the controller rather than 55°C. Compared with the original curve, it raises the startup register by 10°C, increases the running slope, and lowers the full-speed threshold by 20°C. It aims to reduce idle noise while bringing cooling in more strongly once temperatures rise. It does not establish that the machine can remain below 55°C with the fan stopped.</p>
+
+    <h2>Check before relying on it</h2>
+    <p>This is not a manufacturer-approved or fully thermally validated curve. A short observation confirmed stopping and restarting. Sustained normal workloads, including storage activity, and longer idle periods still need to be checked for stable CPU package, controller and SSD temperatures. Retain automatic control and thermal protections. The fan may remain running after warming above the on threshold until it cools below the stop boundary; being below 50°C alone does not imply it must be off.</p>
+    <p>The first live check used an extra 4°C hysteresis delta (absolute readback 41°C). The fan was observed stopped at controller temp1 41°C, then running again in later samples at 42°C; the exact restart temperature was not captured. The subsequent zero-offset revision was confirmed applied and produced the historical samples below. It stopped the fan, but did not produce the claimed 45°C-off / 50°C-on gap. The present configuration supersedes that revision with off register 50°C and offset 3°C, and its settings have now been verified on hardware.</p>
+    <p>If temperatures keep climbing, the CPU throttles, or the fan fails to restart, restore the original settings. The controller’s sensor location and lag are not calibrated here; there is no validated conversion to CPU package temperature.</p>
+
+    <h2>Long-term assessment and recheck · 14 November 2026, 00:35 UTC</h2>
+    <p>The observed temperatures make this automatic fan-stop configuration look reasonable for the present workload. They do not demonstrate long-term thermal safety under sustained CPU and storage load, a warmer room or restricted ventilation. No fan settings or power limits were changed during this check.</p>
+    <table aria-label="Temperatures and fan speed in the latest 30-second observation">
+      <thead><tr><th scope="col">Reading</th><th scope="col">Observed range</th><th scope="col">Last sample</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">CPU package</th><td>52–58°C</td><td>58°C</td></tr>
+        <tr><th scope="row">Controller temp1</th><td>46–48°C</td><td>48°C</td></tr>
+        <tr><th scope="row">WDC PC SN720, 256GB</th><td>49.85°C</td><td>49.85°C</td></tr>
+        <tr><th scope="row">Generic “512GB SSD”</th><td>42.85–43.85°C</td><td>43.85°C</td></tr>
+        <tr><th scope="row">Fan2</th><td>0–2142 RPM</td><td>1854 RPM</td></tr>
+      </tbody>
+    </table>
+    <p>Eleven samples were collected from 00:35:23 to 00:35:54 UTC. The fan stopped in four consecutive samples (00:35:38–00:35:48), including a sample at controller 48°C, then was running again at a sampled 47°C. Sampling every three seconds and the hardware readout’s caching do not capture all intervening temperature changes. The configured aim remains stop around 47°C / resume around 50°C, with full output at controller 70°C, but a precise 50°C restart has not been established. These are controller temperatures, not CPU package temperatures.</p>
+    <p>Drive mapping was checked through sysfs: the warmer drive is <code>nvme1</code>, model <code>WDC PC SN720 SDAQNTW-256G-1001</code>, firmware <code>10160101</code>, at PCI 03:00.0 / hwmon0. The other is <code>nvme0</code>, model <code>512GB SSD</code>, firmware <code>SN15259</code>, at PCI 04:00.0 / hwmon1. Hardware-monitor numbering can change across boots. The generic model does not identify a manufacturer-specific temperature specification.</p>
+    <p>CPU temperatures in the 50s and SSD composite temperatures around 43–50°C do not suggest a present overheating problem. Intel specifies a 105°C maximum junction temperature for the N150; that is an operating ceiling, not a desirable continuous target. Western Digital publishes different temperature ranges for PC and CL SN720 variants, and an exact specification for this OEM suffix was not established. The PC SN720 family sheet lists 0–70°C for its listed SDAP part numbers; that must not be silently treated as the exact rating of this SDAQ OEM drive. The high NVMe warning/critical readbacks are not a substitute for a normal long-term operating target.</p>
+    <p><strong>The fan curve does not directly monitor SSD temperatures.</strong> It is mapped to IT8613 temp1. Storage activity can heat an SSD without a corresponding rise in CPU usage or this board sensor. Before raising the fan thresholds further, check a representative sustained CPU-plus-storage workload for roughly 20–30 minutes and observe whether all temperatures settle. As conservative validation goals rather than manufacturer limits, aim to keep sustained CPU temperature below about 80–85°C and SSD composites below about 60–65°C. Check for thermal throttling and SSD thermal warnings as well; those have not been inspected in this session.</p>
+
+    <h2>What 6 W “base power” means</h2>
+    <p>Intel’s N150 listing gives <strong>6 W Processor Base Power</strong>. This is a thermal-design reference validated in the base configuration under an Intel-specified demanding workload. It is not the CPU’s universal maximum, minimum, idle power or a wall-socket measurement. Idle consumption can be lower and boosted operation can exceed it. The system vendor’s configured power limits also matter.</p>
+    <p>This machine’s RAPL interface reports <strong>20 W long-term</strong> and <strong>25 W short-term</strong> limits, with a long-term averaging window of about 28 seconds. Those are configured limits, not measured present power draw, and not a statement that total system consumption is capped at 25 W. No power settings were changed. The 6 W label therefore does not mean the heatsink only ever needs to dissipate 6 W.</p>
+    <p>A large heatsink helps absorb short bursts and spread heat, but long-term cooling depends on transferring that heat out of the case. CPU power is only part of the heat load; SSDs, memory and power circuitry also contribute. The heatsink’s apparent size alone cannot establish fanless operation under sustained load. Automatic fan stop during light workloads is more defensible than permanently disabling the fan.</p>
+
+    <h2>Initial corrected-curve verification · 14 November 2026</h2>
+    <table aria-label="Selected hardware samples after rebuilding with off register 50 and hysteresis offset 3">
+      <thead><tr><th scope="col">UTC time</th><th scope="col">Controller</th><th scope="col">CPU package</th><th scope="col">Fan2 RPM</th></tr></thead>
+      <tbody>
+        <tr><td>00:00:04</td><td>53°C</td><td>61°C</td><td>1824</td></tr>
+        <tr><td>00:00:13</td><td>56°C</td><td>53°C</td><td>2177</td></tr>
+        <tr><td>00:00:23</td><td>46°C</td><td>51°C</td><td>0</td></tr>
+        <tr><td>00:00:26</td><td>47°C</td><td>52°C</td><td>0</td></tr>
+        <tr><td>00:01:06</td><td>53°C</td><td>67°C</td><td>2122</td></tr>
+        <tr><td>00:01:09</td><td>53°C</td><td>64°C</td><td>1950</td></tr>
+        <tr><td>00:01:12</td><td>47°C</td><td>53°C</td><td>1859</td></tr>
+        <tr><td>00:01:18</td><td>48°C</td><td>59°C</td><td>1824</td></tr>
+      </tbody>
+    </table>
+    <p>Fifteen samples were collected between 23:59:58 UTC on 13 November and 00:01:18 UTC on 14 November, in two short observation windows. The fan stopped in two consecutive samples and was running again after warming. The last sample showed it running at 48°C after the intervening warmer samples; that is consistent with retaining the running state until cooling below the stop boundary. SSD composite readings were about 47–48°C and 40–43°C. These observations do not establish how often it will start during a typical idle hour.</p>
+
+    <h2>Previous zero-offset revision · 13 November 2026</h2>
+    <table aria-label="Selected hardware samples after rebuilding with zero extra hysteresis">
+      <thead><tr><th scope="col">UTC time</th><th scope="col">Controller</th><th scope="col">CPU package</th><th scope="col">Fan2 RPM</th></tr></thead>
+      <tbody>
+        <tr><td>23:50:26</td><td>47°C</td><td>56°C</td><td>1809</td></tr>
+        <tr><td>23:50:31</td><td>50°C</td><td>53°C</td><td>1577</td></tr>
+        <tr><td>23:50:36</td><td>44°C</td><td>51°C</td><td>0</td></tr>
+        <tr><td>23:50:41</td><td>45°C</td><td>50°C</td><td>1781</td></tr>
+        <tr><td>23:51:08</td><td>45°C</td><td>58°C</td><td>0</td></tr>
+        <tr><td>23:51:10</td><td>45°C</td><td>51°C</td><td>1730</td></tr>
+        <tr><td>23:51:12</td><td>46°C</td><td>51°C</td><td>1809</td></tr>
+        <tr><td>23:51:24</td><td>44°C</td><td>51°C</td><td>0</td></tr>
+      </tbody>
+    </table>
+    <p>These are historical readings for off=45°C, start=50°C, offset=0°C, not results for the current configuration. They are sampled readings rather than a continuous transition trace. The driver caches hardware readings, temperature is reported in whole degrees, and fan spin-up/down takes time. SSD composite temperatures in the first four samples were about 45°C and 39–40°C. Fan-stop operation is demonstrated; stable idle behavior, a true switching gap and sustained-load cooling are not yet established.</p>
+
+    <h2>Sources</h2>
+    <p>The original settings and snapshot are preserved in this document’s comparison table and embedded chart data. The current settings correspond to <code>fanCurve</code> and <code>systemd.services.eq14-fan-curve</code> in <code>nixos/server.nix</code>. External links below are supporting documentation; they are not needed to display this page or its chart.</p>
+    <p>Beelink documents the BIOS location as <strong>Advanced → Hardware Monitor → Smart Fan Function → CPU Smart Fan Mode → Automatic Mode</strong>. Verify the channel and temperature source in the firmware before applying any proposal.</p>
+    <ul>
+      <li><a href="https://doc.bee-link.com.cn/books/eq14-bios/page/3fe94">Beelink EQ14 fan configuration instructions</a> — supported settings and recommended automatic starting PWM of 65.</li>
+      <li><a href="https://github.com/torvalds/linux/blob/master/drivers/hwmon/it87.c">Linux it87 driver</a> — automatic curve fields, slope encoding and hysteresis readback.</li>
+      <li><a href="https://docs.kernel.org/hwmon/sysfs-interface.html">Linux hardware monitoring interface</a> — sensor numbering does not establish physical sensor location.</li>
+      <li><a href="https://www.intel.com/content/www/us/en/products/sku/241636/intel-processor-n150-6m-cache-up-to-3-60-ghz/specifications.html">Intel N150 specifications</a> — 6 W Processor Base Power and 105°C maximum junction temperature.</li>
+      <li><a href="https://edc.intel.com/content/www/xl/es/design/products/platforms/processor-and-core-i3-n-series-datasheet-volume-1-of-2/002/thermal-considerations/">Intel N-series thermal considerations</a> — meaning and limitations of Processor Base Power.</li>
+      <li><a href="https://documents.sandisk.com/content/dam/asset-library/en_us/assets/public/western-digital/product/internal-drives/pc-sn720-ssd/data-sheet-pc-sn720-compute.pdf">Western Digital PC SN720 family sheet</a> — 0–70°C for the listed SDAP variants; exact OEM SDAQ suffix not covered.</li>
+      <li><a href="https://documents.sandisk.com/content/dam/asset-library/en_us/assets/public/western-digital/collateral/product-brief/product-brief-cl-sn720-nvme-ssd.pdf">Western Digital CL SN720 family sheet</a> — a different family with an extended temperature range; not proof of this OEM drive’s rating.</li>
+    </ul>
+  </main>
+  <script id="curve-data" type="application/json">
+    {
+      "original": {"off": 35, "start": 40, "full": 90, "startPwm": 60, "slopeRaw": 8, "hysteresisReadback": 31},
+      "current": {"off": 50, "start": 50, "full": 70, "startPwm": 65, "slopeRaw": 32, "hysteresisReadback": 47},
+      "maximumPwm": 255,
+      "temperatureDomain": [20, 100]
+    }
+  </script>
+  <script>
+    (() => {
+      const model = JSON.parse(document.getElementById('curve-data').textContent);
+      const svg = document.getElementById('curve');
+      const namespace = 'http://www.w3.org/2000/svg';
+      const mark = (name, attributes, text) => {
+        const element = document.createElementNS(namespace, name);
+        Object.entries(attributes).forEach(([key, value]) => element.setAttribute(key, value));
+        if (text !== undefined) element.textContent = text;
+        svg.appendChild(element);
+        return element;
+      };
+      const runningPoints = curve => [
+        [curve.off, curve.startPwm], [curve.start, curve.startPwm],
+        [curve.full, Math.min(model.maximumPwm, curve.startPwm + (curve.full - curve.start) * curve.slopeRaw / 8)],
+        [curve.full, model.maximumPwm], [100, model.maximumPwm]
+      ];
+      function draw() {
+        svg.querySelectorAll(':scope > :not(title):not(desc)').forEach(node => node.remove());
+        const width = Math.max(280, svg.getBoundingClientRect().width);
+        const height = 360;
+        const left = 48, right = width - 18, top = 45, bottom = 300;
+        const x = temperature => left + (temperature - 20) / 80 * (right - left);
+        const y = pwm => bottom - pwm / model.maximumPwm * (bottom - top);
+        svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+        mark('rect', {x: x(model.current.hysteresisReadback), y: top, width: x(model.current.start) - x(model.current.hysteresisReadback), height: bottom - top, fill: 'var(--band)'});
+        [0, 25, 50, 75, 100].forEach(percent => {
+          const position = y(model.maximumPwm * percent / 100);
+          mark('line', {x1: left, x2: right, y1: position, y2: position, class: 'grid'});
+          mark('text', {x: left - 8, y: position + 4, 'text-anchor': 'end'}, `${percent}%`);
+        });
+        const ticks = width < 500 ? [20, 50, 70, 100] : [20, 30, 40, 50, 60, 70, 80, 90, 100];
+        ticks.forEach(temperature => {
+          mark('line', {x1: x(temperature), x2: x(temperature), y1: bottom, y2: bottom + 5, class: 'grid'});
+          mark('text', {x: x(temperature), y: bottom + 23, 'text-anchor': 'middle'}, temperature);
+        });
+        mark('text', {x: left, y: 22}, 'Fan output (% PWM)');
+        mark('text', {x: (left + right) / 2, y: 348, 'text-anchor': 'middle'}, 'Controller temp1 (°C)');
+        ['original', 'current'].forEach(key => {
+          const points = runningPoints(model[key]).map(([temperature, pwm]) => `${x(temperature)},${y(pwm)}`).join(' ');
+          mark('polyline', {points, class: key});
+        });
+        const startX = x(model.current.start), startY = y(model.current.startPwm);
+        mark('circle', {cx: startX, cy: startY, r: 4, fill: 'var(--series)'});
+        mark('text', {x: startX, y: startY - 14, 'text-anchor': 'middle'}, 'Ramp setting 50°C');
+        mark('text', {x: x(model.current.full), y: top - 10, 'text-anchor': 'middle'}, 'Full 70°C');
+      }
+      draw();
+      if (typeof ResizeObserver !== 'undefined') new ResizeObserver(draw).observe(svg);
+      else window.addEventListener('resize', draw);
+    })();
+  </script>
+</body>
+</html>

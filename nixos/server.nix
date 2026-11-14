@@ -8,6 +8,25 @@ let
   enableTailscale = true;
   lanInterface = "enp2s0";
   lanSubnet = "192.168.1.0/24";
+  # IT8613 temp1 thresholds, not CPU package temperatures. See docs/eq14-fan-curve.html.
+  fanCurve = {
+    # Live checks with off=45, start=50 and zero offset cycled near 44-46C.
+    # Raise the off register too: target stop near 47C / resume near 50C.
+    # Verified: stopped at 46C, stayed off at 47C, running again by 53C.
+    # Exact switching boundaries and sustained-load cooling remain unverified.
+    offTemperature = 50;
+    startTemperature = 50;
+    fullSpeedTemperature = 70;
+    startPwm = 65;
+    slope = 4; # PWM units per degree Celsius, not a response rate per second.
+    # Additional chip offset in C: the absolute readback is offTemperature - hysteresis.
+    # Restore a nonzero offset to reduce the zero-offset revision's cycling.
+    hysteresis = 3;
+    # No time delay, averaging window or spin-up/down time is exposed by this
+    # controller's current Linux interface. pwm2_freq is the motor PWM carrier.
+    # This curve uses temp1 only; it does not directly respond to SSD temperatures.
+    # See the HTML for SSD readings, CPU power limits and remaining load checks.
+  };
 in
 {
   imports = [ ./common.nix ./development.nix ./dotfiles.nix ];
@@ -23,6 +42,57 @@ in
   };
   hardware.enableRedistributableFirmware = true;
   hardware.cpu.intel.updateMicrocode = true;
+
+  # The EQ14's IT8613E needs the extended it87 driver. Install under updates
+  # so depmod prefers it over the kernel's bundled it87 module.
+  boot.extraModulePackages = [
+    (config.boot.kernelPackages.it87.overrideAttrs (old: {
+      makeFlags = old.makeFlags ++ [
+        "MODDESTDIR=$(out)/lib/modules/${config.boot.kernelPackages.kernel.modDirVersion}/updates"
+      ];
+    }))
+  ];
+  boot.kernelModules = [ "it87" ];
+
+  # Program the hardware's automatic controller; no userspace fan-control loop.
+  systemd.services.eq14-fan-curve = {
+    description = "Apply the EQ14 automatic fan curve";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "systemd-modules-load.service" ];
+    path = [ pkgs.coreutils ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+    script = ''
+      shopt -s nullglob
+      controllers=()
+      for device in /sys/class/hwmon/hwmon*; do
+        if [[ "$(cat "$device/name")" == it8613 ]]; then
+          controllers+=("$device")
+        fi
+      done
+      if (( ''${#controllers[@]} != 1 )); then
+        echo "Expected one IT8613 fan controller; found ''${#controllers[@]}" >&2
+        exit 1
+      fi
+      device="''${controllers[0]}"
+      if [[ "$(cat "$device/pwm2_enable")" != 2 || "$(cat "$device/pwm2_auto_channels_temp")" != 1 ]]; then
+        echo "Expected PWM2 in automatic mode using temp1; refusing to change another setup" >&2
+        exit 1
+      fi
+
+      # Apply stronger high-temperature cooling before delaying fan startup.
+      printf '%s\n' ${toString (fanCurve.fullSpeedTemperature * 1000)} > "$device/pwm2_auto_point3_temp"
+      printf '%s\n' ${toString fanCurve.startPwm} > "$device/pwm2_auto_start"
+      printf '%s\n' ${toString (fanCurve.slope * 8)} > "$device/pwm2_auto_slope"
+      printf '%s\n' ${toString (fanCurve.startTemperature * 1000)} > "$device/pwm2_auto_point2_temp"
+      printf '%s\n' ${toString (fanCurve.offTemperature * 1000)} > "$device/pwm2_auto_point1_temp"
+      printf '%s\n' ${toString ((fanCurve.offTemperature - fanCurve.hysteresis) * 1000)} > "$device/pwm2_auto_point1_temp_hyst"
+      echo "Applied EQ14 automatic curve: off register ${toString fanCurve.offTemperature}C, ramp start ${toString fanCurve.startTemperature}C, full ${toString fanCurve.fullSpeedTemperature}C, hysteresis readback ${toString (fanCurve.offTemperature - fanCurve.hysteresis)}C"
+    '';
+  };
+
   hardware.graphics = {
     enable = true;
     # VA-API and OpenCL for native host applications; containers ship their own.
@@ -193,6 +263,7 @@ in
     ffmpeg-full
     restic
     btop
+    lm_sensors
   ];
 
   system.stateVersion = "26.05";
