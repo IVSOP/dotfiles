@@ -1,7 +1,12 @@
 { lib, pkgs, ... }:
 
 {
-  imports = [ ./common.nix ./development.nix ./obsidian.nix ];
+  imports = [
+    ./common.nix
+    ./development.nix
+    ./obsidian.nix
+    (import ./docker-credentials.nix { backend = "secretservice"; })
+  ];
 
   # ── Boot (lanzaboote / secure boot) ───────────────────────────────────
   # Installation: enable systemd-boot and disable Lanzaboote until signing keys exist.

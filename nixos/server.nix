@@ -29,7 +29,12 @@ let
   };
 in
 {
-  imports = [ ./common.nix ./development.nix ./dotfiles.nix ];
+  imports = [
+    ./common.nix
+    ./development.nix
+    ./dotfiles.nix
+    (import ./docker-credentials.nix { backend = "pass"; })
+  ];
 
   networking.hostName = lib.mkDefault "server";
   # Installation: use systemd-boot without Lanzaboote until signing keys exist.

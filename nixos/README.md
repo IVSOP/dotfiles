@@ -107,3 +107,29 @@ machines.
 changes do not need to be copied into `/etc/nixos` first. Optional arguments
 still select another flake and output directory. Bootvine starts in the ISO's
 initrd and also displays shutdown progress.
+
+## Docker credentials
+
+Laptop and desktop use GNOME Keyring, unlocked by the password entered at Ly
+login. Seahorse manages the saved credentials. The server uses `pass` with
+terminal GPG unlock prompts. Docker automatically detects the selected helper.
+
+Before applying this change, remove the old file-based IVCR login on each machine:
+
+```sh
+docker logout ivcr.server.ivsop.dev
+```
+
+After rebuilding, start a new login session. On the laptop/desktop, run
+`ivcr_login`. On the server, initialize `pass` once before logging in:
+
+```sh
+gpg --full-generate-key
+# Use the fingerprint of the encryption-capable key you created:
+pass init YOUR_GPG_KEY_FINGERPRINT
+ivcr_login
+```
+
+Keep a passphrase on the GPG key. Subsequent credential reads prompt in the
+terminal when the GPG agent needs unlocking. Existing explicit Docker
+`credsStore` or `credHelpers` settings take precedence over auto-detection.
