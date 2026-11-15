@@ -77,6 +77,7 @@
     curl
     yt-dlp
     openssl
+    apacheHttpd      # htpasswd
     unzip
     zip
     file
