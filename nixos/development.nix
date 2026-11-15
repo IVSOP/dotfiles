@@ -123,6 +123,7 @@ in
   environment.systemPackages = with pkgs; [
     # ─ Dev tools ─
     gcc
+    go
     gnumake
     cmake
     meson
