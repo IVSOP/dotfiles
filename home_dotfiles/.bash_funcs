@@ -355,3 +355,95 @@ coldwallet() {
   cd wallet
 }
 
+# Login once per machine; Docker stores the credentials.
+ivcr_login() (
+    set +x
+    if [ "$#" -ne 0 ]; then
+        printf 'Usage: ivcr_login\n' >&2
+        return 1
+    fi
+    local password
+    password=$(gum input --password --prompt 'Registry password: ') || return
+    if [ -z "$password" ]; then
+        printf 'Password cannot be empty.\n' >&2
+        return 1
+    fi
+    printf '%s\n' "$password" | docker login ivcr.server.ivsop.dev \
+        --username ivsopi3 --password-stdin
+)
+
+_ivcr_push_image() {
+    local image_id image_hash app reference manifest_result
+    local component='[a-z0-9]+(([._]|__|-+)[a-z0-9]+)*'
+    local app_pattern="^${component}(/${component})*$"
+
+    image_id=$(docker image inspect --format '{{.Id}}' "$1") || return
+    if ! [[ "$image_id" =~ ^sha256:[a-f0-9]{64}$ ]]; then
+        printf 'Could not determine the image SHA-256 ID.\n' >&2
+        return 1
+    fi
+    image_hash=${image_id#sha256:}
+    app=$(gum input --prompt 'App name: ' --value "${PWD##*/}") || return
+    if ! [[ "$app" =~ $app_pattern ]]; then
+        printf 'Use a lowercase Docker repository name, e.g. my-app or team/my-app.\n' >&2
+        return 1
+    fi
+    reference="ivcr.server.ivsop.dev/$app:$image_hash"
+    printf '\nSource: %s\nApp: %s\nImage: %s\nHash / tag: %s\nDestination: %s\n\n' \
+        "$2" "$app" "$image_id" "$image_hash" "$reference"
+    gum confirm --default=false 'Upload this image?' || return
+
+    if manifest_result=$(docker manifest inspect "$reference" 2>&1); then
+        gum confirm --default=false "This hash already exists in the registry:
+$reference
+Are you sure you want to upload it again?" || return
+    else
+        case "$manifest_result" in
+            *'manifest unknown'*|*'MANIFEST_UNKNOWN'*|*'no such manifest:'*) ;;
+            *)
+                printf 'Could not check whether the image already exists:\n%s\n' "$manifest_result" >&2
+                return 1
+                ;;
+        esac
+    fi
+
+    docker image tag "$image_id" "$reference" && docker image push "$reference"
+}
+
+# Upload an image archive produced by docker save.
+ivcr_upload() {
+    if [ "$#" -ne 1 ] || [ ! -f "$1" ]; then
+        printf 'Usage: ivcr_upload IMAGE.tar\n' >&2
+        return 1
+    fi
+    local output line image
+    local -a images=()
+    output=$(docker image load --input "$1") || return
+    printf '%s\n' "$output"
+    while IFS= read -r line; do
+        case "$line" in
+            'Loaded image: '*) images+=("${line#Loaded image: }") ;;
+            'Loaded image ID: '*) images+=("${line#Loaded image ID: }") ;;
+        esac
+    done <<< "$output"
+    if [ "${#images[@]}" -eq 0 ]; then
+        printf 'No image was found in the archive.\n' >&2
+        return 1
+    fi
+    for image in "${images[@]}"; do break; done
+    if [ "${#images[@]}" -gt 1 ]; then
+        image=$(gum choose --header 'Image to upload:' -- "${images[@]}") || return
+    fi
+    _ivcr_push_image "$image" "$1"
+}
+
+# Build the Dockerfile in the current directory, then upload the result.
+ivcr_build_upload() {
+    if [ "$#" -ne 0 ]; then
+        printf 'Usage: ivcr_build_upload\n' >&2
+        return 1
+    fi
+    local image
+    image=$(docker build --quiet .) || return
+    _ivcr_push_image "$image" "Build in $PWD"
+}
