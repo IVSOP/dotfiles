@@ -373,7 +373,7 @@ ivcr_login() (
 )
 
 _ivcr_push_image() {
-    local image_id image_hash app reference manifest_result
+    local image_id image_hash app image_tag reference manifest_result
     local component='[a-z0-9]+(([._]|__|-+)[a-z0-9]+)*'
     local app_pattern="^${component}(/${component})*$"
 
@@ -383,20 +383,26 @@ _ivcr_push_image() {
         return 1
     fi
     image_hash=${image_id#sha256:}
-    app=$(gum input --prompt 'App name: ' --value "${PWD##*/}") || return
+    app=$(gum input --prompt 'App name: ' --value "${3:-${PWD##*/}}") || return
     if ! [[ "$app" =~ $app_pattern ]]; then
         printf 'Use a lowercase Docker repository name, e.g. my-app or team/my-app.\n' >&2
         return 1
     fi
-    reference="ivcr.server.ivsop.dev/$app:$image_hash"
-    printf '\nSource: %s\nApp: %s\nImage: %s\nHash / tag: %s\nDestination: %s\n\n' \
-        "$2" "$app" "$image_id" "$image_hash" "$reference"
+    image_tag=$(gum input --prompt 'Tag: ' --value "$image_hash" --char-limit 128) || return
+    local tag_pattern='^[a-zA-Z0-9_][a-zA-Z0-9_.-]{0,127}$'
+    if ! [[ "$image_tag" =~ $tag_pattern ]]; then
+        printf 'Invalid Docker tag: use 1-128 letters, digits, _, . or -; no leading dot or hyphen.\n' >&2
+        return 1
+    fi
+    reference="ivcr.server.ivsop.dev/$app:$image_tag"
+    printf '\nSource: %s\nApp: %s\nImage: %s\nTag: %s\nDestination: %s\n\n' \
+        "$2" "$app" "$image_id" "$image_tag" "$reference"
     gum confirm --default=false 'Upload this image?' || return
 
     if manifest_result=$(docker manifest inspect "$reference" 2>&1); then
-        gum confirm --default=false "This hash already exists in the registry:
+        gum confirm --default=false "This tag already exists in the registry:
 $reference
-Are you sure you want to upload it again?" || return
+Are you sure you want to update it to this image?" || return
     else
         case "$manifest_result" in
             *'manifest unknown'*|*'MANIFEST_UNKNOWN'*|*'no such manifest:'*) ;;
@@ -434,7 +440,21 @@ ivcr_upload() {
     if [ "${#images[@]}" -gt 1 ]; then
         image=$(gum choose --header 'Image to upload:' -- "${images[@]}") || return
     fi
-    _ivcr_push_image "$image" "$1"
+    local app_default="${PWD##*/}" image_prefix
+    # Preserve the selected image's repository, removing its tag and registry.
+    if ! [[ "$image" =~ ^sha256:[a-f0-9]{64}$ ]]; then
+        app_default=${image%%@*}
+        case "${app_default##*/}" in
+            *:*) app_default=${app_default%:*} ;;
+        esac
+        image_prefix=${app_default%%/*}
+        if [[ "$app_default" == */* ]]; then
+            case "$image_prefix" in
+                *.*|*:*|localhost) app_default=${app_default#*/} ;;
+            esac
+        fi
+    fi
+    _ivcr_push_image "$image" "$1" "$app_default"
 }
 
 # Build the Dockerfile in the current directory, then upload the result.
