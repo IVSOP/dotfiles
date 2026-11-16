@@ -1,0 +1,1 @@
+- [ ] Set up Cachix to share compiled Nix packages across machines, with a retention policy to limit cache growth.

@@ -7,11 +7,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1794421844,
-        "narHash": "sha256-lJDIMH5jM1tbRH3MGy5fZ135/a5PD1AILAmb93hdmJg=",
+        "lastModified": 1794835746,
+        "narHash": "sha256-8wokxia6BZNPoSzHF+QQK0S0eUWEoMEnyCy01yoyG10=",
         "owner": "IVSOP",
         "repo": "backup_parser",
-        "rev": "29289112dcd786c61970dba99c3f003655a26b90",
+        "rev": "7e42c57b1810083b89050335fe92c063cb0236de",
         "type": "github"
       },
       "original": {
