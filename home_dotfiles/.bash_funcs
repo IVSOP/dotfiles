@@ -1,5 +1,28 @@
 #!/bin/bash
 
+# Run a shell function as root: sudof FUNCTION [ARG...].
+sudof() {
+    if [ "$#" -eq 0 ]; then
+        printf 'Usage: sudof FUNCTION [ARG...]\n' >&2
+        return 1
+    fi
+
+    local fn="$1" definition runner
+    shift
+    if ! definition=$(typeset -f -- "$fn"); then
+        printf 'Not a shell function: %s\n' "$fn" >&2
+        return 1
+    fi
+
+    if [ -n "${ZSH_VERSION-}" ]; then
+        runner=zsh
+    else
+        runner=bash
+    fi
+
+    sudo "$runner" -c "$definition"$'\n''"$@"' -- "$fn" "$@"
+}
+
 function setup_code_sway() {
     local WORKSPACE_ID
     WORKSPACE_ID=$(swaymsg -t get_workspaces | jq '.[] | select(.focused == true) | .id')
