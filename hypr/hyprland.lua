@@ -354,6 +354,8 @@ hl.bind(mainMod .. " + SHIFT + space", hl.dsp.window.float({ action = "toggle" }
 hl.bind(mainMod .. " + Print", hl.dsp.exec_cmd("$HOME/.config/sway/scripts/screenshot-output.sh"))
 hl.bind("Print", hl.dsp.exec_cmd("$HOME/.config/sway/scripts/screenshot.sh -m region"), { release = true })
 hl.bind(mainMod .. " + SHIFT + Print", hl.dsp.exec_cmd("$HOME/.config/sway/scripts/screenshot.sh -m output"), { release = true })
+-- Controller shortcut: capture the focused monitor without selection/annotation.
+hl.bind("CTRL + ALT + SHIFT + S", hl.dsp.exec_cmd("$HOME/.config/sway/scripts/screenshot-output.sh --focused"))
 
 if hy3 then
     -- Move focus with mainMod + arrow keys (hy3-aware)
