@@ -6,7 +6,7 @@ select_target "$@"
 "$config_dir/scripts/pins.sh"
 
 # Update every input that is not explicitly fixed to a commit in flake.nix.
-# Hyprland, hy3, Solana, Anchor, and Bootvine keep their reviewed revisions.
+# Hyprland, hy3, Solana, and Anchor keep their reviewed revisions.
 mapfile -t inputs < <(jq -r '
     . as $lock | .nodes[.root].inputs | to_entries[] |
     select(.value | type == "string") |

@@ -33,17 +33,17 @@
     "obsidian-livesync": {
       "enable": true,
       "hashes": {
-        "main.js": "sha256-+Hlc2KC/KDPuRuP0ULx4j4rmBsbBsuByTYuMOjZKvPI=",
-        "manifest.json": "sha256-kz9Ki09v3zcc5FmAbFJalTJtyYXrNSv7lnLmhuh+S/s=",
+        "main.js": "sha256-8eIiYtEK3yv+5C7bpYU6/EJ65POTEV4X1Y+QlBOyLSc=",
+        "manifest.json": "sha256-AAEOfM9gAgiwCJtWXEgIq8cYqZiVsxcsIFjSKvRHrC4=",
         "styles.css": "sha256-tq+dIUwI8AWD6z/jWikb7RmojJzk7553jC3wr7Pzq30="
       },
       "repo": "vrtmrz/obsidian-livesync",
-      "version": "1.0.49"
+      "version": "1.0.50"
     }
   },
   "radxaFirmware": {
     "repo": "radxa-pkg/radxa-firmware",
-    "revision": "ba359c9d72a0864224ea7a787234c1cf60ca9e6b",
+    "revision": "11ce94cd3c889c53e7cd681a39cdf6a10bef8daf",
     "files": [
       {
         "directory": "brcm",

@@ -18,8 +18,8 @@ alias monitor='$HOME/.config/hypr/scripts/monitor-profile.sh'
 # codex rewrites ~/.codex/config.toml itself, so settings put there get
 # clobbered; pass them as flags instead. The cx* aliases below inherit this.
 alias codex='codex -c tui.auto_recap=false'
-alias cxastra='codex --model gpt-6-astra --config model_reasoning_effort=high'
-alias cxsol='codex --model gpt-6.1-sol --config model_reasoning_effort=high'
+alias cxastra='codex --model gpt-6.2-astra --config model_reasoning_effort=high'
+alias cxsol='codex --model gpt-6.2-sol --config model_reasoning_effort=high'
 alias cxluna='codex --model gpt-6-luna --config model_reasoning_effort=high'
 alias npi="npm install"
 alias npr="npm run"

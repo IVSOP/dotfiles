@@ -1,13 +1,10 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    # Codex releases reach master before nixos-unstable; update this normally.
+    nixpkgs-codex.url = "github:NixOS/nixpkgs/master";
     backup-parser = {
       url = "github:IVSOP/backup_parser";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    # Bootvine 0.1.3: update this reviewed commit explicitly.
-    bootvine = {
-      url = "git+https://codeberg.org/wvhulle/bootvine?rev=a7e33b453a82ecfe9e98d060008b3b20b6924f62";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     lanzaboote = {
@@ -45,12 +42,18 @@
     };
   };
 
-  outputs = inputs@{ bootvine, nixpkgs, nixpkgs-hyprland, nixpkgs-anchor, nixpkgs-solana, lanzaboote, nix4vscode, hy3, waybar, rust-overlay, ... }: let
+  outputs = inputs@{ nixpkgs, nixpkgs-codex, nixpkgs-hyprland, nixpkgs-anchor, nixpkgs-solana, lanzaboote, nix4vscode, hy3, waybar, rust-overlay, ... }: let
     system = "x86_64-linux";
 
     # Shared by the x86 hosts and installer ISO; keep the Radxa independent.
-    bootvineModule = {
-      imports = [ bootvine.nixosModules.default ./bootvine.nix ];
+    bootvineModule = ./bootvine.nix;
+
+    codexModule = {
+      nixpkgs.overlays = [
+        (final: prev: {
+          codex = nixpkgs-codex.legacyPackages.${final.stdenv.hostPlatform.system}.codex;
+        })
+      ];
     };
 
     # This registry pin is on by default, but without the narHash, so nix reads
@@ -123,7 +126,6 @@
       };
       hyprlandPkgs = nixpkgs-hyprland.legacyPackages.${system};
     in [
-      (fromInput "bootvine" "Bootvine" bootvine.packages.${system}.default.version)
       (fromInput "nixpkgs-hyprland" "Hyprland" hyprlandPkgs.hyprland.version)
       {
         component = "Hyprland portal";
@@ -134,7 +136,6 @@
       (fromInput "hy3" "hy3" (hy3Overlay hyprlandPkgs {}).hy3.version)
       (fromInput "nixpkgs-solana" "Solana CLI" pins.solanaCli.version)
       (fromInput "nixpkgs-anchor" "Anchor" pins.anchor.version)
-      { component = "Codex (official binary)"; version = pins.codex.version; revision = ""; location = "pins.nix (version + archive hash)"; }
       { component = "Tracy"; version = pins.tracy.version; revision = ""; location = "pins.nix"; }
       { component = "cargo-build-sbf"; version = pins.cargoBuildSbf.version; revision = ""; location = "pins.nix + solana.nix hashes"; }
       { component = "Solana platform-tools"; version = pins.solanaPlatformTools.version; revision = ""; location = "pins.nix + solana.nix hash"; }
@@ -149,6 +150,7 @@
         { nixpkgs.overlays = [ nix4vscode.overlays.default rust-overlay.overlays.default ]; }
         pinRegistry
         bootvineModule
+        codexModule
         ./server.nix
         ./server-hardware-configuration.nix
       ];
@@ -164,6 +166,7 @@
         { nixpkgs.overlays = [ nix4vscode.overlays.default hy3Overlay waybarOverlay rust-overlay.overlays.default ]; }
         pinRegistry
         bootvineModule
+        codexModule
         ./dotfiles.nix
         ./configuration.nix
         ./laptop.nix
@@ -178,6 +181,7 @@
         { nixpkgs.overlays = [ nix4vscode.overlays.default hy3Overlay waybarOverlay rust-overlay.overlays.default ]; }
         pinRegistry
         bootvineModule
+        codexModule
         ./dotfiles.nix
         ./configuration.nix
         ./desktop.nix
@@ -188,7 +192,7 @@
       server-image = rock4ConfigForX86Build.config.system.build.sdImage;
       iso = (nixpkgs.lib.nixosSystem {
         inherit system;
-        modules = [ bootvineModule ./iso.nix ];
+        modules = [ bootvineModule codexModule ./iso.nix ];
       }).config.system.build.isoImage;
     };
   };
