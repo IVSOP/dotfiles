@@ -242,6 +242,7 @@
         "nixpkgs-hyprland": "nixpkgs-hyprland",
         "nixpkgs-solana": "nixpkgs-solana",
         "rust-overlay": "rust-overlay_2",
+        "steam-controller-status": "steam-controller-status",
         "waybar": "waybar"
       }
     },
@@ -283,6 +284,29 @@
       "original": {
         "owner": "oxalica",
         "repo": "rust-overlay",
+        "type": "github"
+      }
+    },
+    "steam-controller-status": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "rust-overlay": [
+          "rust-overlay"
+        ]
+      },
+      "locked": {
+        "lastModified": 1794965681,
+        "narHash": "sha256-1ynIgjp74r3bn2kXHdZL+mTSL+OhXfKUUWAKmPBjqz4=",
+        "owner": "IVSOP",
+        "repo": "steam_controller_status",
+        "rev": "68995fb77e9d9a4b8a91e200b1079ce36626befb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "IVSOP",
+        "repo": "steam_controller_status",
         "type": "github"
       }
     },

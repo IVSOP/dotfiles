@@ -7,6 +7,11 @@
       url = "github:IVSOP/backup_parser";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    steam-controller-status = {
+      url = "github:IVSOP/steam_controller_status";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.rust-overlay.follows = "rust-overlay";
+    };
     lanzaboote = {
       url = "github:nix-community/lanzaboote";
       inputs.nixpkgs.follows = "nixpkgs";

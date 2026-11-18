@@ -1,4 +1,4 @@
-{ lib, pkgs, ... }:
+{ inputs, lib, pkgs, ... }:
 
 {
   imports = [
@@ -6,6 +6,7 @@
     ./development.nix
     ./obsidian.nix
     (import ./docker-credentials.nix { backend = "secretservice"; })
+    inputs.steam-controller-status.nixosModules.default
   ];
 
   # ── Boot (lanzaboote / secure boot) ───────────────────────────────────
@@ -343,7 +344,16 @@
   };
 
   # ── Steam ────────────────────────────────────────────────────────────
-  programs.steam.enable = true;
+  programs.steam = {
+    enable = true;
+    extest.enable = true;
+  };
+
+  # The Hyprland startup hook starts the applet alongside Solaar.
+  programs.steam-controller-status = {
+    enable = true;
+    autostart = false;
+  };
 
   # ── Security (sudo) ──────────────────────────────────────────────────
   security.polkit.enable = true;
