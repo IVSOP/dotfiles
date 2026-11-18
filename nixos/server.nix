@@ -8,25 +8,111 @@ let
   enableTailscale = true;
   lanInterface = "enp2s0";
   lanSubnet = "192.168.1.0/24";
-  # IT8613 temp1 thresholds, not CPU package temperatures. See docs/eq14-fan-curve.html.
-  fanCurve = {
-    # Live checks with off=45, start=50 and zero offset cycled near 44-46C.
-    # Raise the off register too: target stop near 47C / resume near 50C.
-    # Verified: stopped at 46C, stayed off at 47C, running again by 53C.
-    # Exact switching boundaries and sustained-load cooling remain unverified.
-    offTemperature = 50;
-    startTemperature = 50;
-    fullSpeedTemperature = 70;
-    startPwm = 65;
-    slope = 4; # PWM units per degree Celsius, not a response rate per second.
-    # Additional chip offset in C: the absolute readback is offTemperature - hysteresis.
-    # Restore a nonzero offset to reduce the zero-offset revision's cycling.
-    hysteresis = 3;
-    # No time delay, averaging window or spin-up/down time is exposed by this
-    # controller's current Linux interface. pwm2_freq is the motor PWM carrier.
-    # This curve uses temp1 only; it does not directly respond to SSD temperatures.
-    # See the HTML for SSD readings, CPU power limits and remaining load checks.
-  };
+  eq14Fan = pkgs.writeText "eq14-fan.py" ''
+    import os
+    from pathlib import Path
+    import socket
+    import sys
+    import time
+
+    # Temperatures are IT8613 temp1 readings in millidegrees Celsius.
+    STOP_TEMP = 47_000
+    START_TEMP = 50_000
+    AUTOMATIC_TEMP = 60_000
+    COOLDOWN_SECONDS = 30
+    SPINUP_SECONDS = 6
+    AUTOMATIC_START_PWM = 60
+
+    def read(device, attribute):
+        return int((device / attribute).read_text())
+
+    def write(device, attribute, value):
+        (device / attribute).write_text(f"{value}\n")
+
+    def find_controller():
+        controllers = [
+            device.resolve()
+            for device in Path("/sys/class/hwmon").glob("hwmon*")
+            if (device / "name").read_text().strip() == "it8613"
+        ]
+        if len(controllers) != 1:
+            raise RuntimeError(f"Expected one IT8613 controller, found {len(controllers)}")
+        return controllers[0]
+
+    def restore_automatic(device, marker):
+        # Manual duty and automatic start PWM share the same IT8613 register.
+        write(device, "pwm2_auto_start", AUTOMATIC_START_PWM)
+        write(device, "pwm2_enable", 2)
+        marker.unlink()
+
+    def run(marker, notify):
+        device = find_controller()
+        if marker.exists():
+            restore_automatic(device, marker)
+        if read(device, "pwm2_enable") != 2 or read(device, "pwm2_auto_channels_temp") != 1:
+            raise RuntimeError("Expected PWM2 in automatic mode using temp1")
+
+        # Restore the original running curve. A low off register lets the
+        # software hold the fan on while the board sensor cools.
+        for attribute, value in (
+            ("pwm2_auto_point1_temp", 0),
+            ("pwm2_auto_point2_temp", 40000),
+            ("pwm2_auto_start", AUTOMATIC_START_PWM),
+            ("pwm2_auto_slope", 8),  # One PWM unit per degree, encoded in eighths.
+            ("pwm2_auto_point1_temp_hyst", -4000),  # Keep the original 4°C offset.
+            ("pwm2_auto_point3_temp", 90000),
+        ):
+            write(device, attribute, value)
+
+        notify.sendall(b"READY=1")
+        cool_since = None
+        spin_since = None
+        fan_off = False
+        while True:
+            temperature = read(device, "temp1_input")
+            now = time.monotonic()
+            if spin_since is not None:
+                spinning = read(device, "fan2_input") > 0
+                spin_timed_out = now - spin_since >= SPINUP_SECONDS
+                if spinning or temperature >= AUTOMATIC_TEMP or spin_timed_out:
+                    if not spinning and spin_timed_out:
+                        print("No fan RPM at startup PWM; returning to automatic control", flush=True)
+                    restore_automatic(device, marker)
+                    spin_since = None
+            elif fan_off:
+                if temperature >= AUTOMATIC_TEMP:
+                    restore_automatic(device, marker)
+                    fan_off = False
+                elif temperature >= START_TEMP:
+                    write(device, "pwm2", 80)
+                    fan_off = False
+                    spin_since = now
+            elif temperature > STOP_TEMP:
+                cool_since = None
+            elif cool_since is None:
+                cool_since = now
+            elif now - cool_since >= COOLDOWN_SECONDS:
+                marker.touch()
+                write(device, "pwm2_enable", 1)
+                write(device, "pwm2", 0)
+                fan_off = True
+                cool_since = None
+
+            notify.sendall(b"WATCHDOG=1")
+            time.sleep(2)
+
+    marker = Path(os.environ["RUNTIME_DIRECTORY"]) / "manual-pwm-device"
+    if sys.argv[1:] == ["restore"]:
+        if marker.exists():
+            restore_automatic(find_controller(), marker)
+    else:
+        address = os.environ["NOTIFY_SOCKET"]
+        if address.startswith("@"):
+            address = "\0" + address[1:]
+        with socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM) as notify:
+            notify.connect(address)
+            run(marker, notify)
+  '';
 in
 {
   imports = [
@@ -59,43 +145,23 @@ in
   ];
   boot.kernelModules = [ "it87" ];
 
-  # Program the hardware's automatic controller; no userspace fan-control loop.
+  # The IT8613 handles running speed. The service takes over for fan stop and spin-up.
   systemd.services.eq14-fan-curve = {
-    description = "Apply the EQ14 automatic fan curve";
+    description = "Manage EQ14 fan stop and automatic cooling";
     wantedBy = [ "multi-user.target" ];
     after = [ "systemd-modules-load.service" ];
-    path = [ pkgs.coreutils ];
     serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
+      Type = "notify";
+      ExecStart = "${pkgs.python3}/bin/python3 ${eq14Fan}";
+      ExecStopPost = "${pkgs.python3}/bin/python3 ${eq14Fan} restore";
+      RuntimeDirectory = "eq14-fan-curve";
+      RuntimeDirectoryMode = "0700";
+      RuntimeDirectoryPreserve = "restart";
+      WatchdogSec = "10s";
+      WatchdogSignal = "SIGKILL";
+      Restart = "on-failure";
+      RestartSec = "3s";
     };
-    script = ''
-      shopt -s nullglob
-      controllers=()
-      for device in /sys/class/hwmon/hwmon*; do
-        if [[ "$(cat "$device/name")" == it8613 ]]; then
-          controllers+=("$device")
-        fi
-      done
-      if (( ''${#controllers[@]} != 1 )); then
-        echo "Expected one IT8613 fan controller; found ''${#controllers[@]}" >&2
-        exit 1
-      fi
-      device="''${controllers[0]}"
-      if [[ "$(cat "$device/pwm2_enable")" != 2 || "$(cat "$device/pwm2_auto_channels_temp")" != 1 ]]; then
-        echo "Expected PWM2 in automatic mode using temp1; refusing to change another setup" >&2
-        exit 1
-      fi
-
-      # Apply stronger high-temperature cooling before delaying fan startup.
-      printf '%s\n' ${toString (fanCurve.fullSpeedTemperature * 1000)} > "$device/pwm2_auto_point3_temp"
-      printf '%s\n' ${toString fanCurve.startPwm} > "$device/pwm2_auto_start"
-      printf '%s\n' ${toString (fanCurve.slope * 8)} > "$device/pwm2_auto_slope"
-      printf '%s\n' ${toString (fanCurve.startTemperature * 1000)} > "$device/pwm2_auto_point2_temp"
-      printf '%s\n' ${toString (fanCurve.offTemperature * 1000)} > "$device/pwm2_auto_point1_temp"
-      printf '%s\n' ${toString ((fanCurve.offTemperature - fanCurve.hysteresis) * 1000)} > "$device/pwm2_auto_point1_temp_hyst"
-      echo "Applied EQ14 automatic curve: off register ${toString fanCurve.offTemperature}C, ramp start ${toString fanCurve.startTemperature}C, full ${toString fanCurve.fullSpeedTemperature}C, hysteresis readback ${toString (fanCurve.offTemperature - fanCurve.hysteresis)}C"
-    '';
   };
 
   hardware.graphics = {

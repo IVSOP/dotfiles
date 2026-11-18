@@ -100,6 +100,7 @@
     rsync
     immich-cli
     psmisc
+    stress
     gdu
     inputs.backup-parser.packages.${pkgs.stdenv.hostPlatform.system}.default
     duf
