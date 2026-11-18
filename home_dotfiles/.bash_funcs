@@ -80,33 +80,47 @@ function setup_code() {
     fi
 }
 
-function compress() {
+# Keep pipeline failures local to these helpers, without changing shell options.
+_archive_input_size() (
+    set -o pipefail
+    local input size total=0
+    for input in "$@"; do
+        size=$(du -bc -- "$input" | tail -n 1 | cut -f 1) || return
+        total=$((total + size))
+    done
+    printf '%s\n' "$total"
+)
+
+function compress() (
+    set -o pipefail
     if [ "$#" -lt 1 ]; then
         echo "Not enough args: {OUTPUT} [FILENAMES] or {FILE}, there the output will be FILE.tar.zst"
         echo "Command used is tar -cf - [FILENAMES] | pv -s \$(du -bc [FILENAMES] | tail -n 1 | cut -f 1) | zstd -10 --long --threads=0 --stdout > {OUTPUT}"
         return 1
     fi
 
+    local output_file size
     if [ "$#" -eq 1 ]; then
-        # Single file case: use input file as source and append .tar.zst for output
-        local input_file="$1"
-        local output_file="${input_file}.tar.zst"
-        tar -cf - "$input_file" | pv -s $(du -bc "$input_file" | tail -n 1 | cut -f 1) | zstd -10 --long --threads=0 --stdout > "$output_file"
+        output_file="${1}.tar.zst"
     else
-        # Multiple files case: first arg is output, rest are input files
-        tar -cf - "${@:2}" | pv -s $(du -bc "${@:2}" | tail -n 1 | cut -f 1) | zstd -10 --long --threads=0 --stdout > "$1"
+        output_file="$1"
+        shift
     fi
-}
+    size=$(_archive_input_size "$@") || return
+    tar -cf - -- "$@" | pv -s "$size" | zstd -10 --long --threads=0 --stdout > "$output_file"
+)
 
-function decompress() {
+function decompress() (
+    set -o pipefail
     if [ "$#" -lt 1 ]
     then
         echo "Not enough args"
         return 1
     fi
-    local decompressed_size=$(zstd -l -v "$1" 2>/dev/null | grep Compressed | cut -d ' ' -f5 | cut -d \( -f2)
-    zstd --decompress --threads=0 "$1" --stdout | pv -s $decompressed_size | tar -x -f -
-}
+    local decompressed_size
+    decompressed_size=$(zstd -l -v -- "$1" 2>/dev/null | grep Compressed | cut -d ' ' -f5 | cut -d \( -f2) || return
+    zstd --decompress --threads=0 --stdout -- "$1" | pv -s "$decompressed_size" | tar -x -f -
+)
 
 function warp() {
     if [ "$#" -lt 1 ]
@@ -171,7 +185,7 @@ function encrypt() {
     local filename="$1"
     local output="${filename}.age"
 
-    age --passphrase --output $output $filename
+    age --passphrase --output "$output" "$filename"
 }
 
 function decrypt() {
@@ -191,40 +205,47 @@ function decrypt() {
         result_filename="$filename"
     fi
 
-    age --decrypt --output $result_filename "$1"
+    age --decrypt --output "$result_filename" "$1"
 }
 
-function compress-encrypt() {
+function compress-encrypt() (
+    set -o pipefail
     if [ "$#" -lt 2 ]
     then
         echo "Not enough args: {OUTPUT (.tar.zst.age)} [FILENAMES]"
         return 1
     fi
 
-    tar -cf - "${@:2}" \
-        | pv -s $(du -bc "${@:2}" | tail -n 1 | cut -f 1) \
+    local output="$1" size
+    shift
+    size=$(_archive_input_size "$@") || return
+    tar -cf - -- "$@" \
+        | pv -s "$size" \
         | zstd -10 --long --threads=0 --stdout \
-        | age --passphrase --output "$1"
-}
+        | age --passphrase --output "$output"
+)
 
-function tar-encrypt() {
+function tar-encrypt() (
+    set -o pipefail
     if [ "$#" -lt 1 ]
     then
         echo "Not enough args: FILENAME or OUTPUT(.tar.age) [FILENAMES]"
         return 1
     fi
 
-
+    local output size
     if [ "$#" -eq 1 ]; then
-        local output="$1.tar.age"
-        tar -cf - $1 | pv -s $(du -bc "$1" | tail -n 1 | cut -f 1) | age --passphrase --output $output
+        output="$1.tar.age"
     else
-        local output="$1"
-        tar -cf - "${@:2}" | pv -s $(du -bc "${@:2}" | tail -n 1 | cut -f 1) | age --passphrase --output $output
+        output="$1"
+        shift
     fi
-}
+    size=$(_archive_input_size "$@") || return
+    tar -cf - -- "$@" | pv -s "$size" | age --passphrase --output "$output"
+)
 
-function decompress-decrypt() {
+function decompress-decrypt() (
+    set -o pipefail
     if [ "$#" -lt 1 ]
     then
         echo "Not enough args"
@@ -233,20 +254,24 @@ function decompress-decrypt() {
     age --decrypt --output - "$1" \
         | zstd --decompress --threads=0 - --stdout \
         | tar -x -f -
-}
+)
 
-function decompress-tar() {
+function decompress-tar() (
+    set -o pipefail
     if [ "$#" -lt 1 ]
     then
         echo "Not enough args"
         return 1
     fi
+    local size
+    size=$(_archive_input_size "$1") || return
     age --decrypt --output - "$1" \
-        | pv -s $(du -bc "$1" | tail -n 1 | cut -f 1) \
+        | pv -s "$size" \
         | tar -x -f -
-}
+)
 
-from() {
+from() (
+  set -o pipefail
   local host="" dir choice start_in_root=0 folder=""
 
   while [[ $# -gt 0 ]]; do
@@ -316,7 +341,7 @@ from() {
   else
     scp    "$host:$(_q_or_raw_tilde "$dir/$choice")" .
   fi
-}
+)
 
 cff() {
   local file
@@ -329,7 +354,10 @@ send_to_server() {
     echo "Usage: send_to_server FILE [FILE...]"
     return 1
   fi
-  rsync -avP "$@" server:
+  local source
+  for source in "$@"; do
+    rsync -avP --protect-args -- "$source" server: || return
+  done
 }
 
 send_to_server_compressed() {
@@ -337,7 +365,10 @@ send_to_server_compressed() {
     echo "Usage: send_to_server_compressed FILE [FILE...]"
     return 1
   fi
-  rsync -avPz "$@" server:
+  local source
+  for source in "$@"; do
+    rsync -avPz --protect-args -- "$source" server: || return
+  done
 }
 
 get_from_server() {
@@ -346,11 +377,9 @@ get_from_server() {
     return 1
   fi
   local remote_path
-  local -a sources=()
   for remote_path in "$@"; do
-    sources+=("server:$remote_path")
+    rsync -avP --protect-args -- "server:$remote_path" . || return
   done
-  rsync -avP --protect-args -- "${sources[@]}" .
 }
 
 get_from_server_compressed() {
@@ -359,11 +388,9 @@ get_from_server_compressed() {
     return 1
   fi
   local remote_path
-  local -a sources=()
   for remote_path in "$@"; do
-    sources+=("server:$remote_path")
+    rsync -avPz --protect-args -- "server:$remote_path" . || return
   done
-  rsync -avPz --protect-args -- "${sources[@]}" .
 }
 
 hotwallet() {
