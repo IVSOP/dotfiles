@@ -16,11 +16,9 @@ let
     import time
 
     # Temperatures are IT8613 temp1 readings in millidegrees Celsius.
-    STOP_TEMP = 47_000
-    START_TEMP = 50_000
-    AUTOMATIC_TEMP = 60_000
+    START_TEMP = 55_000
+    STOP_TEMP = START_TEMP - 3_000
     COOLDOWN_SECONDS = 30
-    SPINUP_SECONDS = 6
     AUTOMATIC_START_PWM = 60
 
     def read(device, attribute):
@@ -66,27 +64,14 @@ let
 
         notify.sendall(b"READY=1")
         cool_since = None
-        spin_since = None
         fan_off = False
         while True:
             temperature = read(device, "temp1_input")
             now = time.monotonic()
-            if spin_since is not None:
-                spinning = read(device, "fan2_input") > 0
-                spin_timed_out = now - spin_since >= SPINUP_SECONDS
-                if spinning or temperature >= AUTOMATIC_TEMP or spin_timed_out:
-                    if not spinning and spin_timed_out:
-                        print("No fan RPM at startup PWM; returning to automatic control", flush=True)
-                    restore_automatic(device, marker)
-                    spin_since = None
-            elif fan_off:
-                if temperature >= AUTOMATIC_TEMP:
+            if fan_off:
+                if temperature >= START_TEMP:
                     restore_automatic(device, marker)
                     fan_off = False
-                elif temperature >= START_TEMP:
-                    write(device, "pwm2", 80)
-                    fan_off = False
-                    spin_since = now
             elif temperature > STOP_TEMP:
                 cool_since = None
             elif cool_since is None:
@@ -145,7 +130,7 @@ in
   ];
   boot.kernelModules = [ "it87" ];
 
-  # The IT8613 handles running speed. The service takes over for fan stop and spin-up.
+  # The service gates fan stop and restart. The IT8613 sets the running speed.
   systemd.services.eq14-fan-curve = {
     description = "Manage EQ14 fan stop and automatic cooling";
     wantedBy = [ "multi-user.target" ];

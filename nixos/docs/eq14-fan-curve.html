@@ -34,29 +34,31 @@
 </head>
 <body>
   <main>
-    <h1>Beelink EQ14 · fan curve before and now</h1>
-    <h2>Current fan control · verified 18 November 2026</h2>
-    <p>The fan service starts the fan at 50°C with a brief 80/255 PWM command. It restores the automatic curve’s starting PWM of 60 when it detects rotation or after six seconds. A reading of 60°C or higher returns control to the IT8613 immediately. The IT8613 then increases PWM by one unit per degree above 40°C and reaches full output at 90°C. The service stops the fan after 30 continuous seconds at or below 47°C. These thresholds use controller temp1. <a href="../server.nix">Server configuration</a></p>
+    <h1>Beelink EQ14 · fan curve</h1>
+    <p>The fan starts at <strong>55°C</strong> on the IT8613 controller sensor and follows the original hardware curve. The modeled output is <strong>35% PWM at 70°C</strong>. The original full-speed threshold is <strong>90°C</strong>. The fan switches off after 30 continuous seconds at or below 52°C. <a href="../server.nix">Server configuration</a></p>
+
+    <div class="legend" aria-label="Chart legend">
+      <span><span class="swatch" aria-hidden="true"></span>Configured behavior while warming</span>
+      <span><span class="swatch reference" aria-hidden="true"></span>Original running curve</span>
+    </div>
+    <svg id="curve" role="img" aria-labelledby="curve-title curve-description">
+      <title id="curve-title">Original fan curve with a 55°C turn-on threshold</title>
+      <desc id="curve-description">As the machine warms, the fan is off until 55°C. It then follows the original curve, from a modeled PWM of 75 at 55°C to 90 at 70°C, with full output at 90°C. The shaded band marks the 52°C cooldown threshold and the 55°C turn-on threshold.</desc>
+    </svg>
+    <p class="muted">The chart shows modeled PWM on warmup. On cooldown the fan can keep running below 55°C while the timer counts down.</p>
+    <p>With automatic control running, the original hardware settings use PWM 60 at 40°C and increase by one PWM unit per degree until the full-speed threshold. The service hands control directly to that curve at 55°C. The new handoff threshold will be checked on hardware after activation.</p>
+
+    <details>
+      <summary>Previous configurations and test results</summary>
+    <h2>18 November live test</h2>
     <ul>
-      <li>During warmup, the fan started at PWM 80 and reached 2,064 RPM. The automatic starting PWM read back as 60 after the handoff.</li>
-      <li>Under four-worker CPU load with <code>stress</code>, the fan ran at about 2,300–2,430 RPM from 66°C through 70°C on the controller. At 70°C it was at 2,428 RPM and the CPU package was at 77°C.</li>
+      <li>The build tested that day used a brief PWM 80 startup command. The fan reached 2,064 RPM, and the automatic starting PWM read back as 60 after the handoff.</li>
+      <li>Under four-worker CPU load with <code>stress</code>, the automatic curve ran at about 2,300–2,430 RPM from 66°C through 70°C on the controller. At 70°C it was at 2,428 RPM and the CPU package was at 77°C.</li>
       <li>During cooldown, the service commanded PWM 0 about 31 seconds after the first reading at or below 47°C. The tachometer reached 0 RPM about 2.5 seconds later.</li>
     </ul>
     <h2>Historical automatic curves · 13–14 November 2026</h2>
-    <p>The dashed line shows the original hardware settings recorded on 13 November. The solid line shows the hardware-only Nix configuration checked on 14 November. Both curves use PWM2, which drives the fan reported by the fan2 tachometer.</p>
-    <p>The 14 November configuration wrote <strong>50°C to the off register</strong>, <strong>50°C to the ramp-start register</strong> and <strong>70°C to the full-speed register</strong>. The <strong>3°C hysteresis offset</strong> gave an absolute readback of <strong>47°C</strong>. Readback confirmed all settings after rebuilding. The fan stopped at a sampled controller temperature of 46°C, remained stopped at 47°C in the next sample, and was running again by 53°C.</p>
+    <p>The 14 November hardware-only configuration wrote 50°C to the off and ramp-start registers and 70°C to the full-speed register. The 3°C hysteresis offset gave an absolute readback of 47°C. The fan stopped at a sampled controller temperature of 46°C, remained stopped at 47°C in the next sample, and was running again by 53°C.</p>
     <p>In the preceding 45/50/70°C revision with zero hysteresis offset, the fan cycled around 44–46°C. The 14 November revision raised the off register and restored a nonzero offset, targeting a switching range of 47–50°C. The samples captured stopping and restarting at whole-degree readings.</p>
-
-    <div class="legend" aria-label="Chart legend">
-      <span><span class="swatch" aria-hidden="true"></span>14 November settings</span>
-      <span><span class="swatch reference" aria-hidden="true"></span>Original settings</span>
-    </div>
-    <svg id="curve" role="img" aria-labelledby="curve-title curve-description">
-      <title id="curve-title">Configured output while the fan is running; switching behavior excluded</title>
-      <desc id="curve-description">The corrected running-output model starts at PWM 65 at the 50°C ramp setting, rises by 4 PWM units per degree, and jumps to PWM 255 at the 70°C full-speed setting. The original holds PWM 60 between 35°C and 40°C, rises by 1 unit per degree, and reaches full output at 90°C. The shaded 47–50°C band is the intended switching range; exact boundaries remain unmeasured. These curves do not predict exact on/off transitions. PWM is a control signal, not a measured percentage of maximum RPM.</desc>
-    </svg>
-    <noscript><p>The settings table below contains both configurations. Enable JavaScript to draw the chart; no internet connection is needed.</p></noscript>
-    <p class="muted">The curves show modeled PWM while the fan is running. The shaded band shows the intended 47–50°C switching range for the 14 November settings.</p>
 
     <h2>Original and 14 November settings</h2>
     <table aria-label="Original and 14 November automatic fan settings">
@@ -94,10 +96,10 @@
 
     <h2>Why start at 50°C?</h2>
     <p>You report that the machine is usually below 55°C. The fan controller uses a different sensor from the CPU package: a saved snapshot recorded <strong>40°C at controller temp1 and 51°C at the CPU package</strong>. A later reading was 39°C and 50°C respectively. These snapshots do not establish a fixed offset, particularly during bursts of CPU activity.</p>
-    <p>The 14 November configuration used 50°C on the controller as the automatic ramp-start setting. The 18 November service uses 50°C as the software restart threshold and returns the automatic ramp-start register to 40°C.</p>
+    <p>The 14 November configuration used 50°C on the controller as the automatic ramp-start setting. The service tested on 18 November used 50°C as the software restart threshold and returned the automatic ramp-start register to 40°C.</p>
 
     <h2>Check before relying on it</h2>
-    <p>This is not a manufacturer-approved or fully thermally validated curve. A short observation confirmed stopping and restarting. Sustained normal workloads, including storage activity, and longer idle periods still need to be checked for stable CPU package, controller and SSD temperatures. Retain automatic control and thermal protections. The fan may remain running after warming above the on threshold until it cools below the stop boundary; being below 50°C alone does not imply it must be off.</p>
+    <p>A short observation confirmed stopping and restarting on the 18 November build. Sustained normal workloads, including storage activity, and longer idle periods still need to be checked for stable CPU package, controller and SSD temperatures.</p>
     <p>The first live check used an extra 4°C hysteresis delta with a 41°C absolute readback. The fan was stopped at a controller reading of 41°C and running in later samples at 42°C. The subsequent zero-offset revision cycled around 44–46°C. The 14 November hardware-only revision then used a 50°C off register and a 3°C offset.</p>
     <p>If temperatures keep climbing, the CPU throttles, or the fan fails to restart, restore the original settings. The controller’s sensor location and lag are not calibrated here; there is no validated conversion to CPU package temperature.</p>
 
@@ -155,6 +157,8 @@
     </table>
     <p>These are historical readings for off=45°C, start=50°C, offset=0°C, not results for the current configuration. They are sampled readings rather than a continuous transition trace. The driver caches hardware readings, temperature is reported in whole degrees, and fan spin-up/down takes time. SSD composite temperatures in the first four samples were about 45°C and 39–40°C. Fan-stop operation is demonstrated; stable idle behavior, a true switching gap and sustained-load cooling are not yet established.</p>
 
+    </details>
+
     <h2>Sources</h2>
     <p>The live fan settings are implemented in <code>eq14Fan</code> and <code>systemd.services.eq14-fan-curve</code>. <a href="../server.nix">Server configuration</a></p>
     <p>Beelink documents the BIOS location as <strong>Advanced → Hardware Monitor → Smart Fan Function → CPU Smart Fan Mode → Automatic Mode</strong>. Verify the channel and temperature source in the firmware before applying any proposal.</p>
@@ -170,8 +174,8 @@
   </main>
   <script id="curve-data" type="application/json">
     {
-      "original": {"off": 35, "start": 40, "full": 90, "startPwm": 60, "slopeRaw": 8, "hysteresisReadback": 31},
-      "current": {"off": 50, "start": 50, "full": 70, "startPwm": 65, "slopeRaw": 32, "hysteresisReadback": 47},
+      "original": {"off": 35, "start": 40, "full": 90, "startPwm": 60, "slope": 1},
+      "current": {"stop": 52, "trigger": 55},
       "maximumPwm": 255,
       "temperatureDomain": [20, 100]
     }
@@ -188,40 +192,44 @@
         svg.appendChild(element);
         return element;
       };
-      const runningPoints = curve => [
-        [curve.off, curve.startPwm], [curve.start, curve.startPwm],
-        [curve.full, Math.min(model.maximumPwm, curve.startPwm + (curve.full - curve.start) * curve.slopeRaw / 8)],
-        [curve.full, model.maximumPwm], [100, model.maximumPwm]
+      const {original, current, maximumPwm, temperatureDomain} = model;
+      const [minimumTemp, maximumTemp] = temperatureDomain;
+      const runningPwm = temperature => original.startPwm + (temperature - original.start) * original.slope;
+      const highTemperaturePoints = [
+        [original.full, runningPwm(original.full)],
+        [original.full, maximumPwm], [maximumTemp, maximumPwm]
       ];
+      const originalPoints = [[original.off, original.startPwm], [original.start, original.startPwm], ...highTemperaturePoints];
+      const currentPoints = [[minimumTemp, 0], [current.trigger, 0], [current.trigger, runningPwm(current.trigger)], ...highTemperaturePoints];
       function draw() {
         svg.querySelectorAll(':scope > :not(title):not(desc)').forEach(node => node.remove());
         const width = Math.max(280, svg.getBoundingClientRect().width);
         const height = 360;
         const left = 48, right = width - 18, top = 45, bottom = 300;
-        const x = temperature => left + (temperature - 20) / 80 * (right - left);
-        const y = pwm => bottom - pwm / model.maximumPwm * (bottom - top);
+        const x = temperature => left + (temperature - minimumTemp) / (maximumTemp - minimumTemp) * (right - left);
+        const y = pwm => bottom - pwm / maximumPwm * (bottom - top);
         svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
-        mark('rect', {x: x(model.current.hysteresisReadback), y: top, width: x(model.current.start) - x(model.current.hysteresisReadback), height: bottom - top, fill: 'var(--band)'});
+        mark('rect', {x: x(current.stop), y: top, width: x(current.trigger) - x(current.stop), height: bottom - top, fill: 'var(--band)'});
         [0, 25, 50, 75, 100].forEach(percent => {
-          const position = y(model.maximumPwm * percent / 100);
+          const position = y(maximumPwm * percent / 100);
           mark('line', {x1: left, x2: right, y1: position, y2: position, class: 'grid'});
           mark('text', {x: left - 8, y: position + 4, 'text-anchor': 'end'}, `${percent}%`);
         });
-        const ticks = width < 500 ? [20, 50, 70, 100] : [20, 30, 40, 50, 60, 70, 80, 90, 100];
+        const ticks = width < 500 ? [20, 50, 70, 90] : [20, 30, 40, 50, 60, 70, 80, 90, 100];
         ticks.forEach(temperature => {
           mark('line', {x1: x(temperature), x2: x(temperature), y1: bottom, y2: bottom + 5, class: 'grid'});
           mark('text', {x: x(temperature), y: bottom + 23, 'text-anchor': 'middle'}, temperature);
         });
         mark('text', {x: left, y: 22}, 'Fan output (% PWM)');
         mark('text', {x: (left + right) / 2, y: 348, 'text-anchor': 'middle'}, 'Controller temp1 (°C)');
-        ['original', 'current'].forEach(key => {
-          const points = runningPoints(model[key]).map(([temperature, pwm]) => `${x(temperature)},${y(pwm)}`).join(' ');
+        Object.entries({original: originalPoints, current: currentPoints}).forEach(([key, curve]) => {
+          const points = curve.map(([temperature, pwm]) => `${x(temperature)},${y(pwm)}`).join(' ');
           mark('polyline', {points, class: key});
         });
-        const startX = x(model.current.start), startY = y(model.current.startPwm);
+        const startX = x(current.trigger), startY = y(runningPwm(current.trigger));
         mark('circle', {cx: startX, cy: startY, r: 4, fill: 'var(--series)'});
-        mark('text', {x: startX, y: startY - 14, 'text-anchor': 'middle'}, 'Ramp setting 50°C');
-        mark('text', {x: x(model.current.full), y: top - 10, 'text-anchor': 'middle'}, 'Full 70°C');
+        mark('text', {x: startX, y: startY - 14, 'text-anchor': 'middle'}, `Start ${current.trigger}°C`);
+        mark('text', {x: x(original.full), y: top - 10, 'text-anchor': 'middle'}, `Full ${original.full}°C`);
       }
       draw();
       if (typeof ResizeObserver !== 'undefined') new ResizeObserver(draw).observe(svg);
