@@ -16,7 +16,7 @@ mapfile -t inputs < <(jq -r '
 if [[ ${#inputs[@]} -eq 0 ]]; then
     printf 'No branch-tracking flake inputs to update.\n' >&2
 else
-    nix flake update "${inputs[@]}" --flake "$config_dir"
+    nix flake update "${inputs[@]}" --flake "path:$config_dir"
 fi
 "$config_dir/scripts/update-sources.sh"
 exec "$config_dir/rebuild.sh" "$target"

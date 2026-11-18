@@ -2,7 +2,7 @@
 
 let
   # Small Broadcom firmware set for ROCK 4C+ wireless modules.
-  source = (builtins.fromJSON (builtins.readFile ../sources.json)).radxaFirmware;
+  source = (builtins.fromJSON (builtins.readFile ../../sources.json)).radxaFirmware;
   inherit (source) revision;
   firmwareHash = directory: name:
     (builtins.head (builtins.filter (file: file.directory == directory && file.name == name) source.files)).hash;

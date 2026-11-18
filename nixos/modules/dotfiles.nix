@@ -67,7 +67,7 @@ let
   # ~/.codex/config.toml deliberately isn't here: codex rewrites it itself
   # (trust levels, dismissed notices, nux counters), so a link just turns
   # every codex run into a dirty git tree. Settings we actually care about go
-  # through the codex wrapper in configuration.nix instead.
+  # through Codex's own configuration.
   nestedLinks = [
     ".ssh/config"
   ];

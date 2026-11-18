@@ -1,7 +1,9 @@
-{ config, pkgs, modulesPath, ... }:
+{ pkgs, modulesPath, ... }:
 
 {
   imports = [
+    ../modules/bootvine.nix
+    ../modules/codex.nix
     "${modulesPath}/installer/cd-dvd/installation-cd-minimal.nix"
   ];
 

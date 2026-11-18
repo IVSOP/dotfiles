@@ -1,11 +1,20 @@
 { lib, pkgs, ... }:
 
 {
-  imports = [ ../docker-logging.nix ];
+  imports = [
+    ./rock-4c-plus.nix
+    ../../modules/docker-logging.nix
+  ];
 
-  # Standalone server policy: deliberately does not import configuration.nix.
   networking.hostName = lib.mkDefault "rock-server";
   time.timeZone = "Europe/Lisbon";
+
+  # The flashed image uses this root label.
+  fileSystems."/" = {
+    device = "/dev/disk/by-label/ROCK_SERVER";
+    fsType = "ext4";
+  };
+  swapDevices = [ ];
 
   users.mutableUsers = true; # passwd changes survive rebuilds and reboots.
   users.users.radxa = {
@@ -14,7 +23,7 @@
       "wheel" "docker" "networkmanager" "lp" "dialout"
       "audio" "video" "render" "plugdev" "gpio" "i2c" "spidev" "pwm"
     ];
-    openssh.authorizedKeys.keys = import ../trusted-ssh-keys.nix;
+    openssh.authorizedKeys.keys = import ../../trusted-ssh-keys.nix;
     # No password in the Nix store. Set it during installation.
   };
 

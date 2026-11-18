@@ -9,8 +9,10 @@ installed for key management and verification. Follow the Secure Boot steps in
 [INSTALL.md](INSTALL.md#secure-boot-all-x86-machines) to create and enroll keys;
 enabling Lanzaboote in Nix does not itself enable firmware enforcement.
 
-`server.nix` imports the same `common.nix`, `development.nix`, and `dotfiles.nix`
-used by the desktop and laptop. These share the CLI packages, Git configuration,
+[The server host](hosts/server/default.nix) imports the same
+[x86 base profile](profiles/x86-base.nix), [development module](modules/development.nix),
+and [dotfile links](modules/dotfiles.nix) used by the desktop and laptop. These
+share the CLI packages, Git configuration,
 Zsh/SSH agent, development packages (including stable/nightly Rust, cross targets,
 Solana/Anchor, VS Code extensions, Android/Unity tools, and database tools),
 tmpfs `/tmp`, swappiness `1`, and a `100M` journal limit. Graphical development
@@ -44,8 +46,8 @@ access the GPU through their Compose device mappings.
 Follow [INSTALL.md](INSTALL.md): copy the configuration into `/mnt/etc/nixos`,
 generate this server's hardware file, and install with the `server` target.
 
-- Copy the generated `hardware-configuration.nix` to `server-hardware-configuration.nix`.
-- Check network settings in `server.nix`.
+- Copy the generated `hardware-configuration.nix` to `hosts/server/hardware-configuration.nix`.
+- Check network settings in `hosts/server/default.nix`.
 - Keep the full dotfiles checkout at `/home/ivsopi3/dotfiles`.
 
 SSH accepts configured keys only; root SSH and password SSH are disabled.

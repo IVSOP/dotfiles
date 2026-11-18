@@ -10,7 +10,7 @@ let
   });
 in {
   imports = [
-    ./rock-server.nix
+    ../hosts/rock-server
     "${modulesPath}/installer/sd-card/sd-image.nix"
   ];
 
@@ -18,7 +18,7 @@ in {
   hardware.enableAllHardware = lib.mkForce false;
   boot.supportedFilesystems = lib.mkForce [ "ext4" "vfat" ];
   # Bootstrap through a local root login, then set both passwords manually.
-  # mutableUsers preserves passwd changes; server.nix forbids root/password SSH.
+  # mutableUsers preserves passwd changes; the Radxa host module restricts SSH.
   users.users.root.initialHashedPassword = "";
   users.users.radxa.initialHashedPassword = "!";
   services.getty.helpLine = "Initial setup: log in locally as root (no password), run passwd root and passwd radxa, then log in as radxa and run sudo tailscale up.";

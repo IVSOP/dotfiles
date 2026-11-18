@@ -1,15 +1,21 @@
-{ config, lib, pkgs, ... }:
+{ pkgs, ... }:
 
 {
-  imports = [ ./laptop-hardware-configuration.nix ];
+  imports = [
+    ../../modules/dotfiles.nix
+    ../../profiles/workstation
+    ../../profiles/x86-base.nix
+    ../../modules/development.nix
+    ./hardware-configuration.nix
+  ];
 
   # ── Machine identity ────────────────────────────────────────────────
   networking.hostName = "ivX13";
+  system.stateVersion = "26.05";
 
   # ── SSH keys ────────────────────────────────────────────────────────
-  # Who may ssh into this laptop. Migrated out of ~/.ssh/authorized_keys,
-  # which sshd no longer reads (authorizedKeysInHomedir in configuration.nix).
-  users.users.ivsopi3.openssh.authorizedKeys.keys = import ./trusted-ssh-keys.nix;
+  # sshd reads the keys declared here through /etc/ssh/authorized_keys.d.
+  users.users.ivsopi3.openssh.authorizedKeys.keys = import ../../trusted-ssh-keys.nix;
 
   # Allow wheel members to read the CPU energy counter for wattage in btop.
   security.wrappers.btop = {
@@ -28,8 +34,7 @@
   };
 
   # ── Lid switch ───────────────────────────────────────────────────────
-  # (services.logind.lidSwitch is the pre-rename spelling; it still works but
-  # warns on every eval.) Power button is in configuration.nix.
+  # The workstation profile controls the power button.
   services.logind.settings.Login.HandleLidSwitch = "ignore";
 
   # Ignore the ThinkPad sleep shortcut (Fn+4, or the physical Ctrl+4 with

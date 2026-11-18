@@ -41,34 +41,15 @@
       url = "github:IVSOP/hy3/a4c8154710a941a683afbd46731503ed92551817";
       flake = false;
     };
-    waybar = {
-      url = "github:Alexays/Waybar";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
-  outputs = inputs@{ nixpkgs, nixpkgs-codex, nixpkgs-hyprland, nixpkgs-anchor, nixpkgs-solana, lanzaboote, nix4vscode, hy3, waybar, rust-overlay, ... }: let
+  outputs = inputs@{ nixpkgs, nixpkgs-hyprland, ... }: let
     system = "x86_64-linux";
 
-    # Shared by the x86 hosts and installer ISO; keep the Radxa independent.
-    bootvineModule = ./bootvine.nix;
-
-    codexModule = {
-      nixpkgs.overlays = [
-        (final: prev: {
-          codex = nixpkgs-codex.legacyPackages.${final.stdenv.hostPlatform.system}.codex;
-        })
-      ];
-    };
-
-    # This registry pin is on by default, but without the narHash, so nix reads
-    # it as unlocked and skips the eval cache: every `nix search` costs ~75s.
-    pinRegistry = {
-      nix.registry.nixpkgs.to = {
-        type = "path";
-        path = nixpkgs.outPath;
-        narHash = nixpkgs.narHash;
-      };
+    mkX86System = module: nixpkgs.lib.nixosSystem {
+      inherit system;
+      specialArgs = { inherit inputs; };
+      modules = [ module ];
     };
 
     serverSource = builtins.path {
@@ -79,7 +60,7 @@
     rock4Config = nixpkgs.lib.nixosSystem {
       system = "aarch64-linux";
       specialArgs = { inherit serverSource; };
-      modules = [ ./radxa/server-image.nix ];
+      modules = [ ./images/rock-server.nix ];
     };
     rock4ConfigForX86Build = rock4Config.extendModules {
       modules = [
@@ -90,39 +71,10 @@
       ];
     };
 
-    hy3Overlay = final: prev: let
-      hyprlandPkgs = nixpkgs-hyprland.legacyPackages.${final.stdenv.hostPlatform.system};
-    in {
-      inherit (hyprlandPkgs) hyprland xdg-desktop-portal-hyprland;
-      hy3 = hyprlandPkgs.callPackage "${hy3}/default.nix" {
-        inherit (hyprlandPkgs) hyprland;
-        hlversion = hyprlandPkgs.hyprland.version;
-      };
-    };
-
-    waybarOverlay = nixpkgs.lib.composeManyExtensions [
-      waybar.overlays.default
-      (final: prev: {
-        waybar = prev.waybar.overrideAttrs (old: {
-          # Temporary: the thread stress test's 5-second watchdog can expire
-          # during a busy system build. Match upstream's proposed 60-second
-          # budget while keeping the tests enabled.
-          # After future Waybar updates, try removing this override and using
-          # waybar.overlays.default directly again once its tests pass reliably.
-          # Upstream: https://github.com/Alexays/Waybar/pull/5432
-          postPatch = (old.postPatch or "") + ''
-            substituteInPlace test/utils/sleeper_thread.cpp \
-              --replace-fail 'alarm(5);' 'alarm(60);'
-          '';
-          # Let the suite outlive the subprocess watchdog (Meson defaults to 30s).
-          mesonCheckFlags = (old.mesonCheckFlags or [ ]) ++ [ "--timeout-multiplier" "3" ];
-        });
-      })
-    ];
-
   in {
     lib.manualPins = let
       pins = import ./pins.nix;
+      inherit (import ./profiles/workstation/overlays.nix inputs) hy3Overlay;
       fromInput = name: component: version: {
         inherit component;
         inherit version;
@@ -142,63 +94,26 @@
       (fromInput "nixpkgs-solana" "Solana CLI" pins.solanaCli.version)
       (fromInput "nixpkgs-anchor" "Anchor" pins.anchor.version)
       { component = "Tracy"; version = pins.tracy.version; revision = ""; location = "pins.nix"; }
-      { component = "cargo-build-sbf"; version = pins.cargoBuildSbf.version; revision = ""; location = "pins.nix + solana.nix hashes"; }
-      { component = "Solana platform-tools"; version = pins.solanaPlatformTools.version; revision = ""; location = "pins.nix + solana.nix hash"; }
+      { component = "cargo-build-sbf"; version = pins.cargoBuildSbf.version; revision = ""; location = "pins.nix + modules/solana.nix hashes"; }
+      { component = "Solana platform-tools"; version = pins.solanaPlatformTools.version; revision = ""; location = "pins.nix + modules/solana.nix hash"; }
     ];
 
-    nixosConfigurations.rock-server = rock4Config;
-    nixosConfigurations.server = nixpkgs.lib.nixosSystem {
-      inherit system;
-      specialArgs = { inherit inputs nixpkgs-anchor nixpkgs-solana; };
-      modules = [
-        lanzaboote.nixosModules.lanzaboote
-        { nixpkgs.overlays = [ nix4vscode.overlays.default rust-overlay.overlays.default ]; }
-        pinRegistry
-        bootvineModule
-        codexModule
-        ./server.nix
-        ./server-hardware-configuration.nix
-      ];
-    };
-    packages.aarch64-linux.server = rock4Config.config.system.build.toplevel;
-    packages.aarch64-linux.server-image = rock4Config.config.system.build.sdImage;
-    # x86 builders can select the image too, using ARM binfmt or a remote builder.
-    nixosConfigurations.ivX13 = nixpkgs.lib.nixosSystem {
-      inherit system;
-      specialArgs = { inherit inputs nixpkgs-anchor nixpkgs-solana; };
-      modules = [
-        lanzaboote.nixosModules.lanzaboote
-        { nixpkgs.overlays = [ nix4vscode.overlays.default hy3Overlay waybarOverlay rust-overlay.overlays.default ]; }
-        pinRegistry
-        bootvineModule
-        codexModule
-        ./dotfiles.nix
-        ./configuration.nix
-        ./laptop.nix
-      ];
+    nixosConfigurations = {
+      IVPC = mkX86System ./hosts/IVPC;
+      ivX13 = mkX86System ./hosts/ivX13;
+      server = mkX86System ./hosts/server;
+      rock-server = rock4Config;
     };
 
-    nixosConfigurations.IVPC = nixpkgs.lib.nixosSystem {
-      inherit system;
-      specialArgs = { inherit inputs nixpkgs-anchor nixpkgs-solana; };
-      modules = [
-        lanzaboote.nixosModules.lanzaboote
-        { nixpkgs.overlays = [ nix4vscode.overlays.default hy3Overlay waybarOverlay rust-overlay.overlays.default ]; }
-        pinRegistry
-        bootvineModule
-        codexModule
-        ./dotfiles.nix
-        ./configuration.nix
-        ./desktop.nix
-      ];
+    packages.aarch64-linux = {
+      server = rock4Config.config.system.build.toplevel;
+      server-image = rock4Config.config.system.build.sdImage;
     };
 
     packages.${system} = {
+      # x86 builders can select the image using ARM binfmt or a remote builder.
       server-image = rock4ConfigForX86Build.config.system.build.sdImage;
-      iso = (nixpkgs.lib.nixosSystem {
-        inherit system;
-        modules = [ bootvineModule codexModule ./iso.nix ];
-      }).config.system.build.isoImage;
+      iso = (mkX86System ./images/pc-installer.nix).config.system.build.isoImage;
     };
   };
 }

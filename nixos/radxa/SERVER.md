@@ -3,16 +3,16 @@
 This guide covers the Radxa `rock-server`, one of the [four machines](../README.md).
 For the separate x86 server (`server`), see [its setup guide](../SERVER.md).
 
-Within this `radxa/` directory, `server.nix` contains the server policy;
-`rock-4c-plus.nix` contains board support;
-`rock-server.nix` combines them. No workstation configuration, desktop, or development
-packages are imported. The username is `radxa`, hostname is `rock-server`, and the
-public keys in `../trusted-ssh-keys.nix` are shared with the laptop, desktop,
-and x86 server.
-`radxa-defaults.nix` ports Radxa's applicable system and hardware configuration;
-`rock-wireless-firmware.nix` packages the ROCK's Broadcom Wi-Fi and Bluetooth firmware.
-Add any further trusted public keys there before building. Passwords and Tailscale
-credentials are set on the machine and survive rebuilds.
+[The Radxa host](../hosts/rock-server/default.nix) imports
+[ROCK 4C+ board support](../hosts/rock-server/rock-4c-plus.nix). The board
+directory also holds Radxa's system defaults and the Broadcom Wi-Fi and
+Bluetooth firmware package. [The SD image](../images/rock-server.nix) imports
+the host and adds image provisioning.
+
+The username is `radxa` and the hostname is `rock-server`. Add any further
+trusted public keys to [trusted-ssh-keys.nix](../trusted-ssh-keys.nix) before
+building. Passwords and Tailscale credentials are set on the machine and
+survive rebuilds.
 
 ## Build on the fast computer
 

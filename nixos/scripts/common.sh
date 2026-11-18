@@ -14,8 +14,10 @@ select_target() {
     fi
 
     target="${1:-$(hostname -s)}"
-    case "$target" in
-        ivX13|IVPC|server) ;;
+    case "${target,,}" in
+        ivx13) target=ivX13 ;;
+        ivpc) target=IVPC ;;
+        server) target=server ;;
         *)
             printf 'Unsupported target: %s. Choose ivX13, IVPC, or server.\n' "$target" >&2
             exit 1
@@ -26,6 +28,9 @@ select_target() {
 sync_configuration() {
     printf 'Copying configuration from %s to /etc/nixos\n' "$config_dir"
     sudo install -d -m 0755 /etc/nixos
-    # All x86 modules live at the top level; leave radxa/ out for now.
-    sudo install -m 0644 -- "$config_dir"/*.nix "$config_dir/flake.lock" "$config_dir/sources.json" /etc/nixos/
+    sudo rsync -rp --delay-updates --chmod=D755,F644 -- \
+        "$config_dir/flake.nix" "$config_dir/flake.lock" \
+        "$config_dir/pins.nix" "$config_dir/sources.json" "$config_dir/trusted-ssh-keys.nix" \
+        "$config_dir/hosts" "$config_dir/profiles" "$config_dir/modules" "$config_dir/images" \
+        /etc/nixos/
 }

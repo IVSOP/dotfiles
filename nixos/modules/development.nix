@@ -1,8 +1,8 @@
 # One development environment for the desktop, laptop, and regular server.
-{ lib, pkgs, ... }:
+{ inputs, lib, pkgs, ... }:
 
 let
-  pins = import ./pins.nix;
+  pins = import ../pins.nix;
 
   # Keep the profiler compatible with 0.13.1 clients, even after nixpkgs updates.
   # Use native Wayland under Hyprland and GTK for open/save dialogs.
@@ -75,6 +75,11 @@ let
 in
 {
   imports = [ ./solana.nix ];
+
+  nixpkgs.overlays = [
+    inputs.nix4vscode.overlays.default
+    inputs.rust-overlay.overlays.default
+  ];
 
   # Consumed by solana.nix's rustup shim.
   _module.args = { inherit rustDefault rustNightly; };

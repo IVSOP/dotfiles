@@ -3,7 +3,10 @@
 
 {
   imports = [
-    ./docker-logging.nix
+    ../modules/bootvine.nix
+    ../modules/codex.nix
+    ../modules/docker-logging.nix
+    ../modules/secure-boot.nix
 
     # Apply to all LUKS mappings, including those in generated hardware configs.
     # Discards expose unused block locations; devices can opt out with false.
@@ -55,6 +58,12 @@
   # ── Nix settings ─────────────────────────────────────────────────────
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nixpkgs.config.allowUnfree = true;
+  # Include the hash so Nix treats the registry entry as locked and caches evals.
+  nix.registry.nixpkgs.to = {
+    type = "path";
+    path = inputs.nixpkgs.outPath;
+    narHash = inputs.nixpkgs.narHash;
+  };
 
   # ssh-agent as a systemd user service, socket at $XDG_RUNTIME_DIR/ssh-agent.
   # Replaces the hand-rolled ssh-agent block that used to live in .zshrc:

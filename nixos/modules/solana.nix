@@ -1,10 +1,10 @@
 # Solana CLI, Anchor, and the SBF tools are pinned independently of general Rust.
-{ pkgs, nixpkgs-anchor, nixpkgs-solana, rustDefault, rustNightly, ... }:
+{ inputs, pkgs, rustDefault, rustNightly, ... }:
 
 let
-  pins = import ./pins.nix;
-  solanaPkgs = import nixpkgs-solana { inherit (pkgs.stdenv.hostPlatform) system; };
-  anchorPackage = (import nixpkgs-anchor { inherit (pkgs.stdenv.hostPlatform) system; }).anchor;
+  pins = import ../pins.nix;
+  solanaPkgs = import inputs.nixpkgs-solana { inherit (pkgs.stdenv.hostPlatform) system; };
+  anchorPackage = (import inputs.nixpkgs-anchor { inherit (pkgs.stdenv.hostPlatform) system; }).anchor;
 
   # 1.0.2, from the last nixpkgs that packaged it; this system's nixpkgs
   # ships 1.1.2. Imported bare, without the system's overlays.

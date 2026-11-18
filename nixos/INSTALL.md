@@ -93,25 +93,28 @@ Mount any separate `/home` filesystem now.
 
 ## 2. Copy configuration and generate hardware settings
 
-Copy the existing NixOS files, including `flake.nix`, `flake.lock`, and modules,
-to `/mnt/etc/nixos`. Keep the full dotfiles repo at
-`/mnt/home/ivsopi3/dotfiles` for the user's dotfile symlinks.
+Keep the full dotfiles repo at `/mnt/home/ivsopi3/dotfiles` for the user's
+dotfile symlinks. From that checkout's `nixos/` directory, copy the
+configuration to the installed system:
 
 ```sh
+mkdir -p /mnt/etc/nixos
+cp -r flake.nix flake.lock pins.nix sources.json trusted-ssh-keys.nix \
+  hosts profiles modules images /mnt/etc/nixos/
 cd /mnt/etc/nixos
 ```
 
 | Machine | `target` | `hardware` | Settings file |
 | --- | --- | --- | --- |
-| Server | `server` | `server-hardware-configuration.nix` | `server.nix` |
-| Laptop | `ivX13` | `laptop-hardware-configuration.nix` | `laptop.nix` |
-| Desktop | `IVPC` | `desktop-hardware-configuration.nix` | `desktop.nix` |
+| Server | `server` | `hosts/server/hardware-configuration.nix` | `hosts/server/default.nix` |
+| Laptop | `ivX13` | `hosts/ivX13/hardware-configuration.nix` | `hosts/ivX13/default.nix` |
+| Desktop | `IVPC` | `hosts/IVPC/hardware-configuration.nix` | `hosts/IVPC/default.nix` |
 
 For the server:
 
 ```sh
 target=server
-hardware=server-hardware-configuration.nix
+hardware="hosts/$target/hardware-configuration.nix"
 nixos-generate-config --root /mnt
 cp hardware-configuration.nix "$hardware"
 ```
@@ -138,7 +141,7 @@ Declare only your actual encrypted containers, once each across the imported fil
 
 ### Temporary installation edits
 
-Server: change the existing bindings in `server.nix`:
+For the server, change the existing bindings in `hosts/server/default.nix`:
 
 ```nix
 # Use router DNS until AdGuard is running; restore true afterward.
@@ -147,8 +150,7 @@ useAdguardDNS = false;
 enableTailscale = false;
 ```
 
-All x86 machines: edit the existing boot settings in `server.nix` for the
-server, or `configuration.nix` for the laptop/desktop:
+On all x86 machines, edit the existing settings in `modules/secure-boot.nix`:
 
 ```nix
 # Boot without signing until Secure Boot keys are set up.
@@ -204,7 +206,7 @@ For incoming SSH, add the connecting client's public key to
 
 ### Tailscale and remote login (all machines)
 
-Server: restore `enableTailscale = true` in `/etc/nixos/server.nix`, keep
+Server: restore `enableTailscale = true` in `/etc/nixos/hosts/server/default.nix`, keep
 `useAdguardDNS = false`, then rebuild:
 
 ```sh
@@ -254,7 +256,8 @@ dig @127.0.0.1 example.org
 dig +tcp @127.0.0.1 example.org
 ```
 
-Once both checks pass, restore `useAdguardDNS = true` in `/etc/nixos/server.nix`:
+Once both checks pass, restore `useAdguardDNS = true` in
+`/etc/nixos/hosts/server/default.nix`:
 
 ```sh
 sudo nixos-rebuild switch --flake "path:/etc/nixos#$target"
@@ -271,8 +274,7 @@ resolvers independent of the host's loopback resolver.
 sudo sbctl create-keys
 ```
 
-Restore the existing settings in `/etc/nixos/server.nix` for the server, or
-`/etc/nixos/configuration.nix` for the laptop/desktop:
+Restore the existing settings in `/etc/nixos/modules/secure-boot.nix`:
 
 ```nix
 boot.loader.systemd-boot.enable = lib.mkForce false;

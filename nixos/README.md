@@ -4,10 +4,10 @@ This configuration manages four separate machines:
 
 | Machine | Hostname / flake target | Architecture | User | Machine configuration |
 | --- | --- | --- | --- | --- |
-| Laptop | `ivX13` | `x86_64-linux` | `ivsopi3` | [laptop.nix](laptop.nix) |
-| Desktop | `IVPC` | `x86_64-linux` | `ivsopi3` | [desktop.nix](desktop.nix) |
-| Server | `server` | `x86_64-linux` | `ivsopi3` | [server.nix](server.nix) |
-| Radxa server (ROCK 4C+) | `rock-server` | `aarch64-linux` | `radxa` | [radxa/rock-server.nix](radxa/rock-server.nix) |
+| Laptop | `ivX13` | `x86_64-linux` | `ivsopi3` | [hosts/ivX13](hosts/ivX13/default.nix) |
+| Desktop | `IVPC` | `x86_64-linux` | `ivsopi3` | [hosts/IVPC](hosts/IVPC/default.nix) |
+| Server | `server` | `x86_64-linux` | `ivsopi3` | [hosts/server](hosts/server/default.nix) |
+| Radxa server (ROCK 4C+) | `rock-server` | `aarch64-linux` | `radxa` | [hosts/rock-server](hosts/rock-server/default.nix) |
 
 For a fresh laptop, desktop, or x86 server install, start with the
 [simple installation guide](INSTALL.md). It covers disk preparation with optional
@@ -21,24 +21,24 @@ The server and Radxa server have separate configurations and setup procedures:
 
 ## Configuration layout
 
-[flake.nix](flake.nix) defines the four `nixosConfigurations` targets above.
+[flake.nix](flake.nix) defines the four host targets and the image outputs.
+Start with `hosts/<hostname>/default.nix` to see a machine's imports, settings,
+and hardware configuration.
 
-- The laptop and desktop share [configuration.nix](configuration.nix), which
-  provides the Hyprland desktop and imports [common.nix](common.nix) and
-  [development.nix](development.nix). Each machine imports its own hardware
-  configuration through `laptop.nix` or `desktop.nix`.
-- The x86 server imports `common.nix`, `development.nix`, and
-  [dotfiles.nix](dotfiles.nix), without enabling a desktop session. Its hardware
-  configuration is [server-hardware-configuration.nix](server-hardware-configuration.nix).
-- The three x86 hosts and PC installer ISO share [bootvine.nix](bootvine.nix)
-  for the boot, LUKS prompt, and shutdown display. The Radxa does not use Bootvine.
-- The Radxa server combines [radxa/server.nix](radxa/server.nix) with
-  [radxa/rock-4c-plus.nix](radxa/rock-4c-plus.nix). Its flake target uses
-  [radxa/server-image.nix](radxa/server-image.nix) to add image provisioning.
-  It does not import the shared workstation or development configuration.
-- [trusted-ssh-keys.nix](trusted-ssh-keys.nix) supplies authorized SSH public
-  keys for all four machines. The laptop, desktop, and x86 server also use
-  `dotfiles.nix` for their dotfile links.
+- `profiles/` groups settings used together. The three installed x86 hosts
+  share the [x86 base](profiles/x86-base.nix). The desktop and laptop also
+  import the [workstation profile](profiles/workstation/default.nix) for
+  Hyprland, desktop apps, and services started on demand.
+- `modules/` holds features that can be selected independently. All three
+  installed x86 hosts explicitly import [development](modules/development.nix)
+  and [dotfile links](modules/dotfiles.nix).
+  All four hosts share [Docker logging](modules/docker-logging.nix) and read
+  authorized public keys from [trusted-ssh-keys.nix](trusted-ssh-keys.nix).
+- `images/` configures the [PC installer](images/pc-installer.nix) and
+  [Radxa SD image](images/rock-server.nix). The Radxa image imports the board's
+  host configuration and adds image provisioning. The three x86 hosts and
+  PC installer share [Bootvine](modules/bootvine.nix) for boot, LUKS prompts,
+  and shutdown.
 
 ## Rebuild an installed x86 machine
 
@@ -57,15 +57,14 @@ Edit the files in this repository, then run these scripts as your normal user
 ./gc.sh
 ```
 
-Each script works from any directory and defaults to the current hostname.
-You can pass a case-sensitive target explicitly, for example
-`./rebuild.sh IVPC`; supported targets are `ivX13`, `IVPC`, and `server`.
-The target selects the configuration on the local machine, not a remote host.
+Each script works from any directory and selects `ivX13`, `IVPC`, or `server`
+from the local short hostname, ignoring case. An optional argument such as
+`./rebuild.sh IVPC` selects which configuration to apply to the local machine.
 
-All three copy the top-level `.nix` files, `sources.json`, and `flake.lock` to `/etc/nixos`
-before rebuilding with `--flake path:/etc/nixos#TARGET`. This includes new
-files before they are tracked in Git. Existing unrelated files in `/etc/nixos`
-are preserved; the `radxa/` directory is not copied.
+All three copy the flake, shared data files, and the `hosts/`, `profiles/`,
+`modules/`, and `images/` trees to `/etc/nixos` before rebuilding with
+`--flake path:/etc/nixos#TARGET`. The copy includes new files before they are
+tracked in Git and preserves existing unrelated files in `/etc/nixos`.
 
 `gc.sh` runs `sudo nix-store --gc`, `sudo nix-collect-garbage -d`, and then
 `sudo nixos-rebuild boot`. It deletes old generations and updates the boot
@@ -75,7 +74,8 @@ fails.
 `update.sh` updates all inputs except those fixed to commits in `flake.nix`.
 The manual pins are Hyprland and its portal, hy3, Solana CLI, Anchor, the SBF
 builder and platform tools, and Tracy. General stable/nightly Rust,
-Lanzaboote, VS Code extensions, Waybar, Bootvine, and Codex update normally.
+Lanzaboote, VS Code extensions, Bootvine, and Codex update normally. Waybar
+uses the package from the main nixpkgs input.
 
 Codex uses the regular nixpkgs package on the three x86 hosts and PC installer
 ISO, taken from the branch-tracking `nixpkgs-codex` master input so releases can

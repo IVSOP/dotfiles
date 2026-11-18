@@ -14,7 +14,7 @@ assert builtins.elem backend [ "secretservice" "pass" ];
 
   # The keyring module enables login PAM integration; Ly includes that stack.
   services.gnome.gnome-keyring.enable = backend == "secretservice";
-  # common.nix already provides the OpenSSH agent.
+  # The x86 base profile provides the OpenSSH agent.
   services.gnome.gcr-ssh-agent.enable = false;
 
   programs.gnupg.agent = lib.mkIf (backend == "pass") {

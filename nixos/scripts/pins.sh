@@ -25,6 +25,6 @@ else
         printf '%s\n' "$table"
     fi
 fi
-printf '\nFor fixed flake commits: edit flake.nix, then run nix flake update INPUT --flake %q.\n' "$config_dir"
+printf '\nFor fixed flake commits: edit flake.nix, then run nix flake update INPUT --flake %q.\n' "path:$config_dir"
 printf 'For package versions: edit pins.nix and refresh the associated source/Cargo hashes.\n'
 printf 'General Rust and other unpinned inputs update automatically.\n\n'
