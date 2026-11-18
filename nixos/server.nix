@@ -238,11 +238,6 @@ in
   virtualisation.docker = {
     enable = true;
     enableOnBoot = true;
-    logDriver = "local";
-    daemon.settings.log-opts = {
-      max-size = "10m";
-      max-file = "3";
-    };
   };
 
   # Compose creates stack networks; bootstrap only the shared external one.

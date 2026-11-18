@@ -1,6 +1,8 @@
 { lib, pkgs, ... }:
 
 {
+  imports = [ ../docker-logging.nix ];
+
   # Standalone server policy: deliberately does not import configuration.nix.
   networking.hostName = lib.mkDefault "rock-server";
   time.timeZone = "Europe/Lisbon";
@@ -38,13 +40,6 @@
   virtualisation.docker = {
     enable = true;
     enableOnBoot = true;
-    daemon.settings = {
-      log-driver = "local";
-      log-opts = {
-        max-size = "10m";
-        max-file = "3";
-      };
-    };
   };
 
   networking.firewall = {
