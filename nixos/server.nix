@@ -18,8 +18,12 @@ let
     # Temperatures are IT8613 temp1 readings in millidegrees Celsius.
     START_TEMP = 55_000
     STOP_TEMP = START_TEMP - 3_000
+    RAMP_START_TEMP = 40_000
+    FULL_SPEED_TEMP = 90_000
     COOLDOWN_SECONDS = 30
+    STARTUP_TIMEOUT_SECONDS = 6
     AUTOMATIC_START_PWM = 60
+    PWM_PER_DEGREE = 1
 
     def read(device, attribute):
         return int((device / attribute).read_text())
@@ -54,24 +58,37 @@ let
         # software hold the fan on while the board sensor cools.
         for attribute, value in (
             ("pwm2_auto_point1_temp", 0),
-            ("pwm2_auto_point2_temp", 40000),
+            ("pwm2_auto_point2_temp", RAMP_START_TEMP),
             ("pwm2_auto_start", AUTOMATIC_START_PWM),
-            ("pwm2_auto_slope", 8),  # One PWM unit per degree, encoded in eighths.
+            ("pwm2_auto_slope", PWM_PER_DEGREE * 8),  # Encoded in eighths.
             ("pwm2_auto_point1_temp_hyst", -4000),  # Keep the original 4°C offset.
-            ("pwm2_auto_point3_temp", 90000),
+            ("pwm2_auto_point3_temp", FULL_SPEED_TEMP),
         ):
             write(device, attribute, value)
 
         notify.sendall(b"READY=1")
         cool_since = None
+        startup_since = None
         fan_off = False
         while True:
             temperature = read(device, "temp1_input")
             now = time.monotonic()
             if fan_off:
-                if temperature >= START_TEMP:
-                    restore_automatic(device, marker)
-                    fan_off = False
+                if temperature >= START_TEMP or startup_since is not None:
+                    startup_finished = startup_since is not None and (
+                        now - startup_since >= STARTUP_TIMEOUT_SECONDS
+                        or read(device, "fan2_input") > 0
+                    )
+                    if temperature >= FULL_SPEED_TEMP or startup_finished:
+                        restore_automatic(device, marker)
+                        fan_off = False
+                        startup_since = None
+                    else:
+                        # Get the fan turning at the original curve's duty before handing it back.
+                        rise = max(0, temperature - RAMP_START_TEMP)
+                        write(device, "pwm2", AUTOMATIC_START_PWM + rise * PWM_PER_DEGREE // 1000)
+                        if startup_since is None:
+                            startup_since = now
             elif temperature > STOP_TEMP:
                 cool_since = None
             elif cool_since is None:
@@ -130,7 +147,7 @@ in
   ];
   boot.kernelModules = [ "it87" ];
 
-  # The service gates fan stop and restart. The IT8613 sets the running speed.
+  # The service handles fan stop and startup. The IT8613 sets the running speed.
   systemd.services.eq14-fan-curve = {
     description = "Manage EQ14 fan stop and automatic cooling";
     wantedBy = [ "multi-user.target" ];

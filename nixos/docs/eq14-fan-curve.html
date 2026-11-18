@@ -46,10 +46,12 @@
       <desc id="curve-description">As the machine warms, the fan is off until 55°C. It then follows the original curve, from a modeled PWM of 75 at 55°C to 90 at 70°C, with full output at 90°C. The shaded band marks the 52°C cooldown threshold and the 55°C turn-on threshold.</desc>
     </svg>
     <p class="muted">The chart shows modeled PWM on warmup. On cooldown the fan can keep running below 55°C while the timer counts down.</p>
-    <p>With automatic control running, the original hardware settings use PWM 60 at 40°C and increase by one PWM unit per degree until the full-speed threshold. The service hands control directly to that curve at 55°C. The new handoff threshold will be checked on hardware after activation.</p>
+    <p>The original curve uses PWM 60 at 40°C and increases by one PWM unit per degree until the full-speed threshold. The service starts the fan at the duty for the current temperature, which is PWM 75/255 at 55°C. It hands control back to the hardware when the tachometer detects rotation, after six seconds, or immediately at 90°C. The startup behavior is pending a live test after activation.</p>
 
     <details>
       <summary>Previous configurations and test results</summary>
+    <h2>Startup surge · 18 November 2026, 15:18 UTC</h2>
+    <p>With the earlier direct handoff at 55°C, the first tachometer update after startup read 2,481 RPM. The next update read 2,045 RPM. The trace captured a speed surge during startup. The automatic full-speed setting read back as 90°C.</p>
     <h2>18 November live test</h2>
     <ul>
       <li>The build tested that day used a brief PWM 80 startup command. The fan reached 2,064 RPM, and the automatic starting PWM read back as 60 after the handoff.</li>
