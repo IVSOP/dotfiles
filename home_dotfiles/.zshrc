@@ -4,6 +4,7 @@
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 export EDITOR="nvim"
+export LESS='-R --mouse'
 
 export HISTSIZE=1000
 export HISTFILESIZE=2000
