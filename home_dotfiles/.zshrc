@@ -18,7 +18,18 @@ source $HOME/.bash_funcs
 
 zstyle ':omz:update' mode disabled
 zstyle ':completion:*' use-cache on
-zstyle ':completion:*' list-colors 'di=01;34'
+# Share filename colors with ls/eza, including executable files.
+# SSH sessions may not inherit LS_COLORS from the local desktop.
+if [[ -z $LS_COLORS ]] && (( $+commands[dircolors] )); then
+    if [[ -r $HOME/.dircolors ]]; then
+        eval "$(dircolors -b "$HOME/.dircolors")"
+    else
+        eval "$(dircolors -b)"
+    fi
+fi
+# Keep basic file colors even without dircolors or a recognized terminal.
+export LS_COLORS="${LS_COLORS:-di=01;34:ln=01;36:ex=01;32:so=01;35:pi=33:bd=01;33:cd=01;33:or=01;31}"
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*' matcher-list '' # keep completion case-sensitive
 # Include hidden files and all file types in fzf-tab's completion candidates.
 _comp_options+=(globdots)
