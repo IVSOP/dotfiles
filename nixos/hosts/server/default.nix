@@ -25,6 +25,9 @@ in
   hardware.enableRedistributableFirmware = true;
   hardware.cpu.intel.updateMicrocode = true;
 
+  # Use the BIOS fan curve. Set true to enable the custom EQ14 curve.
+  services.eq14FanCurve.enable = false;
+
   hardware.graphics = {
     enable = true;
     # VA-API and OpenCL for native host applications; containers ship their own.

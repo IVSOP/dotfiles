@@ -41,6 +41,18 @@ enabled with `intel-media-driver` for VA-API and `intel-compute-runtime` for
 OpenCL. Docker images provide their own user-space acceleration libraries and
 access the GPU through their Compose device mappings.
 
+## EQ14 fan control
+
+The BIOS controls the fan by default. Set `services.eq14FanCurve.enable` in
+[the server host configuration](hosts/server/default.nix) to `true` to use the
+[custom fan curve](docs/eq14-fan-curve.html) or `false` to return to the BIOS
+curve. Apply the change with `./rebuild.sh server`. The custom service restores
+the curve it saved at startup when it stops.
+
+When upgrading from the older always-on fan service, reboot after the first
+rebuild with the toggle off so the BIOS can reload its curve. The older service
+only restored automatic mode when stopped.
+
 ## Installation
 
 Follow [INSTALL.md](INSTALL.md): copy the configuration into `/mnt/etc/nixos`,

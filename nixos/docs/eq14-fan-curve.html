@@ -35,7 +35,7 @@
 <body>
   <main>
     <h1>Beelink EQ14 · fan curve</h1>
-    <p>The fan starts at <strong>55°C</strong> on the IT8613 controller sensor and follows the original hardware curve. The modeled output is <strong>35% PWM at 70°C</strong>. The original full-speed threshold is <strong>90°C</strong>. The fan switches off after 30 continuous seconds at or below 52°C. <a href="../hosts/server/fan.nix">Fan configuration</a></p>
+    <p>The server uses the BIOS fan curve by default. With the <a href="../SERVER.md#eq14-fan-control">optional custom curve</a> enabled, the fan starts at <strong>55°C</strong> on the IT8613 controller sensor and follows the original running curve. The modeled output is <strong>35% PWM at 70°C</strong>. The original full-speed threshold is <strong>90°C</strong>. The fan switches off after 30 continuous seconds at or below 52°C.</p>
 
     <div class="legend" aria-label="Chart legend">
       <span><span class="swatch" aria-hidden="true"></span>Configured behavior while warming</span>
@@ -162,7 +162,7 @@
     </details>
 
     <h2>Sources</h2>
-    <p>The live fan settings are implemented in <code>eq14Fan</code> and <code>systemd.services.eq14-fan-curve</code>. <a href="../hosts/server/fan.nix">Fan configuration</a></p>
+    <p>The optional custom curve is implemented in <code>eq14Fan</code> and <code>systemd.services.eq14-fan-curve</code>. <a href="../hosts/server/fan.nix">Fan configuration</a></p>
     <p>Beelink documents the BIOS location as <strong>Advanced → Hardware Monitor → Smart Fan Function → CPU Smart Fan Mode → Automatic Mode</strong>. Verify the channel and temperature source in the firmware before applying any proposal.</p>
     <ul>
       <li><a href="https://doc.bee-link.com.cn/books/eq14-bios/page/3fe94">Beelink EQ14 fan configuration instructions</a> — supported settings and recommended automatic starting PWM of 65.</li>
