@@ -19,4 +19,19 @@ else
     nix flake update "${inputs[@]}" --flake "path:$config_dir"
 fi
 "$config_dir/scripts/update-sources.sh"
-exec "$config_dir/rebuild.sh" "$target"
+"$config_dir/rebuild.sh" "$target"
+
+# The rebuild installs Rustup. Update the invoking user's toolchains with it.
+rustup_bin=/run/current-system/sw/bin/rustup
+rustup_options=(
+    --no-self-update
+    --profile minimal
+    --component rust-src,rustfmt,clippy
+    --target wasm32-unknown-unknown
+    --target aarch64-linux-android
+    --target aarch64-unknown-linux-musl
+    --target x86_64-linux-android
+    --target x86_64-pc-windows-gnu
+)
+"$rustup_bin" toolchain install "${rustup_options[@]}" --component rust-analyzer stable
+"$rustup_bin" toolchain install "${rustup_options[@]}" nightly

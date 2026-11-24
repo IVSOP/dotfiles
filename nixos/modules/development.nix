@@ -12,28 +12,6 @@ let
       withGtkFileSelector = true;
     };
 
-  # Cross-compilation targets, installed for both toolchains.
-  rustTargets = [
-    "wasm32-unknown-unknown"   # wasm-bindgen / wasm-pack / wasm-server-runner
-    "aarch64-linux-android"    # real ARM devices
-    "aarch64-unknown-linux-musl" # ROCK 4C+ static Linux binaries
-    "x86_64-linux-android"     # emulator
-    "x86_64-pc-windows-gnu"    # cross-linked via mingw-w64
-  ];
-
-  # Stable toolchain, minus rustfmt (nightly supplies that below).
-  rustStable = pkgs.rust-bin.stable.latest.minimal.override {
-    extensions = [ "rust-src" "rust-analyzer" "clippy" ];
-    targets = rustTargets;
-  };
-
-  # Latest nightly that actually has all these components built.
-  rustNightly = pkgs.rust-bin.selectLatestNightlyWith (toolchain:
-    toolchain.default.override {
-      extensions = [ "rust-src" "rustfmt" "clippy" ];
-      targets = rustTargets;
-    });
-
   # Native libraries C-sys crates need. Bevy (alsa/udev at build time, plus
   # vulkan/wayland/xkbcommon/X11 dlopened at runtime) is the driving case.
   rustNativeDeps = with pkgs; [
@@ -51,38 +29,13 @@ let
     libxrandr
   ];
 
-  # What lands on PATH by default: stable, with nightly rustfmt/cargo-fmt
-  # so `cargo fmt` accepts nightly-only rustfmt.toml options.
-  rustDefault = pkgs.runCommand "rust-default" { } ''
-    mkdir -p $out/bin
-    ln -s ${rustStable}/bin/* $out/bin/
-    ln -sf ${rustNightly}/bin/rustfmt   $out/bin/rustfmt
-    ln -sf ${rustNightly}/bin/cargo-fmt $out/bin/cargo-fmt
-  '';
-
-  # Full nightly toolchain as cargo-nightly, rustc-nightly, ...
-  # PATH is prefixed so nightly cargo finds nightly rustc/rustfmt, not stable.
-  rustNightlySuffixed = pkgs.runCommand "rust-nightly-suffixed"
-    { nativeBuildInputs = [ pkgs.makeWrapper ]; } ''
-    mkdir -p $out/bin
-    for bin in ${rustNightly}/bin/*; do
-      name=$(basename "$bin")
-      makeWrapper "$bin" "$out/bin/$name-nightly" \
-        --prefix PATH : ${rustNightly}/bin
-    done
-  '';
-
 in
 {
   imports = [ ./solana.nix ];
 
   nixpkgs.overlays = [
     inputs.nix4vscode.overlays.default
-    inputs.rust-overlay.overlays.default
   ];
-
-  # Consumed by solana.nix's rustup shim.
-  _module.args = { inherit rustDefault rustNightly; };
 
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
@@ -92,6 +45,10 @@ in
   programs.nix-ld.enable = true;
 
   # ── Rust ──────────────────────────────────────────────────────────────
+  environment.etc."rustup/settings.toml".text = ''
+    default_toolchain = "stable"
+  '';
+
   # Linker + libpthread search path for the x86_64-pc-windows-gnu target.
   environment.variables.CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER =
     "${pkgs.pkgsCross.mingwW64.stdenv.cc}/bin/x86_64-w64-mingw32-gcc";
@@ -135,8 +92,7 @@ in
     ninja
     pkg-config
     cpio
-    rustDefault
-    rustNightlySuffixed
+    rustup
     cargo-edit
     cargo-expand
     wasm-bindgen-cli
@@ -145,6 +101,7 @@ in
     pkgsCross.mingwW64.stdenv.cc   # x86_64-w64-mingw32-gcc, linker for windows-gnu
     nodejs
     yarn                           # anchor test runner shells out to yarn
+    maven
     (python3.withPackages (ps: [ ps.pyyaml ])) # YAML inventory parsing in deployment scripts
     postgresql
     typst

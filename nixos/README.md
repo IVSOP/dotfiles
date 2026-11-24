@@ -49,7 +49,7 @@ Edit the files in this repository, then run these scripts as your normal user
 # Copy the configuration to /etc/nixos and switch to it
 ./rebuild.sh
 
-# Show manual pins, update other inputs and source versions, then copy and rebuild
+# Update inputs and sources, rebuild, then update Rust toolchains
 ./update.sh
 
 # Copy the configuration, collect garbage, delete old generations,
@@ -73,9 +73,15 @@ fails.
 
 `update.sh` updates all inputs except those fixed to commits in `flake.nix`.
 The manual pins are Hyprland and its portal, hy3, Solana CLI, Anchor, the SBF
-builder and platform tools, and Tracy. General stable/nightly Rust,
-Lanzaboote, VS Code extensions, Bootvine, and Codex update normally. Waybar
-uses the package from the main nixpkgs input.
+builder and platform tools, and Tracy. Lanzaboote, VS Code extensions,
+Bootvine, and Codex update normally. Waybar uses the package from the main
+nixpkgs input.
+
+NixOS installs Rustup. Plain `cargo` and `rustc` follow the project’s
+`rust-toolchain.toml` and default to stable elsewhere. Rustup installs missing
+project toolchains on first use. After a successful rebuild, `./update.sh`
+refreshes stable and nightly in the invoking user’s Rustup home with the
+configured components and cross-compilation targets.
 
 Codex uses the regular nixpkgs package on the three x86 hosts and PC installer
 ISO, taken from the branch-tracking `nixpkgs-codex` master input so releases can

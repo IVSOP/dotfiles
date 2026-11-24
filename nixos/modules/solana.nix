@@ -1,5 +1,5 @@
 # Solana CLI, Anchor, and the SBF tools are pinned independently of general Rust.
-{ inputs, pkgs, rustDefault, rustNightly, ... }:
+{ inputs, pkgs, ... }:
 
 let
   pins = import ../pins.nix;
@@ -13,7 +13,7 @@ let
     paths = [ anchorPackage ];
     nativeBuildInputs = [ pkgs.makeWrapper ];
     postBuild = ''
-      wrapProgram $out/bin/anchor --prefix PATH : ${anchorCargoShim}/bin:${rustupShim}/bin
+      wrapProgram $out/bin/anchor --prefix PATH : ${anchorCargoShim}/bin:${pkgs.rustup}/bin
     '';
   };
 
@@ -22,9 +22,9 @@ let
   anchorCargoShim = pkgs.writeShellScriptBin "cargo" ''
     if [ "$1" = "build-sbf" ] && [ "$2" = "--tools-version" ] && [ "$3" = "v1.52" ]; then
       shift 3
-      exec ${rustupShim}/bin/cargo build-sbf --tools-version ${platformTools.version} "$@"
+      exec ${pkgs.rustup}/bin/cargo build-sbf --tools-version ${platformTools.version} "$@"
     fi
-    exec ${rustupShim}/bin/cargo "$@"
+    exec ${pkgs.rustup}/bin/cargo "$@"
   '';
 
   # Temporary workaround: nixpkgs' cargoSetupHook now requires system libraries
@@ -40,36 +40,6 @@ let
       solanaPkgs.rust-jemalloc-sys-unprefixed
     ];
   });
-
-  # anchor and cargo-build-sbf assume rustup, which can't go in
-  # systemPackages (cargo/rustc collide with rustDefault). Dispatches per
-  # call; rustc is shimmed too because rustup's cargo proxy sets
-  # RUSTUP_TOOLCHAIN and then expects a matching rustc proxy on PATH.
-  rustupShim = pkgs.runCommand "solana-rustup-shim" { } ''
-    mkdir -p $out/bin
-    ln -s ${pkgs.rustup}/bin/rustup $out/bin/rustup
-
-    cat > $out/bin/cargo <<SHIM
-    #!${pkgs.runtimeShell}
-    case "\$1" in
-      +stable)  shift; exec ${rustDefault}/bin/cargo "\$@" ;;
-      +nightly) shift; exec ${rustNightly}/bin/cargo "\$@" ;;
-      +*)              exec ${pkgs.rustup}/bin/cargo "\$@" ;;
-      *)               exec ${rustDefault}/bin/cargo "\$@" ;;
-    esac
-    SHIM
-
-    cat > $out/bin/rustc <<SHIM
-    #!${pkgs.runtimeShell}
-    if [ -n "\''${RUSTUP_TOOLCHAIN:-}" ]; then
-      exec ${pkgs.rustup}/bin/rustc "\$@"
-    else
-      exec ${rustDefault}/bin/rustc "\$@"
-    fi
-    SHIM
-
-    chmod +x $out/bin/cargo $out/bin/rustc
-  '';
 
   # The SBF LLVM + rust toolchain. cargo-build-sbf would fetch and
   # self-patchelf this at build time; install_if_missing() skips both when
@@ -161,8 +131,8 @@ let
 
     nativeBuildInputs = [ pkgs.pkg-config pkgs.makeWrapper ];
     postInstall = ''
-      wrapProgram $out/bin/cargo-build-sbf --prefix PATH : ${rustupShim}/bin
-      wrapProgram $out/bin/cargo-test-sbf  --prefix PATH : ${rustupShim}/bin
+      wrapProgram $out/bin/cargo-build-sbf --prefix PATH : ${pkgs.rustup}/bin
+      wrapProgram $out/bin/cargo-test-sbf  --prefix PATH : ${pkgs.rustup}/bin
     '';
   };
 in
