@@ -53,6 +53,12 @@ in
   services.udisks2.enable = true;
   services.gvfs.enable = true;
 
+  # Start GVfs before removable drives are connected during the session.
+  systemd.user.targets.graphical-session = {
+    overrideStrategy = "asDropin";
+    wants = [ "gvfs-udisks2-volume-monitor.service" ];
+  };
+
   # ── Bluetooth ────────────────────────────────────────────────────────
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;
