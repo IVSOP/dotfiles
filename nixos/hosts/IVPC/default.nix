@@ -16,11 +16,10 @@
   users.users.ivsopi3.openssh.authorizedKeys.keys = import ../../trusted-ssh-keys.nix;
 
   # ── Disk ─────────────────────────────────────────────────────────────
-  # Replace hardware-configuration.nix with this machine's generated
-  # hardware configuration when installing. Set any LUKS devices here.
-  # boot.loader.efi.efiSysMountPoint = "/boot/efi";
-  # boot.initrd.luks.devices."crypt_0" = {
-  #   device = "/dev/disk/by-uuid/REPLACE-ME";
-  #   preLVM = true;
-  # };
+  boot.loader.efi.efiSysMountPoint = "/boot/efi";
+
+  boot.initrd.luks.devices = {
+    crypt_0.device = "/dev/disk/by-uuid/1dff8699-bbc7-4326-bc92-0d919789a272";
+    crypt_1.device = "/dev/disk/by-uuid/79a9d887-ffd8-4ae8-a27c-ac48b053204f";
+  };
 }
