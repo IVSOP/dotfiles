@@ -91,44 +91,80 @@ swapon --show
 
 Mount any separate `/home` filesystem now.
 
-## 2. Copy configuration and generate hardware settings
+## 2. Prepare the NixOS configuration
 
-Keep the full dotfiles repo at `/mnt/home/ivsopi3/dotfiles` for the user's
-dotfile symlinks. From that checkout's `nixos/` directory, copy the
-configuration to the installed system:
+### Clone the dotfiles repository
+
+Clone the full repository into `/tmp` on the live installer. If restoring a
+backup with local changes, put the checkout at `/tmp/dotfiles` and skip the
+clone.
 
 ```sh
+cd /tmp
+git clone https://github.com/IVSOP/dotfiles.git ./dotfiles
+```
+
+### Copy the flake to `/mnt/etc/nixos`
+
+```sh
+cd /tmp/dotfiles/nixos
 mkdir -p /mnt/etc/nixos
 cp -r flake.nix flake.lock pins.nix sources.json trusted-ssh-keys.nix \
   hosts profiles modules images /mnt/etc/nixos/
-cd /mnt/etc/nixos
 ```
 
-| Machine | `target` | `hardware` | Settings file |
-| --- | --- | --- | --- |
-| Server | `server` | `hosts/server/hardware-configuration.nix` | `hosts/server/default.nix` |
-| Laptop | `ivX13` | `hosts/ivX13/hardware-configuration.nix` | `hosts/ivX13/default.nix` |
-| Desktop | `IVPC` | `hosts/IVPC/hardware-configuration.nix` | `hosts/IVPC/default.nix` |
+### Generate the hardware configuration
 
-For the server:
+| Machine | `target` | Settings file |
+| --- | --- | --- |
+| Server | `server` | `hosts/server/default.nix` |
+| Laptop | `ivX13` | `hosts/ivX13/default.nix` |
+| Desktop | `IVPC` | `hosts/IVPC/default.nix` |
+
+Set `target` for this machine. Generate its hardware configuration in
+`/mnt/etc/nixos` using the mounted filesystems and active swap.
 
 ```sh
-target=server
-hardware="hosts/$target/hardware-configuration.nix"
-nixos-generate-config --root /mnt
-cp hardware-configuration.nix "$hardware"
+cd /mnt/etc/nixos
+target=server  # Use ivX13 for the laptop or IVPC for the desktop.
+nixos-generate-config --root /mnt --show-hardware-config \
+  > "hosts/$target/hardware-configuration.nix"
 ```
 
-For another machine, substitute its row's values and settings file.
+### Adapt the host's `default.nix`
 
-The server already supplies its boot and network settings. See [SERVER.md](SERVER.md)
-to change the configured network address. For the desktop, uncomment its
-`boot.loader.efi.efiSysMountPoint = "/boot/efi";` setting.
+Edit `hosts/$target/default.nix` in `/mnt/etc/nixos`. Review these settings
+for the new machine.
 
-### Encrypted root only
+- **EFI mount.** Match `boot.loader.efi.efiSysMountPoint` to where you mounted
+  the EFI partition on the installed system. If it is at `/mnt/boot/efi` in the
+  installer, use `/boot/efi`. The server and laptop already use that value.
+  On `IVPC`, uncomment the setting when following this layout.
+- **Hostname.** Set `networking.hostName` if this machine needs a different
+  hostname. Keep using the selected flake target for installation and pass it
+  explicitly to the maintenance scripts when the hostname differs.
+- **Server.** Use `ip -br link` and `ip -4 route` to check the interface and
+  network. Update `lanInterface` and `lanSubnet` for the LAN and Docker ingress
+  rules. In the `server-lan` NetworkManager profile, set `ipv4.address1` to an
+  unused static address with its prefix and `ipv4.gateway` to your router.
+  Update the fallback in `ipv4.dns` for when `useAdguardDNS` is `false`. Review
+  the Intel microcode setting and Intel graphics packages if the CPU or GPU differs.
+  [SERVER.md](SERVER.md)
+- **Laptop.** On a different laptop, review the `services.logind.settings.Login`
+  lid and suspend-key behavior and the TLP power profiles and battery charge
+  thresholds.
 
-For LUKS, add any missing mappings to the machine file. Get each UUID with
-`cryptsetup luksUUID /dev/your-partition`:
+#### LUKS mappings
+
+Review `boot.initrd.luks.devices` in both the generated file and the host's
+`default.nix`. The existing `ivX13` mapping points to the original laptop's
+disk. Remove it for an unencrypted install.
+
+For LVM over LUKS, check that every encrypted physical volume has an unlock
+mapping. The generator may see the mounted logical volumes without detecting
+their underlying LUKS containers. In the host's `default.nix`, add any missing
+mappings and update stale ones. Use the names you passed to `cryptsetup open`
+and get each container's UUID with `cryptsetup luksUUID /dev/your-partition`.
 
 ```nix
 boot.initrd.luks.devices = {
@@ -137,7 +173,7 @@ boot.initrd.luks.devices = {
 };
 ```
 
-Declare only your actual encrypted containers, once each across the imported files.
+Keep one mapping per actual container across the two files.
 
 ### Temporary installation edits
 
@@ -159,24 +195,42 @@ boot.loader.systemd-boot.enable = lib.mkForce true;
 boot.lanzaboote.enable = false;
 ```
 
-## 3. Install
+### Copy the changes back to the temporary checkout
 
-From `/mnt/etc/nixos`:
+After generation succeeds and you finish editing, copy the updated flake back
+to `/tmp/dotfiles` so it includes this machine's hardware and host settings.
 
 ```sh
-nixos-install --root /mnt --flake "path:./#$target"
+cp -r /mnt/etc/nixos/. /tmp/dotfiles/nixos/
+```
+
+## 3. Install
+
+```sh
+nixos-install --root /mnt --flake "path:/mnt/etc/nixos#$target"
 ```
 
 Set the root password when prompted. If Nix reports disabled flake features,
 retry with `--option extra-experimental-features 'nix-command flakes'`.
 Continue only after installation succeeds.
 
-## 4. Set password and reboot
+## 4. Set the password, copy the dotfiles, and reboot
+
+`nixos-enter` runs the installed system's activation, which creates the
+`ivsopi3` account and its home directory with the configured permissions.
 
 ```sh
 nixos-enter --root /mnt -c 'passwd ivsopi3'
-nixos-enter --root /mnt -c 'chown -R ivsopi3:users /home/ivsopi3/dotfiles'
-reboot
+```
+
+Once the home exists, copy the updated checkout into it. Since the installer
+runs as root, set ownership on the copied checkout. If the home already has a
+`dotfiles` checkout, move it aside first.
+
+```sh
+cp -aT /tmp/dotfiles /mnt/home/ivsopi3/dotfiles &&
+  nixos-enter --root /mnt -c 'chown -hR ivsopi3:users /home/ivsopi3/dotfiles' &&
+  reboot
 ```
 
 Remove the USB and log in locally as `ivsopi3` with the password just set.
@@ -202,15 +256,17 @@ ssh-add ~/.ssh/id_ed25519
 
 Register `~/.ssh/id_ed25519.pub` with the Git hosts or machines you access.
 For incoming SSH, add the connecting client's public key to
-`/etc/nixos/trusted-ssh-keys.nix` and rebuild. Its private key stays on the client.
+`~/dotfiles/nixos/trusted-ssh-keys.nix` and run
+`~/dotfiles/nixos/rebuild.sh "$target"`. Its private key stays on the client.
 
 ### Tailscale and remote login (all machines)
 
-Server: restore `enableTailscale = true` in `/etc/nixos/hosts/server/default.nix`, keep
-`useAdguardDNS = false`, then rebuild:
+On the server, restore `enableTailscale = true` in
+`~/dotfiles/nixos/hosts/server/default.nix`, keep `useAdguardDNS = false`, and
+rebuild.
 
 ```sh
-sudo nixos-rebuild switch --flake "path:/etc/nixos#$target"
+~/dotfiles/nixos/rebuild.sh "$target"
 ```
 
 This starts Tailscale immediately and enables it for future boots on the server.
@@ -257,10 +313,10 @@ dig +tcp @127.0.0.1 example.org
 ```
 
 Once both checks pass, restore `useAdguardDNS = true` in
-`/etc/nixos/hosts/server/default.nix`:
+`~/dotfiles/nixos/hosts/server/default.nix` and rebuild.
 
 ```sh
-sudo nixos-rebuild switch --flake "path:/etc/nixos#$target"
+~/dotfiles/nixos/rebuild.sh "$target"
 cat /etc/resolv.conf
 getent hosts example.org
 ```
@@ -274,17 +330,17 @@ resolvers independent of the host's loopback resolver.
 sudo sbctl create-keys
 ```
 
-Restore the existing settings in `/etc/nixos/modules/secure-boot.nix`:
+Restore the existing settings in `~/dotfiles/nixos/modules/secure-boot.nix`.
 
 ```nix
 boot.loader.systemd-boot.enable = lib.mkForce false;
 boot.lanzaboote.enable = true;
 ```
 
-Rebuild and verify the signed boot files:
+Rebuild and verify the signed boot files.
 
 ```sh
-sudo nixos-rebuild switch --flake "path:/etc/nixos#$target"
+~/dotfiles/nixos/rebuild.sh "$target"
 sudo sbctl verify
 ```
 

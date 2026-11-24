@@ -55,12 +55,10 @@ only restored automatic mode when stopped.
 
 ## Installation
 
-Follow [INSTALL.md](INSTALL.md): copy the configuration into `/mnt/etc/nixos`,
-generate this server's hardware file, and install with the `server` target.
-
-- Copy the generated `hardware-configuration.nix` to `hosts/server/hardware-configuration.nix`.
-- Check network settings in `hosts/server/default.nix`.
-- Keep the full dotfiles checkout at `/home/ivsopi3/dotfiles`.
+Follow [INSTALL.md](INSTALL.md) with the `server` target. After copying the
+flake into `/mnt/etc/nixos`, generate the hardware file and check the network
+settings in `hosts/server/default.nix` there. Copy the changes back to the
+temporary checkout before installing.
 
 SSH accepts configured keys only; root SSH and password SSH are disabled.
 
