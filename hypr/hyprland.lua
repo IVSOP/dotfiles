@@ -69,6 +69,7 @@ local mainMod     = "SUPER"
 -------------------
 
 hl.on("hyprland.start", function()
+    hl.exec_cmd("/run/wrappers/bin/gnome-keyring-daemon --start --components=secrets")
     hl.exec_cmd("$HOME/Desktop/Rofi-Themer/Scripts/daemon.sh $HOME/Desktop/Rofi-Themer/data/")
     hl.exec_cmd("~/.config/hypr/scripts/monitor-session.sh")
     hl.exec_cmd("nm-applet")
