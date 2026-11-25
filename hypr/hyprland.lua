@@ -466,6 +466,15 @@ local suppressMaximizeRule = hl.window_rule({
 -- suppressMaximizeRule:set_enabled(false)
 
 hl.window_rule({
+    match = { class = "steam_app_1422450" },
+    monitor = "DP-3",
+    float = true,
+    move = { 0, 0 },
+    border_size = 0,
+    suppress_event = "maximize fullscreen fullscreenoutput",
+})
+
+hl.window_rule({
     -- Fix some dragging issues with XWayland
     name  = "fix-xwayland-drags",
     match = {
