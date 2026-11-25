@@ -1,3 +1,5 @@
+{ pkgs, ... }:
+
 {
   imports = [
     ../../modules/dotfiles.nix
@@ -10,6 +12,11 @@
   # ── Machine identity ────────────────────────────────────────────────
   networking.hostName = "IVPC";
   system.stateVersion = "26.05";
+
+  environment.systemPackages = with pkgs; [
+    ckan
+    vintagestory
+  ];
 
   # ── SSH keys ────────────────────────────────────────────────────────
   # Shared with the laptop and server.
