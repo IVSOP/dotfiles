@@ -26,7 +26,7 @@
   fileSystems."/boot/efi" =
     { device = "/dev/disk/by-uuid/90CD-27EA";
       fsType = "vfat";
-      options = [ "fmask=0022" "dmask=0022" ];
+      options = [ "fmask=0177" "dmask=0077" ];
     };
 
   swapDevices =
