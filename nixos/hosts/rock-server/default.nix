@@ -87,6 +87,7 @@
 
   environment.defaultPackages = [ ];
   environment.systemPackages = with pkgs; [
+    efibootmgr
     docker-compose
     rsync
     dnsutils # dig, nslookup, host, nsupdate

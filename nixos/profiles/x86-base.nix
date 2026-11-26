@@ -95,6 +95,7 @@
     man-pages
     usbutils         # lsusb
     pciutils         # lspci
+    efibootmgr
 
     # ─ CLI tools ─
     eza
