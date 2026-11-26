@@ -35,9 +35,9 @@
     nixpkgs-solana.url = "github:NixOS/nixpkgs/f4a03c008967841f2a0b3cb7c436fc6fc31671f6";
     # Keep Hyprland and its portal on the same package set without updating
     # the rest of the system. hy3 must build against that exact Hyprland.
-    nixpkgs-hyprland.url = "github:NixOS/nixpkgs/1d060086d60cb76a40cf37109f979d88a5bd6396";
+    nixpkgs-hyprland.url = "github:NixOS/nixpkgs/d5cc6833999746cffdfe0598f7bc801a57b887a9";
     hy3 = {
-      # Reviewed indicator-0.57 revision, paired with Hyprland 0.57.1.
+      # Custom indicator-0.57 source, built against the pinned Hyprland 0.57.2.
       url = "github:IVSOP/hy3/a4c8154710a941a683afbd46731503ed92551817";
       flake = false;
     };

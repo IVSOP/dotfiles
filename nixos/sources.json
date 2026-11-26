@@ -13,32 +13,32 @@
     "obsidian-excalidraw-plugin": {
       "enable": true,
       "hashes": {
-        "main.js": "sha256-Sd/FZnp3MNvBJM38KkqOiRiBAGNkk6OdZJO/VpalVUE=",
-        "manifest.json": "sha256-joKCj9kSVhXoo2HQ8VVT5UjKwu56MD5VOHN4pTuSX9k=",
-        "styles.css": "sha256-bHqZFPgzBdCfmVckiJf/LyXPLC1LRrLZq0Lzx+4dKfA="
+        "main.js": "sha256-3MA82YfQOLQI4ofDh8ASh0AGyJ8ZTPgiEYhCpz+qDdU=",
+        "manifest.json": "sha256-6jVScaYkIGYw4RYKqUc2X9ELB8+wMGC6OHUvOiPlQWE=",
+        "styles.css": "sha256-UBPtRTUMwDYHY1Jl8TNelvKKc87Jn70Ye9Gn2fe/Yho="
       },
       "repo": "zsviczian/obsidian-excalidraw-plugin",
-      "version": "2.29.2"
+      "version": "2.29.4"
     },
     "obsidian-git": {
       "enable": false,
       "hashes": {
-        "main.js": "sha256-WL6wmBh1xnL8gzUOOx8g22yh3zyiBHol9JGQseMeJEM=",
-        "manifest.json": "sha256-TzRQ8yAfAuLh6L8qhzC/yDfPQqJduZG7XZMFbRcJOVE=",
-        "styles.css": "sha256-kq6A0mAOW8dkPdq8qjfYiOEul2Pv/2PcqVzJSkQhB4E="
+        "main.js": "sha256-lVE0LFn66uO5uZEifly89sPjvI3bj2V2+1TJYDr1fXQ=",
+        "manifest.json": "sha256-XgCpaTu41bjU+PFvhhkv3/gst5+GLbNGFeWdH+K8sGk=",
+        "styles.css": "sha256-DP0tJQzpeyibxXzVjevO70qqjdaacayabWv5sFNi6B0="
       },
       "repo": "Vinzent03/obsidian-git",
-      "version": "2.43.0"
+      "version": "2.44.0"
     },
     "obsidian-livesync": {
       "enable": true,
       "hashes": {
-        "main.js": "sha256-8eIiYtEK3yv+5C7bpYU6/EJ65POTEV4X1Y+QlBOyLSc=",
-        "manifest.json": "sha256-AAEOfM9gAgiwCJtWXEgIq8cYqZiVsxcsIFjSKvRHrC4=",
-        "styles.css": "sha256-tq+dIUwI8AWD6z/jWikb7RmojJzk7553jC3wr7Pzq30="
+        "main.js": "sha256-B6JWyrrD0tFkN6AWLSniGe35chasP7KBhTGlBbxmY/M=",
+        "manifest.json": "sha256-w9Y0ivDgd7r3rSPvJ8bIltPnFggb1TD+c0vvoS+f9aE=",
+        "styles.css": "sha256-71/zHUD8fIL0Tah3sPYaSWHsnwVaFPI/8OWE/Wnv9P8="
       },
       "repo": "vrtmrz/obsidian-livesync",
-      "version": "1.0.50"
+      "version": "1.0.52"
     }
   },
   "radxaFirmware": {
