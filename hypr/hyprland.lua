@@ -472,8 +472,7 @@ local suppressMaximizeRule = hl.window_rule({
 hl.window_rule({
     match = { class = "steam_app_1422450" },
     monitor = "desc:Dell Inc. AW2725QF B49QC34",
-    float = true,
-    move = { 0, 0 },
+    fullscreen = true,
     border_size = 0,
     suppress_event = "maximize fullscreen fullscreenoutput",
 })
