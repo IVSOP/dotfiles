@@ -230,7 +230,8 @@ end
 ---- WORKSPACE RULES ----
 --------------------------
 
--- Monitor-specific workspace placement belongs in each hyprmoncfg profile.
+-- Keep workspace 1 on the portrait display across monitor profiles and cable swaps.
+hl.workspace_rule({ workspace = "1", monitor = "desc:LG Electronics LG ULTRAGEAR 306MAGP7MC39", default = true })
 
 -----------------------
 ---- WINDOW RULES ----
@@ -470,7 +471,7 @@ local suppressMaximizeRule = hl.window_rule({
 
 hl.window_rule({
     match = { class = "steam_app_1422450" },
-    monitor = "DP-3",
+    monitor = "desc:Dell Inc. AW2725QF B49QC34",
     float = true,
     move = { 0, 0 },
     border_size = 0,
