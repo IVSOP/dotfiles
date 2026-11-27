@@ -144,10 +144,10 @@ when the driver successfully falls back to the generic filename.
 
 ## Network and GPIO behavior
 
-Host service connections are accepted only on `tailscale0`; LAN/WAN SSH and
-application connections are blocked. Outbound traffic, connection replies, DHCP,
-and essential IPv6 control traffic work. Tailscale's public UDP port stays closed;
-it can use outbound traversal or relays.
+Host services are reachable over `tailscale0`. The firewall also opens TCP and
+UDP 53317 for LocalSend on other interfaces. Outbound traffic, connection replies,
+DHCP, and essential IPv6 control traffic work. Tailscale uses outbound traversal
+or relays with its public UDP port closed.
 
 Docker's published ports bypass the normal INPUT firewall. The separate IPv4/IPv6
 `docker-ingress` nftables forwarding chain blocks incoming DNAT/published ports

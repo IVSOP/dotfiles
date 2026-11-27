@@ -56,7 +56,7 @@
           "$out/app/localsend/localsend_app"
       '';
     });
-    openFirewall = true;
+    openFirewall = false; # The shared LocalSend CLI module opens the same ports.
   };
 
   # ── Tailscale ────────────────────────────────────────────────────────

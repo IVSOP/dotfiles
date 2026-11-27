@@ -4,6 +4,7 @@
   imports = [
     ./rock-4c-plus.nix
     ../../modules/docker-logging.nix
+    ../../modules/localsend-cli.nix
   ];
 
   networking.hostName = lib.mkDefault "rock-server";

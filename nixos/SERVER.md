@@ -68,10 +68,9 @@ For console login, SSH keys, Tailscale, and AdGuard DNS, follow
 ## Firewall and containers
 
 The NixOS firewall uses nftables and trusts `tailscale0`, so host services are
-reachable from the tailnet, subject to its access rules. No host-service TCP
-ports are opened on physical interfaces; published container exceptions are
-described below. UDP 41641 is opened for Tailscale's encrypted transport; normal
-firewall allowances for DHCP and ICMP remain enabled.
+reachable from the tailnet, subject to its access rules. It opens TCP and UDP
+53317 for LocalSend on physical interfaces and UDP 41641 for Tailscale's encrypted
+transport. Normal firewall allowances for DHCP and ICMP remain enabled.
 
 Docker's published ports traverse forwarding rules after DNAT, so the server
 also filters container ingress in a separate nftables table. On `enp2s0`, this

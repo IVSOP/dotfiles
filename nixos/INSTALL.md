@@ -186,14 +186,17 @@ useAdguardDNS = false;
 enableTailscale = false;
 ```
 
-On all x86 machines, edit the existing settings in `modules/secure-boot.nix`:
+For the initial x86 install, keep Secure Boot off in the firmware and change
+the existing `boot.lanzaboote.enable` line in
+`/mnt/etc/nixos/hosts/$target/default.nix` from `true` to `false`. The target
+uses stock systemd-boot for installation and first boot.
 
 ```nix
-# Boot without signing until Secure Boot keys are set up.
-boot.loader.systemd-boot.enable = lib.mkForce true;
-# Restore true after creating the signing keys, before rebuilding and enrolling.
 boot.lanzaboote.enable = false;
 ```
+
+Set it back to `true` during [post-install Secure Boot setup](#secure-boot-all-x86-machines)
+after creating the signing keys.
 
 ### Copy the changes back to the temporary checkout
 
@@ -330,12 +333,8 @@ resolvers independent of the host's loopback resolver.
 sudo sbctl create-keys
 ```
 
-Restore the existing settings in `~/dotfiles/nixos/modules/secure-boot.nix`.
-
-```nix
-boot.loader.systemd-boot.enable = lib.mkForce false;
-boot.lanzaboote.enable = true;
-```
+Set `boot.lanzaboote.enable` back to `true` in
+`~/dotfiles/nixos/hosts/$target/default.nix` to restore signing.
 
 Rebuild and verify the signed boot files.
 

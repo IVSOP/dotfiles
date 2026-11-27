@@ -23,6 +23,8 @@
   users.users.ivsopi3.openssh.authorizedKeys.keys = import ../../trusted-ssh-keys.nix;
 
   # ── Disk ─────────────────────────────────────────────────────────────
+  # Set to false for a fresh install until Secure Boot signing keys exist.
+  boot.lanzaboote.enable = true;
   boot.loader.efi.efiSysMountPoint = "/boot/efi";
 
   boot.initrd.luks.devices = {

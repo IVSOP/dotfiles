@@ -20,6 +20,8 @@ in
   ];
 
   networking.hostName = lib.mkDefault "server";
+  # Set to false for a fresh install until Secure Boot signing keys exist.
+  boot.lanzaboote.enable = true;
   boot.loader.efi.canTouchEfiVariables = lib.mkDefault true;
   boot.loader.efi.efiSysMountPoint = lib.mkDefault "/boot/efi";
   hardware.enableRedistributableFirmware = true;

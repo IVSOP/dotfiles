@@ -6,6 +6,7 @@
     ../modules/bootvine.nix
     ../modules/codex.nix
     ../modules/docker-logging.nix
+    ../modules/localsend-cli.nix
     ../modules/secure-boot.nix
 
     # Apply to all LUKS mappings, including those in generated hardware configs.
