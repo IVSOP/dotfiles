@@ -12,7 +12,7 @@
 
     "modules-left": [
         "ext/workspaces",
-        "idle_inhibitor",
+        "custom/keep-awake",
         "tray"
     ],
 
@@ -51,15 +51,19 @@
         "all-outputs": true
     },
 
-    "idle_inhibitor": {
+    "custom/keep-awake": {
+        "exec": "exec \"$HOME/.config/waybar/keep-awake.sh\" status",
+        "return-type": "json",
+        "interval": 5,
+        "signal": 10,
+        "exec-on-event": false,
         "format": "{icon}",
         "format-icons": {
-            "activated": "",
-            "deactivated": ""
+            "awake": "",
+            "idle": "",
+            "unavailable": ""
         },
-        "tooltip-format-activated": "Keep awake is on. Click to restore idle timers.",
-        "tooltip-format-deactivated": "Keep awake is off. Click to pause idle timers.",
-        "on-click-release": "notify-send --app-name=Waybar --transient 'Keep-awake mode toggled'"
+        "on-click": "exec \"$HOME/.config/waybar/keep-awake.sh\" toggle"
     },
 
     "tray": {
