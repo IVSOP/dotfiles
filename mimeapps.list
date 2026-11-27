@@ -6,6 +6,7 @@ video/mp4=nemo-mpv-video.desktop;
 image/jpeg=nemo-mpv-image.desktop;
 
 [Default Applications]
+inode/directory=nemo.desktop;
 image/avif=nemo-mpv-image.desktop;
 x-scheme-handler/claude-cli=claude-code-url-handler.desktop
 x-scheme-handler/http=firefox.desktop

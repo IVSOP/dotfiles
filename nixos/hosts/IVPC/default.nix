@@ -6,6 +6,7 @@
     ../../profiles/workstation
     ../../profiles/x86-base.nix
     ../../modules/development.nix
+    ./fan.nix
     ./hardware-configuration.nix
   ];
 
