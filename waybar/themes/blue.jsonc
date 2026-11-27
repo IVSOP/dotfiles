@@ -12,6 +12,7 @@
 
     "modules-left": [
         "ext/workspaces",
+        "idle_inhibitor",
         "tray"
     ],
 
@@ -48,6 +49,17 @@
             "default": ""
         },
         "all-outputs": true
+    },
+
+    "idle_inhibitor": {
+        "format": "{icon}",
+        "format-icons": {
+            "activated": "",
+            "deactivated": ""
+        },
+        "tooltip-format-activated": "Keep awake is on. Click to restore idle timers.",
+        "tooltip-format-deactivated": "Keep awake is off. Click to pause idle timers.",
+        "on-click-release": "notify-send --app-name=Waybar --transient 'Keep-awake mode toggled'"
     },
 
     "tray": {
