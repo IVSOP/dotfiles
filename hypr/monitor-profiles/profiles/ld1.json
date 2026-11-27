@@ -17,7 +17,9 @@
       "refresh": 120,
       "x": 0,
       "y": 0,
-      "scale": 1.5
+      "scale": 1.5,
+      "bitdepth": 10,
+      "cm": "srgb"
     },
     {
       "key": "Lenovo Group Limited|0x4094",

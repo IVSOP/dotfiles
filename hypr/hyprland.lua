@@ -252,6 +252,9 @@ hl.config({
         disable_splash_rendering = true,
         vrr = 1,
     },
+    render = {
+        cm_auto_hdr = 0, -- Keep SDR outputs in SDR when apps go fullscreen.
+    },
 })
 
 

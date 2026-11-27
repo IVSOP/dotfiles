@@ -17,7 +17,9 @@
       "x": 0,
       "y": 0,
       "scale": 1,
-      "transform": 1
+      "transform": 1,
+      "bitdepth": 10,
+      "cm": "srgb"
     },
     {
       "key": "Dell Inc.|AW2725QF|B49QC34",
@@ -33,7 +35,9 @@
       "refresh": 120,
       "x": 1440,
       "y": 506,
-      "scale": 1.5
+      "scale": 1.5,
+      "bitdepth": 10,
+      "cm": "srgb"
     },
     {
       "key": "Lenovo Group Limited|0x4094",

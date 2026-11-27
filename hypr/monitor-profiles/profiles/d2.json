@@ -20,6 +20,8 @@
       "y": 506,
       "scale": 1.5,
       "transform": 0,
+      "bitdepth": 10,
+      "cm": "srgb",
       "sdr_min_luminance": 0,
       "min_luminance": 0
     },
@@ -40,6 +42,8 @@
       "y": 0,
       "scale": 1,
       "transform": 1,
+      "bitdepth": 10,
+      "cm": "srgb",
       "sdr_min_luminance": 0,
       "min_luminance": 0
     }
